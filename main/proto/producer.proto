@@ -1,0 +1,16 @@
+syntax = "proto3";
+package  proto;
+option     go_package ="./proto";
+
+message ProduceRequest {
+   bytes key = 1;
+   bytes value = 2; 
+}
+
+message Empty{
+
+}
+
+service Producer{
+    rpc Produce(ProduceRequest) returns (Empty);
+}
