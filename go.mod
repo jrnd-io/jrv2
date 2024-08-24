@@ -1,6 +1,6 @@
 module github.com/jrnd-io/jrv2
 
-go 1.21.1
+go 1.23
 
 require (
 	github.com/hashicorp/go-plugin v1.6.1
