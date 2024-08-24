@@ -1,8 +1,8 @@
 import time
 import sys
 from concurrent import futures
-import grpc 
-import producer_pb2_grpc 
+import grpc
+import producer_pb2_grpc
 import producer_pb2
 
 from grpc_health.v1.health import HealthServicer
@@ -13,8 +13,10 @@ class ProducerServicer(producer_pb2_grpc.ProducerServicer):
         key = request.key.decode("utf-8")
         with open(f"py_{key}", "w") as f:
             f.write(request.value.decode("utf-8"))
+            for k, v in request.headers.items():
+                f.write(f"{k}: {v}\n")
             f.close()
-        
+
         return producer_pb2.Empty()
 
 

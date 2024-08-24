@@ -35,7 +35,7 @@ class ProducerStub(object):
             channel: A grpc.Channel.
         """
         self.Produce = channel.unary_unary(
-                '/proto.Producer/Produce',
+                '/jrpc.Producer/Produce',
                 request_serializer=producer__pb2.ProduceRequest.SerializeToString,
                 response_deserializer=producer__pb2.Empty.FromString,
                 _registered_method=True)
@@ -60,9 +60,9 @@ def add_ProducerServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'proto.Producer', rpc_method_handlers)
+            'jrpc.Producer', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('proto.Producer', rpc_method_handlers)
+    server.add_registered_method_handlers('jrpc.Producer', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -83,7 +83,7 @@ class Producer(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/proto.Producer/Produce',
+            '/jrpc.Producer/Produce',
             producer__pb2.ProduceRequest.SerializeToString,
             producer__pb2.Empty.FromString,
             options,

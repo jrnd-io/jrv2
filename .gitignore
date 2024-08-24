@@ -54,3 +54,6 @@ pkg/producers/elastic/*.json
 pkg/producers/mongoDB/*.json
 pkg/producers/gcs/*.json
 pkg/producers/s3/*.json
+
+# python virtual environment
+.venv
