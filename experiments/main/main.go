@@ -5,14 +5,15 @@ import (
 	"os/exec"
 
 	"github.com/hashicorp/go-plugin"
+	"github.com/jrnd-io/jrv2/pkg/jrpc"
 )
 
 func main() {
 
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig:  Handshake,
-		Plugins:          PluginMap,
-		Cmd:              exec.Command("sh", "-c", os.Getenv("KV_PLUGIN")),
+		HandshakeConfig:  jrpc.Handshake,
+		Plugins:          jrpc.PluginMap,
+		Cmd:              exec.Command("sh", "-c", os.Getenv("JR_PLUGIN")),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 	})
 	defer client.Kill()
@@ -24,13 +25,13 @@ func main() {
 	}
 
 	// Request the plugin
-	raw, err := rpcClient.Dispense("producer_grpc")
+	raw, err := rpcClient.Dispense(jrpc.JRProducerGRPCPlugin)
 	if err != nil {
 		panic(err)
 	}
 
-	producer := raw.(Producer)
-	producer.Produce([]byte("pippo"), []byte("pippo value"))
-	producer.Produce([]byte("pluto"), []byte("pluto value"))
+	producer := raw.(jrpc.Producer)
+	producer.Produce([]byte("pippo"), []byte("pippo value"), map[string]string{"k1": "v1"})
+	producer.Produce([]byte("pluto"), []byte("pluto value"), map[string]string{"k2": "v2"})
 
 }
