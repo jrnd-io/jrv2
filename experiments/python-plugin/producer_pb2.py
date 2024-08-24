@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eproducer.proto\x12\x04jrpc\"\x90\x01\n\x0eProduceRequest\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x32\n\x07headers\x18\x03 \x03(\x0b\x32!.jrpc.ProduceRequest.HeadersEntry\x1a.\n\x0cHeadersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\x07\n\x05\x45mpty28\n\x08Producer\x12,\n\x07Produce\x12\x14.jrpc.ProduceRequest\x1a\x0b.jrpc.EmptyB\x08Z\x06./jrpcb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0eproducer.proto\x12\x04jrpc\"\x90\x01\n\x0eProduceRequest\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x32\n\x07headers\x18\x03 \x03(\x0b\x32!.jrpc.ProduceRequest.HeadersEntry\x1a.\n\x0cHeadersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\x07\n\x05\x45mpty28\n\x08Producer\x12,\n\x07Produce\x12\x14.jrpc.ProduceRequest\x1a\x0b.jrpc.Empty26\n\x0eGRPCController\x12$\n\x08Shutdown\x12\x0b.jrpc.Empty\x1a\x0b.jrpc.EmptyB\x08Z\x06./jrpcb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -42,4 +42,6 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_EMPTY']._serialized_end=178
   _globals['_PRODUCER']._serialized_start=180
   _globals['_PRODUCER']._serialized_end=236
+  _globals['_GRPCCONTROLLER']._serialized_start=238
+  _globals['_GRPCCONTROLLER']._serialized_end=292
 # @@protoc_insertion_point(module_scope)

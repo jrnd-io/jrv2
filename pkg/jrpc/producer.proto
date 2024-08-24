@@ -15,3 +15,8 @@ message Empty{
 service Producer{
     rpc Produce(ProduceRequest) returns (Empty);
 }
+
+// The GRPCController is responsible for telling the plugin server to shutdown.
+service GRPCController {
+    rpc Shutdown(Empty) returns (Empty);
+}
