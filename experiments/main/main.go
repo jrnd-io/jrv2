@@ -6,15 +6,24 @@ import (
 
 	"github.com/hashicorp/go-plugin"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/hashicorp/go-hclog"
 )
 
 func main() {
 
+
+
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig:  jrpc.Handshake,
 		Plugins:          jrpc.PluginMap,
+		SyncStdout:           os.Stdout, // sync stdout from plugin
+		SyncStderr:		   os.Stderr, // sync stderr from plugin
 		Cmd:              exec.Command("sh", "-c", os.Getenv("JR_PLUGIN")),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+	 	Logger: hclog.New(&hclog.LoggerOptions{ // disable logging
+			Name: "plugin",
+			Level: hclog.Off,
+		}),
 	})
 	defer client.Kill()
 

@@ -11,6 +11,7 @@ import (
 type MyProducer struct{}
 
 func (MyProducer) Produce(key []byte, v []byte, headers map[string]string) error {
+	fmt.Println("producer.Produce", string(key), string(v), headers)
 	value := []byte(fmt.Sprintf("%s\n\nWritten from plugin-go-grpc", string(v)))
 	file, err := os.Create("kv_" + string(key))
 	if err != nil {
