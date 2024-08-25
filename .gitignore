@@ -57,3 +57,7 @@ pkg/producers/s3/*.json
 
 # python virtual environment
 .venv
+__pycache__
+
+# vscode
+.vscode
