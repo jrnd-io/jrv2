@@ -37,7 +37,7 @@ class ProducerStub(object):
         self.Produce = channel.unary_unary(
                 '/jrpc.Producer/Produce',
                 request_serializer=producer__pb2.ProduceRequest.SerializeToString,
-                response_deserializer=producer__pb2.Empty.FromString,
+                response_deserializer=producer__pb2.ProduceResponse.FromString,
                 _registered_method=True)
 
 
@@ -56,7 +56,7 @@ def add_ProducerServicer_to_server(servicer, server):
             'Produce': grpc.unary_unary_rpc_method_handler(
                     servicer.Produce,
                     request_deserializer=producer__pb2.ProduceRequest.FromString,
-                    response_serializer=producer__pb2.Empty.SerializeToString,
+                    response_serializer=producer__pb2.ProduceResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -85,7 +85,7 @@ class Producer(object):
             target,
             '/jrpc.Producer/Produce',
             producer__pb2.ProduceRequest.SerializeToString,
-            producer__pb2.Empty.FromString,
+            producer__pb2.ProduceResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -98,8 +98,7 @@ class Producer(object):
 
 
 class GRPCControllerStub(object):
-    """The GRPCController is responsible for telling the plugin server to shutdown.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -115,8 +114,7 @@ class GRPCControllerStub(object):
 
 
 class GRPCControllerServicer(object):
-    """The GRPCController is responsible for telling the plugin server to shutdown.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def Shutdown(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -141,8 +139,7 @@ def add_GRPCControllerServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class GRPCController(object):
-    """The GRPCController is responsible for telling the plugin server to shutdown.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def Shutdown(request,

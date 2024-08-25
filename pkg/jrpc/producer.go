@@ -20,14 +20,20 @@ var Handshake = plugin.HandshakeConfig{
 	MagicCookieValue: JRMagicCookieValue,
 }
 
+// Interface
 type Producer interface {
-	Produce([]byte, []byte, map[string]string) error
+	Produce([]byte, []byte, map[string]string) (*ProduceResponse, error)
 }
+
+// GRPC Client
 type GRPCClient struct{ client ProducerClient }
 
-func (m *GRPCClient) Produce(key []byte, v []byte, headers map[string]string) error {
-	_, err := m.client.Produce(context.Background(), &ProduceRequest{Key: key, Value: v, Headers: headers})
-	return err
+func (m *GRPCClient) Produce(key []byte, v []byte, headers map[string]string) (*ProduceResponse, error) {
+	resp, err := m.client.Produce(context.Background(), &ProduceRequest{Key: key, Value: v, Headers: headers})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 type GRPCServer struct {
@@ -36,11 +42,12 @@ type GRPCServer struct {
 
 func (m *GRPCServer) Produce(
 	_ context.Context,
-	req *ProduceRequest) (*Empty, error) {
+	req *ProduceRequest) (*ProduceResponse, error) {
 
-	return &Empty{}, m.Impl.Produce(req.Key, req.Value, req.Headers)
+	return m.Impl.Produce(req.Key, req.Value, req.Headers)
 }
 
+// Plugin Map
 var PluginMap = map[string]plugin.Plugin{
 	JRProducerGRPCPlugin: &ProducerGRPCPlugin{},
 }

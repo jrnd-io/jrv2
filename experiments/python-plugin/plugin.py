@@ -1,5 +1,6 @@
 import logging
 import jrplugin
+import producer_pb2
 
 
 logger = jrplugin.Logger(logging_level=logging.DEBUG)
@@ -15,7 +16,11 @@ class MyProducer(jrplugin.JRProducer):
                 f.write(f"{k}: {v}\n")
             f.close()
 
-        return
+        response = producer_pb2.ProduceResponse()
+        response.bytes = len(request.value)
+        response.message = "Wrote to file"
+
+        return response
 
 
 if __name__ == "__main__":

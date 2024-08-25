@@ -22,6 +22,14 @@ class ProduceRequest(_message.Message):
     headers: _containers.ScalarMap[str, str]
     def __init__(self, key: _Optional[bytes] = ..., value: _Optional[bytes] = ..., headers: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
+class ProduceResponse(_message.Message):
+    __slots__ = ("bytes", "message")
+    BYTES_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    bytes: int
+    message: str
+    def __init__(self, bytes: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
+
 class Empty(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...

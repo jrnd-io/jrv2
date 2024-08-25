@@ -1,7 +1,6 @@
 """
 This module implements the basic classes for a plugin that can be run in the JR plugin system.
 """
-import time
 import abc
 import sys
 import logging
@@ -60,13 +59,21 @@ class Logger:
 
 class GRPCController(producer_pb2_grpc.GRPCControllerServicer):
     """
-    Shutdown Controller
+    GRPController is  a controller that can be used to shutdown the plugin process.
     """
+    def __init__(self, _logger, server):
+        """
+        Initialize the controller with the logger and the server.
+        """
+        self.logger = _logger
+        self.server = server
+
     def Shutdown(self, request, context):
         """
         Execute what ever needs to be done to clean up and exit the plugin process gracefully
         """
-        log.info("Shutting down")
+        self.logger.log.info("Shutting down")
+        self.server.stop(0)
 
 
 class GRPCStdioServicer(object):
@@ -75,8 +82,8 @@ class GRPCStdioServicer(object):
     to stream any stdout/err data so that it can be mirrored on the plugin
     host side.
     """
-    def __init__(self, _log):
-        self.log = _log
+    def __init__(self, _logger):
+        self.logger = _logger
 
     def StreamStdio(self, request, context):
         """
@@ -87,11 +94,11 @@ class GRPCStdioServicer(object):
         Callers should connect early to prevent blocking on the plugin process.
         """
         while True:
-            sd = grpc_stdio_pb2.StdioData(channel=1, data=self.log.read())
+            sd = grpc_stdio_pb2.StdioData(channel=1, data=self.logger.read())
             yield sd
 
 
-def serve(producer,logger):
+def serve(producer, logger):
     """
     Starts the GRPC server
     """
@@ -101,7 +108,7 @@ def serve(producer,logger):
     # Start the server.
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     producer_pb2_grpc.add_ProducerServicer_to_server(producer, server)
-    producer_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(), server)
+    producer_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(logger, server), server)
     grpc_stdio_pb2_grpc.add_GRPCStdioServicer_to_server(GRPCStdioServicer(logger), server)
     health_pb2_grpc.add_HealthServicer_to_server(health, server)
     server.add_insecure_port('127.0.0.1:1234')
@@ -109,13 +116,8 @@ def serve(producer,logger):
     # Output information
     print("1|1|tcp|127.0.0.1:1234|grpc")
     sys.stdout.flush()
+    server.wait_for_termination()
 
-    logger.log.debug("Server started")
-    try:
-        while True:
-            time.sleep(60 * 60 * 24)
-    except KeyboardInterrupt:
-        server.stop(0)
 
 
 class JRProducer(producer_pb2_grpc.ProducerServicer):
@@ -124,4 +126,4 @@ class JRProducer(producer_pb2_grpc.ProducerServicer):
     """
     @abc.abstractmethod
     def Produce(self, request, context):
-        return
+        pass

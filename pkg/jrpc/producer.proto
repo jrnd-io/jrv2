@@ -2,21 +2,26 @@ syntax = "proto3";
 package  jrpc;
 option   go_package ="./jrpc";
 
+
 message ProduceRequest {
    bytes key = 1;
    bytes value = 2;
    map<string,string> headers = 3;
 }
 
-message Empty{
-
+message ProduceResponse {
+    uint64 bytes = 1;
+    string message = 2;
 }
 
+
 service Producer{
-    rpc Produce(ProduceRequest) returns (Empty);
+    rpc Produce(ProduceRequest) returns (ProduceResponse) {}
 }
 
 // The GRPCController is responsible for telling the plugin server to shutdown.
+message Empty{
+}
 service GRPCController {
     rpc Shutdown(Empty) returns (Empty);
 }

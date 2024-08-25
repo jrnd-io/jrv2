@@ -44,9 +44,10 @@ func main() {
 	}
 
 	producer := raw.(jrpc.Producer)
-	producer.Produce([]byte("pippo"), []byte("pippo value"), map[string]string{"k1": "v1"})
-	producer.Produce([]byte("pluto"), []byte("pluto value"), map[string]string{"k2": "v2"})
-
-	//	plugin.CleanupClients()
+	resp, err := producer.Produce([]byte("pippo"), []byte("pippo value"), map[string]string{"k1": "v1"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Response: %v\n", resp)
 
 }
