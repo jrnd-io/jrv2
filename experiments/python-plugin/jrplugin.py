@@ -107,9 +107,10 @@ def serve(producer,logger):
     server.add_insecure_port('127.0.0.1:1234')
     server.start()
     # Output information
-    print("1|1|tcp|127.0.0.1:1234|grpc", flush=True)
+    print("1|1|tcp|127.0.0.1:1234|grpc")
     sys.stdout.flush()
 
+    logger.log.debug("Server started")
     try:
         while True:
             time.sleep(60 * 60 * 24)
