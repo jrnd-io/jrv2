@@ -29,7 +29,3 @@ class ProduceResponse(_message.Message):
     bytes: int
     message: str
     def __init__(self, bytes: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
-
-class Empty(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...

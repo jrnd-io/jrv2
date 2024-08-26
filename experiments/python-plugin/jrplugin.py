@@ -10,6 +10,8 @@ from queue import Queue
 from io import StringIO
 import grpc
 import producer_pb2_grpc
+import grpc_controller_pb2
+import grpc_controller_pb2_grpc
 import grpc_stdio_pb2_grpc
 import grpc_stdio_pb2
 
@@ -57,7 +59,7 @@ class Logger:
         return ret.encode("utf-8")
 
 
-class GRPCController(producer_pb2_grpc.GRPCControllerServicer):
+class GRPCController(grpc_controller_pb2_grpc.GRPCControllerServicer):
     """
     GRPController is  a controller that can be used to shutdown the plugin process.
     """
@@ -74,6 +76,7 @@ class GRPCController(producer_pb2_grpc.GRPCControllerServicer):
         """
         self.logger.log.info("Shutting down")
         self.server.stop(0)
+        return grpc_controller_pb2.Empty()
 
 
 class GRPCStdioServicer(object):
@@ -108,7 +111,7 @@ def serve(producer, logger):
     # Start the server.
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     producer_pb2_grpc.add_ProducerServicer_to_server(producer, server)
-    producer_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(logger, server), server)
+    grpc_controller_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(logger, server), server)
     grpc_stdio_pb2_grpc.add_GRPCStdioServicer_to_server(GRPCStdioServicer(logger), server)
     health_pb2_grpc.add_HealthServicer_to_server(health, server)
     server.add_insecure_port('127.0.0.1:1234')

@@ -20,8 +20,8 @@ service Producer{
 }
 
 // The GRPCController is responsible for telling the plugin server to shutdown.
-message Empty{
-}
-service GRPCController {
-    rpc Shutdown(Empty) returns (Empty);
-}
+//message Empty{
+//}
+//service GRPCController {
+//    rpc Shutdown(Empty) returns (Empty);
+//}

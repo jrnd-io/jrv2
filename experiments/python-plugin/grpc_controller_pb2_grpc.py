@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import producer_pb2 as producer__pb2
+import grpc_controller_pb2 as grpc__controller__pb2
 
 GRPC_GENERATED_VERSION = '1.66.0'
 GRPC_VERSION = grpc.__version__
@@ -18,15 +18,16 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in producer_pb2_grpc.py depends on'
+        + f' but the generated code in grpc_controller_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class ProducerStub(object):
-    """Missing associated documentation comment in .proto file."""
+class GRPCControllerStub(object):
+    """The GRPCController is responsible for telling the plugin server to shutdown.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -34,43 +35,45 @@ class ProducerStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Produce = channel.unary_unary(
-                '/jrpc.Producer/Produce',
-                request_serializer=producer__pb2.ProduceRequest.SerializeToString,
-                response_deserializer=producer__pb2.ProduceResponse.FromString,
+        self.Shutdown = channel.unary_unary(
+                '/plugin.GRPCController/Shutdown',
+                request_serializer=grpc__controller__pb2.Empty.SerializeToString,
+                response_deserializer=grpc__controller__pb2.Empty.FromString,
                 _registered_method=True)
 
 
-class ProducerServicer(object):
-    """Missing associated documentation comment in .proto file."""
+class GRPCControllerServicer(object):
+    """The GRPCController is responsible for telling the plugin server to shutdown.
+    """
 
-    def Produce(self, request, context):
+    def Shutdown(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_ProducerServicer_to_server(servicer, server):
+def add_GRPCControllerServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Produce': grpc.unary_unary_rpc_method_handler(
-                    servicer.Produce,
-                    request_deserializer=producer__pb2.ProduceRequest.FromString,
-                    response_serializer=producer__pb2.ProduceResponse.SerializeToString,
+            'Shutdown': grpc.unary_unary_rpc_method_handler(
+                    servicer.Shutdown,
+                    request_deserializer=grpc__controller__pb2.Empty.FromString,
+                    response_serializer=grpc__controller__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'jrpc.Producer', rpc_method_handlers)
+            'plugin.GRPCController', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('jrpc.Producer', rpc_method_handlers)
+    server.add_registered_method_handlers('plugin.GRPCController', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class Producer(object):
-    """Missing associated documentation comment in .proto file."""
+class GRPCController(object):
+    """The GRPCController is responsible for telling the plugin server to shutdown.
+    """
 
     @staticmethod
-    def Produce(request,
+    def Shutdown(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +86,9 @@ class Producer(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/jrpc.Producer/Produce',
-            producer__pb2.ProduceRequest.SerializeToString,
-            producer__pb2.ProduceResponse.FromString,
+            '/plugin.GRPCController/Shutdown',
+            grpc__controller__pb2.Empty.SerializeToString,
+            grpc__controller__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,
