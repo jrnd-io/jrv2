@@ -14,6 +14,7 @@ func main() {
 
 	jrPlugin := os.Getenv("JR_PLUGIN")
 	fmt.Println("JR_PLUGIN: ", jrPlugin)
+
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig:  jrpc.Handshake,
 		Plugins:          jrpc.PluginMap,
@@ -22,20 +23,21 @@ func main() {
 		Stderr:           os.Stderr,
 		Cmd:              exec.Command("sh", "-c", jrPlugin),
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
-		Managed:          true,
+		Managed:          false,
 		Logger: hclog.New(&hclog.LoggerOptions{ // disable logging
 			Name:  "plugin",
 			Level: hclog.Trace,
 		}),
 	})
-	//defer client.Kill()
-	defer plugin.CleanupClients()
+	// defer client.Kill()
+	//defer plugin.CleanupClients()
 
 	// Connect via RPC
 	rpcClient, err := client.Client()
 	if err != nil {
 		panic(err)
 	}
+	defer rpcClient.Close()
 
 	// Request the plugin
 	raw, err := rpcClient.Dispense(jrpc.JRProducerGRPCPlugin)
@@ -44,10 +46,12 @@ func main() {
 	}
 
 	producer := raw.(jrpc.Producer)
-	resp, err := producer.Produce([]byte("pippo"), []byte("pippo value"), map[string]string{"k1": "v1"})
-	if err != nil {
-		panic(err)
+	for i := 0; i < 10; i++ {
+		resp, err := producer.Produce([]byte(fmt.Sprintf("pippo_%d", i)), []byte("pippo value"), map[string]string{"k1": "v1"})
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Response: %v\n", resp)
 	}
-	fmt.Printf("Response: %v\n", resp)
 
 }
