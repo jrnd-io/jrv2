@@ -17,38 +17,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-package main
+package emitter
 
-import (
-	"github.com/jrnd-io/jrv2/pkg/constants"
-	"github.com/rs/zerolog"
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
-var logLevel = constants.DefaultLogLevel
-
-var rootCmd = &cobra.Command{
-	Use:   "jr",
-	Short: "jr, the data random generator",
-	Long:  `jr is a data random generator that helps you in generating quality random data for your needs.`,
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
-	rootCmd.AddGroup(&cobra.Group{
-		ID:    "resource",
-		Title: "Resources",
-	})
-
-	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", constants.DefaultLogLevel, "JR Log Level")
-}
-
-func initConfig() {
-
-	// setting zerolog level
-	zlogLevel, err := zerolog.ParseLevel(logLevel)
-	if err != nil {
-		zlogLevel = zerolog.PanicLevel
-	}
-	zerolog.SetGlobalLevel(zlogLevel)
+var ListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "describes available emitters",
+	Long: "describes available emitters. Example usage:\n" +
+		"jr emitter list",
 }

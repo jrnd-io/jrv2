@@ -20,35 +20,20 @@
 package main
 
 import (
-	"github.com/jrnd-io/jrv2/pkg/constants"
-	"github.com/rs/zerolog"
+	"github.com/jrnd-io/jrv2/cmd/jr/template"
 	"github.com/spf13/cobra"
 )
 
-var logLevel = constants.DefaultLogLevel
-
-var rootCmd = &cobra.Command{
-	Use:   "jr",
-	Short: "jr, the data random generator",
-	Long:  `jr is a data random generator that helps you in generating quality random data for your needs.`,
+var templateCmd = &cobra.Command{
+	Use:     "template",
+	Short:   "jr Template resource",
+	Long:    `jr Template resource`,
+	GroupID: "resource",
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-	rootCmd.AddGroup(&cobra.Group{
-		ID:    "resource",
-		Title: "Resources",
-	})
-
-	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", constants.DefaultLogLevel, "JR Log Level")
-}
-
-func initConfig() {
-
-	// setting zerolog level
-	zlogLevel, err := zerolog.ParseLevel(logLevel)
-	if err != nil {
-		zlogLevel = zerolog.PanicLevel
-	}
-	zerolog.SetGlobalLevel(zlogLevel)
+	templateCmd.AddCommand(template.ListCmd)
+	templateCmd.AddCommand(template.RunCmd)
+	templateCmd.AddCommand(template.ShowCmd)
+	rootCmd.AddCommand(templateCmd)
 }
