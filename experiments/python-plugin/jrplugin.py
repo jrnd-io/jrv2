@@ -63,19 +63,22 @@ class GRPCController(grpc_controller_pb2_grpc.GRPCControllerServicer):
     """
     GRPController is  a controller that can be used to shutdown the plugin process.
     """
-    def __init__(self, _logger, server):
+    def __init__(self, _logger, health, server):
         """
         Initialize the controller with the logger and the server.
         """
         self.logger = _logger
         self.server = server
+        self.health = health
 
     def Shutdown(self, request, context):
         """
         Execute what ever needs to be done to clean up and exit the plugin process gracefully
         """
-        self.logger.log.info("Shutting down")
-        self.server.stop(0)
+        self.logger.log.debug("shutting down jr plugin grpc server")
+        self.health.enter_graceful_shutdown()
+        self.server.stop(1)
+        self.logger.log.debug("stopped jr plugin grpc server")
         return grpc_controller_pb2.Empty()
 
 
@@ -111,7 +114,7 @@ def serve(producer, logger):
     # Start the server.
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     producer_pb2_grpc.add_ProducerServicer_to_server(producer, server)
-    grpc_controller_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(logger, server), server)
+    grpc_controller_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCController(logger, health, server), server)
     grpc_stdio_pb2_grpc.add_GRPCStdioServicer_to_server(GRPCStdioServicer(logger), server)
     health_pb2_grpc.add_HealthServicer_to_server(health, server)
     server.add_insecure_port('127.0.0.1:1234')
