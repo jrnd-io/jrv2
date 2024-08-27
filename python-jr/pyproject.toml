@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-jr"
-version = "2.0.1"
+version = "2.0.2"
 description = "python plugin system for jr, the data random generator"
 authors = ["JR Team"]
 readme = "README.md"
