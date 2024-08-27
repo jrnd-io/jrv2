@@ -17,21 +17,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-package main
+package emitter
 
 import (
-	"github.com/jrnd-io/jrv2/cmd/jr/function"
 	"github.com/spf13/cobra"
 )
 
-var functionCmd = &cobra.Command{
-	Use:     "function",
-	Short:   "jr Function resource",
-	Long:    `jr Function resource`,
+var emitterCmd = &cobra.Command{
+	Use:     "emitter",
+	Short:   "jr Emitter resource",
+	Long:    `jr Emitter resource`,
 	GroupID: "resource",
 }
 
-func init() {
-	functionCmd.AddCommand(function.ListCmd)
-	rootCmd.AddCommand(functionCmd)
+func NewCmd() *cobra.Command {
+	emitterCmd.AddCommand(ListCmd)
+	emitterCmd.AddCommand(RunCmd)
+	emitterCmd.AddCommand(ShowCmd)
+	return emitterCmd
 }
