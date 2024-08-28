@@ -28,6 +28,10 @@ import (
 	"text/template"
 )
 
+const (
+	StockSymbolMap = "stock_symbol"
+)
+
 func init() {
 	AddFuncs(template.FuncMap{
 		"account":      Account,
@@ -119,7 +123,7 @@ func Isin(country string) string {
 
 // Sedol returns a valid 7 characters sedol code
 func Sedol() string {
-	sedol, _ := Regex("[0-9BCDFGHJKLMNPQRSTVWXYZ]]{6}")
+	sedol, _ := Regex("[0-9BCDFGHJKLMNPQRSTVWXYZ]{6}")
 	return sedol + SedolCheckDigit(sedol)
 }
 
@@ -137,7 +141,7 @@ func Swift() string {
 	for i := range bankCode {
 		bankCode[i] = letters[rand.Intn(len(letters))] //nolint no need to use a secure random generator
 	}
-	country := Word("country")
+	country := Country()
 	location := rand.Intn(100) //nolint no need to use a secure random generator
 	branch := rand.Intn(1000)  //nolint no need to use a secure random generator
 

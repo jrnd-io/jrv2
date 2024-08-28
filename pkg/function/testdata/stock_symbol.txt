@@ -1,0 +1,8 @@
+stock_symbol00
+stock_symbol01
+stock_symbol02
+stock_symbol03
+stock_symbol04
+stock_symbol05
+stock_symbol06
+stock_symbol07

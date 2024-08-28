@@ -114,10 +114,10 @@ func CityAt(index int) string {
 // Country returns the ISO 3166 Country selected with locale
 func Country() string {
 	countryIndex := emitter.GetState().CountryIndex
-
-	if countryIndex == -1 {
+	if countryIndex == -1 || countryIndex == 0 {
 		emitter.GetState().LastIndex = Random.Intn(len(countries.All()))
-		return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
+		c := countries.All()[emitter.GetState().LastIndex].Alpha2()
+		return c
 	}
 
 	return countries.ByNumeric(emitter.GetState().CountryIndex).Alpha2()

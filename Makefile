@@ -110,6 +110,7 @@ install:
 	install build/jr /usr/local/bin
 
 test:
+	go clean -testcache
 	go test ./...
 
 all: hello install-gogen generate compile
