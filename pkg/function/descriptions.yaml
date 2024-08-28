@@ -1,0 +1,1193 @@
+account:
+    name: account
+    category: finance
+    description: returns a random account number of given length
+    parameters: length int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{account 10}}'
+    output: "6192117146"
+add:
+    name: add
+    category: math
+    description: adds two numbers
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{add 1 2}}'
+    output: "3"
+add_v_to_list:
+    name: add_v_to_list
+    category: context
+    description: adds a context value to a list. A random value from the list can be obtained with 'random_v_from_list', usually in an other template
+    parameters: name string, value string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{add_v_to_list "ids" "12770"}}{{random_v_from_list "ids"}}'
+    output: "12770"
+amount:
+    name: amount
+    category: finance
+    description: returns an amount of money between min and max, and given currency
+    parameters: min float32, max float32, currency string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{account 10 1000 "$"}}'
+    output: $7409.66
+array:
+    name: array
+    category: utilities
+    description: returns an empty array of given size
+    parameters: size int
+    localizable: false
+    return: array
+    example: jr template run --embedded '{{array 5}}'
+    output: '[0,0,0,0,0]'
+atoi:
+    name: atoi
+    category: text
+    description: converts a string to an integer
+    parameters: string
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{atoi "123"}}'
+    output: "123"
+birthdate:
+    name: birthdate
+    category: time
+    description: generates a birthdate in a given age range
+    parameters: minAge int, maxAge int
+    localizable: false
+    return: '[]string'
+    example: jr template run --embedded '{{birthdate 1 23}}'
+    output: "2018-06-09"
+bitcoin:
+    name: bitcoin
+    category: finance
+    description: returns a bitcoin address
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{bitcoin}}'
+    output: 12KuG8lNm42zkk3aKd4sC0uuFM
+bool:
+    name: bool
+    category: utilities
+    description: returns a random boolean
+    parameters: ""
+    localizable: false
+    return: bool
+    example: jr template run --embedded '{{bool}}'
+    output: "true"
+building:
+    name: building
+    category: address
+    description: returns a random building number of max n digits
+    parameters: n int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{building 3}}'
+    output: "982"
+capital:
+    name: capital
+    category: address
+    description: returns a random capital
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{capital}}'
+    output: Phoenix
+capital_at:
+    name: capital_at
+    category: address
+    description: returns capital at given index
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{capital_at 4}}'
+    output: Sacramento
+card:
+    name: card
+    category: finance
+    description: returns a random credit card number
+    parameters: issuer string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{card "amex"}}'
+    output: "376794009305701"
+cardCVV:
+    name: cardCVV
+    category: finance
+    description: returns a random credit card CVV of given length
+    parameters: length int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{cardCVV 3}}'
+    output: "072"
+cardinal:
+    name: cardinal
+    category: address
+    description: returns a random cardinal direction
+    parameters: short bool
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{cardinal false}} {{cardinal true}}'
+    output: North-Ovest SE
+cf:
+    name: cf
+    category: people
+    description: 'returns an Italian codice fiscale. Note: this function gets name, surname, gender, birthdate and city from the context'
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --locale IT --embedded '{{cf}}'
+    output: RSSMRA70A30H501W
+city:
+    name: city
+    category: address
+    description: returns a random city
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{city}}'
+    output: New York
+city_at:
+    name: city_at
+    category: address
+    description: returns a city at given index
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{city_at 1}}'
+    output: Austin
+company:
+    name: company
+    category: people
+    description: returns a random company name
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{company}}'
+    output: Umbrella Corporation
+concat:
+    name: concat
+    category: text
+    description: converts an integer to a string
+    parameters: string string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{concat "aaa" "bbb"}}'
+    output: "123"
+counter:
+    name: counter
+    category: utilities
+    description: returns a named counter, starting at n incrementing by i
+    parameters: name string, start int, step int
+    localizable: false
+    return: int
+    example: jr template run -n 5 --embedded '{{counter "mycounter" 0 1}}'
+    output: |4-
+        0
+        1
+        2
+        3
+        4
+country:
+    name: country
+    category: address
+    description: returns the ISO 3166 country code (selected locale)
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr --locale it run --embedded '{{country}}'
+    output: IT
+country_at:
+    name: country_at
+    category: address
+    description: returns an ISO 3166 country code at a given index
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{country_at 109}}'
+    output: IT
+country_code:
+    name: country_code
+    category: phone
+    description: returns a random Country Code prefix
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{country_code}}'
+    output: "+39"
+country_code_at:
+    name: country_code_at
+    category: phone
+    description: returns a Country Code prefix at a given index
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{country_code_at 109}}'
+    output: "+39"
+country_random:
+    name: country_random
+    category: address
+    description: returns a random ISO 3166 country code
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{country}}'
+    output: IT
+cusip:
+    name: cusip
+    category: finance
+    description: returns a valid 9 characters cusip code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{cusip}}'
+    output: DWNFYN9W2
+date_between:
+    name: date_between
+    category: time
+    description: generates a date between given from and to
+    parameters: from string, to string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{date_between "1970-12-07" "1990-12-07"}}'
+    output: "1985-06-29"
+dates_between:
+    name: dates_between
+    category: time
+    description: generates an array of num dates between given from and to
+    parameters: from string, to string, num int
+    localizable: false
+    return: '[]string'
+    example: jr template run --embedded '{{dates_between "1970-12-07" "1990-12-07" 3}}'
+    output: '[1974-12-27 1987-06-07 1985-08-18]'
+div:
+    name: div
+    category: math
+    description: divides two numbers
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{div 10 2}}'
+    output: "5"
+email:
+    name: email
+    category: people
+    description: 'returns a random email. Note: it uses automatically name, surname previously used in the template'
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{email_provider}}'
+    output: paul.newman@gmail.com
+email_provider:
+    name: email_provider
+    category: people
+    description: returns a random email provider
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{email_provider}}'
+    output: gmail.com
+email_work:
+    name: email_work
+    category: people
+    description: 'returns a random email. Note: it uses automatically name, surname and company if previously used in the template'
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{email_work}}'
+    output: paul.newman@bostonstatic.com
+ethereum:
+    name: ethereum
+    category: finance
+    description: returns an ethereum address
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ethereum}}'
+    output: 0xb0c2fa65e1C39bD0ADeE9c2EDfC260af81aF62f8
+first:
+    name: first
+    category: text
+    description: returns the first character of a string
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{first "hello world"}}'
+    output: h
+firstword:
+    name: firstword
+    category: text
+    description: returns the first word of a text
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{firstword "hello world"}}'
+    output: hello
+floating:
+    name: floating
+    category: math
+    description: returns a random float64 between min and max
+    parameters: min float64, max float64
+    localizable: false
+    return: float64
+    example: jr template run --embedded '{{floating 10 20}}'
+    output: "13.123"
+format_float:
+    name: format_float
+    category: math
+    description: returns a string with a formatted floating number
+    parameters: format string, number float
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{{format_float "%.2f" (floating 1 5)}}'
+    output: "4.46"
+from:
+    name: from
+    category: text
+    description: returns a random string from a list of strings in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: set string
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{from "actor"}}'
+    output: John Travolta
+from_at:
+    name: from_at
+    category: text
+    description: returns a string at a given position in a list of strings in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{from_at "actor" 3}}'
+    output: James Dean
+from_n:
+    name: from_n
+    category: text
+    description: return a subset of elements in a list of string in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: set string, number int
+    localizable: true
+    return: '[]string'
+    example: jr template run --embedded '{{from_n "State" 5}}'
+    output: '[West Virginia Idaho Maryland New Hampshire Wyoming]'
+from_shuffle:
+    name: from_shuffle
+    category: text
+    description: returns a shuffled list of strings in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: set string
+    localizable: true
+    return: '[]string'
+    example: jr template run --embedded '{{from_shuffle "state_short"}}'
+    output: '[ND IL MO WA NC SD MS PA AZ HI DE SC WI WV TN AL MA IA NH NV OH VA WY MT MN NM LA OK IN CA OR VT MD NY RI UT AK NE AR CO FL ID KY TX ME GA NJ MI KS CT]'
+fromcsv:
+    name: fromcsv
+    category: utilities
+    description: returns a value for given column label from a csv file row
+    parameters: string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{fromcsv "NAME"}}' --csv testfiles/test2.csv
+    output: John
+future:
+    name: future
+    category: time
+    description: returns a date in the future not after the given years
+    parameters: years int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{future 5}}'
+    output: "2022-05-08"
+gender:
+    name: gender
+    category: people
+    description: 'returns a random gender. Note: it gets the gender context automatically setup by previous name calls'
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{gender}}'
+    output: F
+get_v:
+    name: get_v
+    category: context
+    description: returns a context value. The value must be set with 'set_v', usually in an other template
+    parameters: name string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{set_v "id" "12770"}}{{get_v "id"}}'
+    output: "12770"
+get_v_from_list_at_index:
+    name: get_v_from_list_at_index
+    category: context
+    description: returns a specific value from a list. The list must be set with 'add_v_to_list', usually in an other template
+    parameters: name string index int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{add_v_to_list "ids" "12770"}}{{get_v_from_list_at_index "ids" 0}}'
+    output: "12770"
+http_method:
+    name: http_method
+    category: network
+    description: returns a random http method
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{http_method}}'
+    output: GET
+image:
+    name: image
+    category: image
+    description: generates a random Image url of given width, height.
+    parameters: width int, height int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{image 640 480}}'
+    output: https://loremflickr.com/640/480/animals
+image_of:
+    name: image
+    category: image
+    description: generates a random Image url of given width, height and type. Type can be one of "abstract", "animals", "business", "cats", "city", "fashion", "food", "nature", "nightlife", "people", "sport", "technics", "transport"
+    parameters: width int, height int, type string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{image_of 640 480 "cats"}}'
+    output: https://loremflickr.com/640/480/cats
+imei:
+    name: imei
+    category: phone
+    description: returns a random imei number of 15 digits
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{imei}}'
+    output: "334238791972527"
+index_of:
+    name: index_of
+    category: text
+    description: 'returns the index of s in ''name'' file '
+    parameters: s string, name string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{index_of  "New York" "city"}}'
+    output: "27"
+inject:
+    name: inject
+    category: utilities
+    description: 'inject a string with a given probability between 0 (never) and 1 (always): useful to inject errors'
+    parameters: probability float64, injected any, original any
+    localizable: false
+    return: any
+    example: jr template run --embedded '{{$bad_city:=regex "[A-Z]{5}"}}{{city | inject 0.5 $bad_city}}'
+    output: Portland|ZPTAC
+integer:
+    name: integer
+    category: math
+    description: returns a random integer between min and max
+    parameters: min int, max int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{integer 10 20}}'
+    output: "13"
+integer64:
+    name: integer64
+    category: math
+    description: returns a random int64 between min and max
+    parameters: min int64, max int64
+    localizable: false
+    return: int64
+    example: jr template run --embedded '{{integer64 10 20}}'
+    output: "13"
+ip:
+    name: ip
+    category: network
+    description: returns a random Ip Address matching the given cidr
+    parameters: cidr string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ip "10.2.0.0/16"}}'
+    output: 10.2.55.217
+ip_known_port:
+    name: ip_known_port
+    category: network
+    description: returns a random known port number
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ip_known_port}}'
+    output: "80"
+ip_known_protocol:
+    name: ip_known_protocol
+    category: network
+    description: returns a random known protocol
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ip_known_protocol}}'
+    output: tcp
+ipv6:
+    name: ipv6
+    category: network
+    description: returns a random Ipv6 Address
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ipv6}}'
+    output: 2001:db8:85a3:8d3:1319:8a2e:370:7348
+isin:
+    name: isin
+    category: finance
+    description: returns a valid 12 characters isin code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{isin}}'
+    output: ""
+itoa:
+    name: itoa
+    category: text
+    description: converts an integer to a string
+    parameters: int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{itoa 123}}'
+    output: "123"
+join:
+    name: join
+    category: text
+    description: joins a list of strings with a separator
+    parameters: strings []string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{join "hello," "world"}}'
+    output: hello,world
+key:
+    name: key
+    category: utilities
+    description: returns a random key string using a prefix and a length
+    parameters: prefix string, length int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{key "KEY" 20}}'
+    output: KEY4
+latitude:
+    name: latitude
+    category: address
+    description: returns a random latitude between -90 and 90 degrees
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{latitude}}'
+    output: ""
+len:
+    name: len
+    category: text
+    description: returns the length a list of strings in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: set string
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{len "city"}}'
+    output: "46"
+longitude:
+    name: longitude
+    category: address
+    description: returns a random longitude between -180 and 180 degrees
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{longitude}}'
+    output: ""
+lorem:
+    name: lorem
+    category: text
+    description: generates a Lorem ipsum string
+    parameters: words int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{lorem 10}}'
+    output: Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fusce elit magna.
+lower:
+    name: lower
+    category: text
+    description: converts a string to lowercase
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{lower "HELLO"}}'
+    output: hello
+mac:
+    name: mac
+    category: network
+    description: returns a random mac Address
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{mac}}'
+    output: 7e:8e:75:a5:0a:85
+markov:
+    name: markov
+    category: text
+    description: generates a markov chain from a string
+    parameters: chain int, text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{markov 10 "hello world"}}'
+    output: hello world
+max:
+    name: max
+    category: math
+    description: returns the maximum of two numbers
+    parameters: first int|float, second int|float
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{max 10.3 2.4}}'
+    output: "10.3"
+maxint:
+    name: max
+    category: math
+    description: returns the maximum of two ints
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{max 10 2}}'
+    output: "10"
+middle_name:
+    name: middle_name
+    category: people
+    description: returns a random middle Name
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{middle_name}}'
+    output: J
+min:
+    name: min
+    category: math
+    description: returns the minimum of two numbers
+    parameters: first int|float, second int|float
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{min 10.1 2.3}}'
+    output: "2.3"
+minint:
+    name: min
+    category: math
+    description: returns the minimum of two ints
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{min 10 2}}'
+    output: "2"
+mobile_phone:
+    name: mobile_phone
+    category: phone
+    description: returns a random mobile phone
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{mobile_phone}}'
+    output: "34033546096"
+mobile_phone_at:
+    name: mobile_phone_at
+    category: phone
+    description: returns a mobile phone at a given index
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{mobile_phone_at 79}}'
+    output: "3422308090"
+mod:
+    name: mod
+    category: math
+    description: returns the remainder of two numbers
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{mod 10 2}}'
+    output: "0"
+mul:
+    name: mul
+    category: math
+    description: multiplies two numbers
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{mul 10 2}}'
+    output: "20"
+name:
+    name: name
+    category: people
+    description: returns a random Name
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{name}}'
+    output: Lisa
+name_f:
+    name: name_f
+    category: people
+    description: returns a random female Name
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{name_f}}'
+    output: Lisa
+name_m:
+    name: name_m
+    category: people
+    description: returns a random male Name
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{name_m}}'
+    output: John
+nearby_gps:
+    name: nearby_gps
+    category: address
+    description: returns a random latitude longitude within a given radius in meters
+    parameters: latitude float64, longitude float64, radius int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{nearby_gps 41.9028 12.4964 1000}}'
+    output: 41.8963 12.4975
+password:
+    name: password
+    category: security
+    description: returns a random Password of given length, memorable, and with prefix and suffix
+    parameters: length int, memorable bool, prefix string, suffix string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{password 10 true "!" "?"}}'
+    output: '!itAPYgivIH?'
+past:
+    name: past
+    category: time
+    description: returns a date in the past not before the given years
+    parameters: years int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{past 5}}'
+    output: "2022-05-08"
+phone:
+    name: phone
+    category: phone
+    description: returns a random phone
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{phone}}'
+    output: 06 72358749
+phone_at:
+    name: phone_at
+    category: phone
+    description: returns a phone at a given index
+    parameters: index int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{phone_at 79}}'
+    output: 06 72358749
+random:
+    name: random
+    category: text
+    description: returns a random string from a list of strings
+    parameters: list []string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{dates_between "1970-12-07" "1990-12-07" 10 | random}}'
+    output: hello
+random_index:
+    name: random_index
+    category: text
+    description: returns a random index from a list of strings in a file. Files are in '$JR_SYSTEM_DIR/templates/data/locale'
+    parameters: set string
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{random_index "city"}}'
+    output: "12"
+random_n_v_from_list:
+    name: random_n_v_from_list
+    category: context
+    description: returns n random values from a list. All values will be different. The list must be set with 'add_v_to_list', usually in an other template
+    parameters: name string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{add_v_to_list "ids" "12770"}}{{add_v_to_list "ids" "12771"}}{{add_v_to_list "ids" "12772"}}{{random_n_v_from_list "ids" 2}}'
+    output: '[12770,12771]'
+random_string:
+    name: random_string
+    category: text
+    description: returns a random string long between min and max characters
+    parameters: min int, max int, vocabulary string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{random_string 3 10}}'
+    output: YBCEjxmn
+random_string_vocabulary:
+    name: random_string_vocabulary
+    category: text
+    description: returns a random string long between min and max characters using a vocabulary
+    parameters: min int, max int, vocabulary string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{random_string_vocabulary 3 10 "hello world"}}'
+    output: llolh
+random_v_from_list:
+    name: random_v_from_list
+    category: context
+    description: returns a random value from a list. The list must be set with 'add_v_to_list', usually in an other template
+    parameters: name string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{add_v_to_list "ids" "12770"}}{{random_v_from_list "ids"}}'
+    output: "12770"
+randoms:
+    name: randoms
+    category: text
+    description: returns a random strings from a | separated list string
+    parameters: list string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{randoms "ALPHA|BETA|GAMMA|DELTA"}}'
+    output: BETA
+recent:
+    name: recent
+    category: time
+    description: returns a date in the past not before the given days
+    parameters: days int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{recent 15}}'
+    output: "2023-04-17"
+regex:
+    name: regex
+    category: text
+    description: returns a random string matching the Regex
+    parameters: regex string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{regex "[a-z]{5}"}}'
+    output: xxlbh
+repeat:
+    name: repeat
+    category: text
+    description: repeats a string a number of times
+    parameters: text string, number int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{repeat "hello" 3}}'
+    output: hellohellohello
+replaceall:
+    name: replaceall
+    category: text
+    description: replaces all instances of a string with another string
+    parameters: set string, original string, replaced string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{replaceall "hello world" "hello" "goodbye"}}'
+    output: goodbye world
+sedol:
+    name: sedol
+    category: finance
+    description: returns a valid 7 characters sedol code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{sedol}}'
+    output: ""
+seed:
+    name: seed
+    category: utilities
+    description: set seed directly in a template
+    parameters: rndSeed int64
+    localizable: false
+    return: ' '
+    example: jr template run --embedded '{{seed 12345}}'
+    output: ""
+sentence:
+    name: sentence
+    category: text
+    description: generates a random Sentence of n words
+    parameters: words int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{sentence 15}}'
+    output: Alice was not going to happen next. First, she tried to curtsey as she fell
+sentence_prefix:
+    name: sentence_prefix
+    category: text
+    description: generates a random Sentence of n words, with a prefix length
+    parameters: prefix int, length int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{sentence_prefix 3 15}}'
+    output: Alice was beginning to get very tired of sitting by her sister on the bank.
+set_v:
+    name: set_v
+    category: context
+    description: sets a context value. The value must be get with 'get_v', usually in an other template
+    parameters: name string, value string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{set_v "id" "12770"}}{{get_v "id"}}'
+    output: "12770"
+soon:
+    name: soon
+    category: time
+    description: returns a date in the future not after the given days
+    parameters: days int
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{soon 15}}'
+    output: "2023-04-25"
+split:
+    name: split
+    category: text
+    description: splits a string into a list of strings
+    parameters: text string, separator string
+    localizable: false
+    return: '[]string'
+    example: jr template run --embedded '{{split "hello,world" ","}}'
+    output: '[hello world]'
+squeeze:
+    name: squeeze
+    category: text
+    description: removes all spaces from a string
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{squeeze " hello   world "}}'
+    output: helloworld
+squeezechars:
+    name: squeezechars
+    category: text
+    description: removes all instances of a character from a string
+    parameters: set string, chars string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{squeezechars "hello world" "l"}}'
+    output: heo word
+ssn:
+    name: ssn
+    category: people
+    description: returns a random ssn (Social Security Number)
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{ssn}}'
+    output: 834-76-1234
+state:
+    name: state
+    category: address
+    description: returns a random state
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{state}}'
+    output: New York
+state_at:
+    name: state_at
+    category: address
+    description: returns state at given index
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{state_at 3}}'
+    output: Arkansas
+state_short:
+    name: state_short
+    category: address
+    description: returns a random short State
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{state_short}}'
+    output: KY
+state_short_at:
+    name: state_short_at
+    category: address
+    description: returns short State at given index
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{state_short_at 3}}'
+    output: AR
+stock_symbol:
+    name: stock_symbol
+    category: finance
+    description: returns a NASDAQ stock symbol
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{stock_symbol}}'
+    output: CFLT
+street:
+    name: street
+    category: address
+    description: returns a random street
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{street}}'
+    output: Union Street
+sub:
+    name: sub
+    category: math
+    description: subtracts two numbers
+    parameters: first int, second int
+    localizable: false
+    return: int
+    example: jr template run --embedded '{{sub 1 2}}'
+    output: "-1"
+substr:
+    name: substr
+    category: text
+    description: returns a substring of a string
+    parameters: from int, to int, text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{substr 0 5 "hello world"}}'
+    output: hello
+surname:
+    name: surname
+    category: people
+    description: returns a random surname
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{surname}}'
+    output: Wright
+swift:
+    name: swift
+    category: finance
+    description: returns a swift/bic code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{swift}}'
+    output: KZMTMP84448
+title:
+    name: title
+    category: text
+    description: converts a string to title case
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{title "hello world"}}'
+    output: Hello World
+trim:
+    name: trim
+    category: text
+    description: trims whitespace from a string
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{trim " hello world "}}'
+    output: hello world
+trimchars:
+    name: trimchars
+    category: text
+    description: trims all characters in the given set from the beginning and end of a string
+    parameters: set string, chars string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{trimchars "hello world" "hld"}}'
+    output: ello wor
+unix_time_stamp:
+    name: unix_time_stamp
+    category: time
+    description: returns a random unix timestamp not older than the given number of days
+    parameters: days int
+    localizable: false
+    return: int64
+    example: jr template run --embedded '{{unix_time_stamp 10}}'
+    output: "1679703304"
+upper:
+    name: upper
+    category: text
+    description: converts a string to uppercase
+    parameters: text string
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{upper "hello"}}'
+    output: HELLO
+user:
+    name: user
+    category: people
+    description: returns a random Username using Name, Surname and a length
+    parameters: name string, surname string, length int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{user "barack" "obama" 12 }}'
+    output: barackobama75
+useragent:
+    name: useragent
+    category: security
+    description: returns a random user agent
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{useragent}}'
+    output: Mozilla/5.0 (Android 10) AppleWebKit/592.64 (KHTML, like Gecko) Chrome Mobile/7.3.5.7 Mobile Safari/9.10
+username:
+    name: username
+    category: people
+    description: returns a random Username using Name, Surname
+    parameters: name string, surname string
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{username "barack" "obama" }}'
+    output: b-obama
+uuid:
+    name: uuid
+    category: utilities
+    description: returns a random uuid
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{uuid}}'
+    output: a6da3ed0-5fcb-4bb8-a6aa-654120a1e6e3
+valor:
+    name: valor
+    category: finance
+    description: returns a valid 6-9 digits valor code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{valor}}'
+    output: "0832047"
+wkn:
+    name: wkn
+    category: finance
+    description: returns a valid 6 characters wkn code
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{wkn}}'
+    output: UFJKSNM
+yesorno:
+    name: yesorno
+    category: utilities
+    description: returns a random yes or no
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{yesorno}}'
+    output: "yes"
+zip:
+    name: zip
+    category: address
+    description: returns a random zip code
+    parameters: ""
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{zip}}'
+    output: "21401"
+zip_at:
+    name: zip_at
+    category: address
+    description: returns Zip code at given index
+    parameters: index int
+    localizable: true
+    return: string
+    example: jr template run --embedded '{{zip_at 3}}'
+    output: "72201"
