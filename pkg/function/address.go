@@ -56,6 +56,13 @@ func init() {
 const (
 	earthRadius     = 6371000 // in meters
 	degreesPerMeter = 1.0 / earthRadius * 180.0 / math.Pi
+
+	CityMap       = "city"
+	CapitalMap    = "capital"
+	StateMap      = "state"
+	StateShortMap = "state"
+	StreetMap     = "street"
+	ZipMap        = "zip"
 )
 
 var CardinalShort = []string{"N", "S", "E", "O", "NE", "NO", "SE", "SO"}
@@ -72,12 +79,12 @@ func BuildingNumber(n int) string {
 
 // Capital returns a random Capital
 func Capital() string {
-	return Word("capital")
+	return Word(CapitalMap)
 }
 
 // CapitalAt returns Capital at given index
 func CapitalAt(index int) string {
-	return WordAt("capital", index)
+	return WordAt(CapitalMap, index)
 }
 
 // Cardinal return a random cardinal direction, in long or short form
@@ -93,15 +100,15 @@ func Cardinal(short bool) string {
 
 // City returns a random City
 func City() string {
-	c := Word("city")
-	emitter.GetState().Ctx.Store("_city", c)
+	c := Word(CityMap)
+	emitter.GetState().Ctx.Store(fmt.Sprintf("_%s", CityMap), c)
 	emitter.GetState().CityIndex = emitter.GetState().LastIndex
 	return c
 }
 
 // CityAt returns City at given index
 func CityAt(index int) string {
-	return WordAt("city", index)
+	return WordAt(CityMap, index)
 }
 
 // Country returns the ISO 3166 Country selected with locale
@@ -162,35 +169,35 @@ func NearbyGPS(latitude float64, longitude float64, radius int) string {
 
 // State returns a random State
 func State() string {
-	s := Word("state")
-	emitter.GetState().Ctx.Store("_state", s)
+	s := Word(StateMap)
+	emitter.GetState().Ctx.Store(fmt.Sprintf("_%s", StateMap), s)
 	emitter.GetState().CountryIndex = emitter.GetState().LastIndex
 	return s
 }
 
 // StateAt returns State at given index
 func StateAt(index int) string {
-	return WordAt("state", index)
+	return WordAt(StateMap, index)
 }
 
 // StateShort returns a random short State
 func StateShort() string {
-	return Word("state_short")
+	return Word(StateShortMap)
 }
 
 // StateShortAt returns short State at given index
 func StateShortAt(index int) string {
-	return WordAt("state_short", index)
+	return WordAt(StateShortMap, index)
 }
 
 // Street returns a random street
 func Street() string {
-	return Word("street")
+	return Word(StreetMap)
 }
 
 // StreetAt returns a street at given index
 func StreetAt(index int) string {
-	return WordAt("street", index)
+	return WordAt(StreetMap, index)
 }
 
 // Zip returns a random Zip code
@@ -198,7 +205,7 @@ func Zip() string {
 	cityIndex := emitter.GetState().CityIndex
 
 	if cityIndex == -1 {
-		z := Word("zip")
+		z := Word(ZipMap)
 		zip, _ := Regex(z)
 		return zip
 	}
@@ -208,7 +215,7 @@ func Zip() string {
 
 // ZipAt returns Zip code at given index
 func ZipAt(index int) string {
-	z := WordAt("zip", index)
+	z := WordAt(ZipMap, index)
 	zip, _ := Regex(z)
 	return zip
 }

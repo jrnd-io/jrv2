@@ -61,7 +61,7 @@ install-gogen:
 generate:
 	go generate pkg/generator/generate.go
 
-compile: hello lint
+compile: hello lint test
 	@echo "Compiling"
 	go build -v -ldflags="-X 'main.Version=$(VERSION)' \
 	-X 'main.GoVersion=$(GOVERSION)' \
@@ -108,6 +108,9 @@ copy_config:
 
 install:
 	install build/jr /usr/local/bin
+
+test:
+	go test ./...
 
 all: hello install-gogen generate compile
 all_offline: hello generate compile

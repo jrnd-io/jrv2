@@ -32,13 +32,6 @@ import (
 
 const (
 	TestLocale = "test"
-	City       = "city"
-	Capital    = "capital"
-	Country    = "country"
-	State      = "state"
-	StateShort = "state_short"
-	Street     = "street"
-	Zip        = "zip"
 )
 
 func TestBuildingNumber(t *testing.T) {
@@ -59,34 +52,34 @@ func TestFun(t *testing.T) {
 		funcMap string
 	}{
 		{
-			name:    City,
+			name:    function.CityMap,
 			f:       function.City,
-			funcMap: City,
+			funcMap: function.CityMap,
 		},
 		{
-			name:    Capital,
+			name:    function.CapitalMap,
 			f:       function.Capital,
-			funcMap: Capital,
+			funcMap: function.CapitalMap,
 		},
 		{
-			name:    State,
+			name:    function.StateMap,
 			f:       function.State,
-			funcMap: State,
+			funcMap: function.StateMap,
 		},
 		{
-			name:    StateShort,
+			name:    function.StateShortMap,
 			f:       function.StateShort,
-			funcMap: StateShort,
+			funcMap: function.StateShortMap,
 		},
 		{
-			name:    Street,
+			name:    function.StreetMap,
 			f:       function.Street,
-			funcMap: Street,
+			funcMap: function.StreetMap,
 		},
 		{
-			name:    Zip,
+			name:    function.ZipMap,
 			f:       function.Zip,
-			funcMap: Zip,
+			funcMap: function.ZipMap,
 		},
 	}
 
@@ -118,44 +111,44 @@ func TestFunAt(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     City,
+			name:     function.CityMap,
 			f:        function.CityAt,
-			funcMap:  City,
+			funcMap:  function.CityMap,
 			index:    2,
-			expected: fmt.Sprintf("%s02", City),
+			expected: fmt.Sprintf("%s02", function.CityMap),
 		},
 		{
-			name:     Capital,
+			name:     function.CapitalMap,
 			f:        function.CapitalAt,
-			funcMap:  Capital,
+			funcMap:  function.CapitalMap,
 			index:    2,
-			expected: fmt.Sprintf("%s02", Capital),
+			expected: fmt.Sprintf("%s02", function.CapitalMap),
 		},
 		{
-			name:     State,
+			name:     function.StateMap,
 			f:        function.StateAt,
-			funcMap:  State,
+			funcMap:  function.StateMap,
 			index:    2,
-			expected: fmt.Sprintf("%s02", State),
+			expected: fmt.Sprintf("%s02", function.StateMap),
 		},
 		{
-			name:     StateShort,
+			name:     function.StateShortMap,
 			f:        function.StateShortAt,
-			funcMap:  StateShort,
+			funcMap:  function.StateShortMap,
 			index:    2,
-			expected: fmt.Sprintf("%s02", StateShort),
+			expected: fmt.Sprintf("%s02", function.StateShortMap),
 		},
 		{
-			name:     Street,
+			name:     function.StreetMap,
 			f:        function.StreetAt,
-			funcMap:  Street,
+			funcMap:  function.StreetMap,
 			index:    2,
-			expected: fmt.Sprintf("%s02", Street),
+			expected: fmt.Sprintf("%s02", function.StreetMap),
 		},
 		{
-			name:     Zip,
+			name:     function.ZipMap,
 			f:        function.ZipAt,
-			funcMap:  Zip,
+			funcMap:  function.ZipMap,
 			index:    2,
 			expected: "00002",
 		},
