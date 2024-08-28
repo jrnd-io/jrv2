@@ -25,6 +25,7 @@ import (
 	"math"
 	"text/template"
 
+	"github.com/biter777/countries"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
@@ -57,6 +58,9 @@ const (
 	degreesPerMeter = 1.0 / earthRadius * 180.0 / math.Pi
 )
 
+var CardinalShort = []string{"N", "S", "E", "O", "NE", "NO", "SE", "SO"}
+var CardinalLong = []string{"North", "South", "East", "Ovest", "North-East", "North-Ovest", "South-East", "South-Ovest"}
+
 // BuildingNumber generates a random building number of max n digits
 func BuildingNumber(n int) string {
 	building := make([]byte, Random.Intn(n)+1)
@@ -78,12 +82,12 @@ func CapitalAt(index int) string {
 
 // Cardinal return a random cardinal direction, in long or short form
 func Cardinal(short bool) string {
+
+	directions := CardinalLong
 	if short {
-		directions := []string{"N", "S", "E", "O", "NE", "NO", "SE", "SO"}
-		return directions[Random.Intn(len(directions))]
+		directions = CardinalShort
 	}
 
-	directions := []string{"North", "South", "East", "Ovest", "North-East", "North-Ovest", "South-East", "South-Ovest"}
 	return directions[Random.Intn(len(directions))]
 }
 
@@ -103,21 +107,24 @@ func CityAt(index int) string {
 // Country returns the ISO 3166 Country selected with locale
 func Country() string {
 	countryIndex := emitter.GetState().CountryIndex
+
 	if countryIndex == -1 {
-		return Word("country")
+		emitter.GetState().LastIndex = Random.Intn(len(countries.All()))
+		return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
 	}
 
-	return WordAt("country", countryIndex)
+	return countries.ByNumeric(emitter.GetState().CountryIndex).Alpha2()
 }
 
 // CountryRandom returns a random ISO 3166 Country
 func CountryRandom() string {
-	return Word("country")
+	emitter.GetState().LastIndex = Random.Intn(len(countries.All()))
+	return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
 }
 
 // CountryAt returns an ISO 3166 Country at a given index
 func CountryAt(index int) string {
-	return WordAt("country", index)
+	return countries.ByNumeric(index).Alpha2()
 }
 
 // Latitude returns a random latitude between -90 and 90

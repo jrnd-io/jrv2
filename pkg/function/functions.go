@@ -33,27 +33,52 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var defaultLocale = "us"
 var Random = rand.New(rand.NewSource(0)) //nolint no need for a secure random generator
 var data = map[string][]string{}
 
 // Cache is used to internally Cache data from word files
+func ClearCache(name string) {
+	data[name] = nil
+}
+func GetCache(name string) []string {
+	return data[name]
+}
 func Cache(name string) (bool, error) {
-
-	templateDir := fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates")
 
 	v := data[name]
 	if v != nil {
 		return false, nil
 	}
+	templateDir := fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates")
 
-	locale := strings.ToLower(emitter.GetState().Locale)
-	filename := fmt.Sprintf("%s/data/%s/%s", os.ExpandEnv(templateDir), locale, name)
-	if locale != "us" && !(fileExists(filename)) {
-		filename = fmt.Sprintf("%s/data/%s/%s", os.ExpandEnv(templateDir), "us", name)
+	locale := emitter.GetState().Locale
+	fileName := fmt.Sprintf("%s%cdata%c%s%c%s",
+		os.ExpandEnv(templateDir),
+		os.PathSeparator,
+		os.PathSeparator,
+		locale,
+		os.PathSeparator,
+		name)
+	if locale != defaultLocale && !(fileExists(fileName)) {
+		fileName = fmt.Sprintf("%s%cdata%c%s%c%s",
+			os.ExpandEnv(templateDir),
+			os.PathSeparator,
+			os.PathSeparator,
+			defaultLocale,
+			os.PathSeparator,
+			name)
 	}
-	data[name] = initialize(filename)
+
+	return CacheFromFile(name, fileName)
+
+}
+
+func CacheFromFile(fileName string, name string) (bool, error) {
+
+	data[name] = initialize(fileName)
 	if len(data[name]) == 0 {
-		return false, fmt.Errorf("no words found in %s", filename)
+		return false, fmt.Errorf("no words found in %s", fileName)
 	}
 
 	return true, nil
