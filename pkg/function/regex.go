@@ -27,12 +27,20 @@ import (
 	"math"
 	"os"
 	"regexp/syntax"
+	"text/template"
 )
 
 const runeRangeEnd = 0x10ffff
 const printableChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ \t\n\r"
 
 var printableCharsNoNL = printableChars[:len(printableChars)-2]
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"regex": Regex,
+	})
+
+}
 
 type regexState struct {
 	limit int

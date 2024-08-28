@@ -27,10 +27,21 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"text/template"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const digits = "0123456789"
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"sentence":        Sentence,       // to nonsense
+		"sentence_prefix": SentencePrefix, // to nonsense
+		"lorem":           Lorem,          // to nonsense
+		"markov":          Nonsense,       // to nonsense
+	})
+
+}
 
 // Prefix is a Markov chain prefix of one or more words.
 type Prefix []string
@@ -211,11 +222,6 @@ func Nonsense(prefixLen, numWords int, baseText string) string {
 	c := NewChain(prefixLen)
 	c.Build(strings.NewReader(baseText))
 	return c.Generate(numWords)
-}
-
-// RandomString returns a random string long between min and max characters
-func RandomString(min, max int) string {
-	return RandomStringVocabulary(min, max, alphabet)
 }
 
 // RandomStringVocabulary returns a random string long between min and max characters using a vocabulary

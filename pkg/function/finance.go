@@ -25,7 +25,27 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"text/template"
 )
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"account":      Account,
+		"amount":       Amount,
+		"bitcoin":      Bitcoin,
+		"card":         CreditCard,
+		"cardCVV":      CreditCardCVV,
+		"cusip":        Cusip,
+		"ethereum":     Ethereum,
+		"isin":         Isin,
+		"sedol":        Sedol,
+		"stock_symbol": StockSymbol,
+		"swift":        Swift,
+		"valor":        Valor,
+		"wkn":          Wkn,
+	})
+
+}
 
 // Account returns a random account number of given length
 func Account(length int) string {

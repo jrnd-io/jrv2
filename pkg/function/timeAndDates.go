@@ -21,10 +21,24 @@
 package function
 
 import (
+	"text/template"
 	"time"
 
 	"github.com/rs/zerolog/log"
 )
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"birthdate":       BirthDate,
+		"date_between":    DateBetween,
+		"dates_between":   DatesBetween,
+		"future":          Future,
+		"past":            Past,
+		"recent":          Recent,
+		"soon":            Soon,
+		"unix_time_stamp": UnixTimeStamp,
+	})
+}
 
 // UnixTimeStamp returns a random unix timestamp not older than the given number of days
 func UnixTimeStamp(days int) int64 {

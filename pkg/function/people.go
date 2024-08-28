@@ -24,12 +24,33 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/squeeze69/generacodicefiscale"
 
 	"github.com/rs/zerolog/log"
 )
+
+func init() {
+	AddFuncs(template.FuncMap{
+		// people related utilities
+		"cf":             CodiceFiscale,
+		"company":        Company,
+		"email":          Email,
+		"email_provider": EmailProvider,
+		"email_work":     WorkEmail,
+		"gender":         Gender,
+		"middlename":     Middlename,
+		"name":           Name,
+		"name_m":         NameM,
+		"name_f":         NameF,
+		"ssn":            Ssn,
+		"surname":        Surname,
+		"user":           User,
+		"username":       Username,
+	})
+}
 
 // CodiceFiscale return a valid Italian Codice Fiscale
 func CodiceFiscale() string {

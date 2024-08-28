@@ -22,14 +22,27 @@ package function
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+	"text/template"
 
 	"github.com/google/uuid"
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
-// Counter creates a counter named c, starting from start and incrementing by step
-func Counter(c string, start, step int) int {
-	return emitter.GetState().Counter(c, start, step)
+func init() {
+	AddFuncs(template.FuncMap{
+		"array":    func(count int) []int { return make([]int, count) },
+		"bool":     RandomBool,
+		"image":    Image,
+		"image_of": ImageOf,
+		"index_of": IndexOf,
+		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, Random.Intn(n)) },
+		"seed":     Seed,
+		"uuid":     UniqueID,
+		"yesorno":  YesOrNo,
+		"inject":   Inject,
+	})
+
 }
 
 // Image generates a random Image url of given width, height and type
@@ -90,7 +103,30 @@ func Inject(probability float64, injected, original any) any {
 	return original
 }
 
-// FromCsv gets the label value from csv file
-func FromCSV(c string) string {
-	return emitter.GetState().FromCSV(c)
+// Seed sets seeds and can be used in a template
+func Seed(rndSeed int64) string {
+	SetSeed(rndSeed)
+	return ""
+}
+
+// SetSeed sets seeds for all random JR objects
+func SetSeed(rndSeed int64) {
+	Random.Seed(rndSeed)
+	uuid.SetRand(Random)
+}
+
+// IndexOf returns the index of the s string in a file
+func IndexOf(s string, name string) int {
+	_, err := Cache(name)
+	if err != nil {
+		return -1
+	}
+	words := data[name]
+	index := sort.Search(len(words), func(i int) bool { return strings.ToLower(words[i]) >= strings.ToLower(s) })
+
+	if index < len(words) && words[index] == s {
+		return index
+	}
+
+	return -1
 }

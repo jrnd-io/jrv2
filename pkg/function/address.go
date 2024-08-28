@@ -23,9 +23,34 @@ package function
 import (
 	"fmt"
 	"math"
+	"text/template"
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"building":       BuildingNumber,
+		"cardinal":       Cardinal,
+		"capital":        Capital,
+		"capital_at":     CapitalAt,
+		"city":           City,
+		"city_at":        CityAt,
+		"country":        Country,
+		"country_random": CountryRandom,
+		"country_at":     CountryAt,
+		"latitude":       Latitude,
+		"longitude":      Longitude,
+		"nearby_gps":     NearbyGPS,
+		"state":          State,
+		"state_at":       StateAt,
+		"state_short":    StateShort,
+		"state_short_at": StateShortAt,
+		"street":         Street,
+		"zip":            Zip,
+		"zip_at":         ZipAt,
+	})
+}
 
 const (
 	earthRadius     = 6371000 // in meters

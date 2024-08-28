@@ -21,8 +21,22 @@
 package function
 
 import (
+	"text/template"
+
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
+
+func init() {
+	AddFuncs(template.FuncMap{
+		"country_code":    CountryCode,
+		"country_code_at": CountryCodeAt,
+		"imei":            Imei,
+		"phone":           Phone,
+		"phone_at":        PhoneAt,
+		"mobile_phone":    MobilePhone,
+		"mobile_phone_at": MobilePhoneAt,
+	})
+}
 
 // CountryCode returns a random Country Code prefix
 func CountryCode() string {

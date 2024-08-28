@@ -23,7 +23,22 @@ package function
 import (
 	"fmt"
 	"net"
+	"text/template"
 )
+
+// adding functions to map
+func init() {
+	AddFuncs(template.FuncMap{
+		"http_method":       HTTPMethod,
+		"ip":                IP,
+		"ipv6":              IPv6,
+		"ip_known_protocol": IPKnownProtocol,
+		"ip_known_port":     IPKnownPort,
+		"mac":               Mac,
+		"password":          Password,
+		"useragent":         UserAgent,
+	})
+}
 
 // HttpMethod returns a random http method
 func HTTPMethod() string {
