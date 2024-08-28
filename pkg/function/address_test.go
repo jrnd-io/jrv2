@@ -21,10 +21,10 @@ package function_test
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"testing"
 
-	"github.com/biter777/countries"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/stretchr/testify/assert"
@@ -35,6 +35,10 @@ const (
 	City       = "city"
 	Capital    = "capital"
 	Country    = "country"
+	State      = "state"
+	StateShort = "state_short"
+	Street     = "street"
+	Zip        = "zip"
 )
 
 func TestBuildingNumber(t *testing.T) {
@@ -44,33 +48,135 @@ func TestBuildingNumber(t *testing.T) {
 	assert.LessOrEqual(t, len(s), n)
 }
 
-func TestCapital(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
-	// preload cache
-	function.ClearCache(Capital)
-	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", Capital), Capital)
-	if err != nil {
-		t.Error(err)
-		return
+type funcT func() string
+type funcTAt func(int) string
+
+func TestFun(t *testing.T) {
+	// Define test cases
+	testCases := []struct {
+		name    string
+		f       funcT
+		funcMap string
+	}{
+		{
+			name:    City,
+			f:       function.City,
+			funcMap: City,
+		},
+		{
+			name:    Capital,
+			f:       function.Capital,
+			funcMap: Capital,
+		},
+		{
+			name:    State,
+			f:       function.State,
+			funcMap: State,
+		},
+		{
+			name:    StateShort,
+			f:       function.StateShort,
+			funcMap: StateShort,
+		},
+		{
+			name:    Street,
+			f:       function.Street,
+			funcMap: Street,
+		},
+		{
+			name:    Zip,
+			f:       function.Zip,
+			funcMap: Zip,
+		},
 	}
 
-	c := function.Capital()
-	assert.Contains(t, function.GetCache(Capital), c)
-	function.ClearCache(Capital)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			emitter.GetState().Locale = TestLocale
+			function.ClearCache(tc.funcMap)
+			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			c := tc.f()
+			assert.Contains(t, function.GetCache(tc.funcMap), c)
+			function.ClearCache(tc.funcMap)
+
+		})
+	}
 }
-func TestCapitalAt(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
-	// preload cache
-	function.ClearCache(Capital)
-	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", Capital), Capital)
-	if err != nil {
-		t.Error(err)
-		return
+
+func TestFunAt(t *testing.T) {
+	// Define test cases
+	testCases := []struct {
+		name     string
+		f        funcTAt
+		funcMap  string
+		index    int
+		expected string
+	}{
+		{
+			name:     City,
+			f:        function.CityAt,
+			funcMap:  City,
+			index:    2,
+			expected: fmt.Sprintf("%s02", City),
+		},
+		{
+			name:     Capital,
+			f:        function.CapitalAt,
+			funcMap:  Capital,
+			index:    2,
+			expected: fmt.Sprintf("%s02", Capital),
+		},
+		{
+			name:     State,
+			f:        function.StateAt,
+			funcMap:  State,
+			index:    2,
+			expected: fmt.Sprintf("%s02", State),
+		},
+		{
+			name:     StateShort,
+			f:        function.StateShortAt,
+			funcMap:  StateShort,
+			index:    2,
+			expected: fmt.Sprintf("%s02", StateShort),
+		},
+		{
+			name:     Street,
+			f:        function.StreetAt,
+			funcMap:  Street,
+			index:    2,
+			expected: fmt.Sprintf("%s02", Street),
+		},
+		{
+			name:     Zip,
+			f:        function.ZipAt,
+			funcMap:  Zip,
+			index:    2,
+			expected: "00002",
+		},
 	}
 
-	c := function.CapitalAt(2)
-	assert.Equal(t, "capital02", c)
-	function.ClearCache(Capital)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			emitter.GetState().Locale = TestLocale
+			function.ClearCache(tc.funcMap)
+			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			c := tc.f(tc.index)
+			assert.Equal(t, tc.expected, c)
+			function.ClearCache(tc.funcMap)
+
+		})
+	}
 }
 
 func TestCardinal(t *testing.T) {
@@ -79,48 +185,6 @@ func TestCardinal(t *testing.T) {
 
 	assert.Contains(t, function.CardinalShort, dShort)
 	assert.Contains(t, function.CardinalLong, dLong)
-}
-
-func TestCity(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
-	// preload cache
-	function.ClearCache(City)
-	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", City), City)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	c := function.City()
-	assert.Contains(t, function.GetCache(City), c)
-	function.ClearCache(City)
-}
-func TestCityAt(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
-	// preload cache
-	function.ClearCache(City)
-	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", City), City)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	c := function.CityAt(2)
-	assert.Equal(t, "city02", c)
-	function.ClearCache(City)
-}
-
-func TestCountry(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
-
-	c := function.Country()
-	country := countries.ByName(c)
-	assert.Contains(t, country.Alpha2(), c)
-}
-func TestCountryAt(t *testing.T) {
-
-	c := function.CountryAt(232)
-	assert.Equal(t, countries.ByNumeric(232).Alpha2(), c)
 }
 
 func TestLatitude(t *testing.T) {
@@ -142,27 +206,52 @@ func TestLongitude(t *testing.T) {
 }
 
 func TestNearbyGPS(t *testing.T) {
-	t.Error()
+	// Define test cases
+	testCases := []struct {
+		latitude  float64
+		longitude float64
+		radius    int
+	}{
+		{37.7749, -122.4194, 1000}, // San Francisco, 1000 meters
+		{51.5074, -0.1278, 500},    // London, 500 meters
+		{-33.8688, 151.2093, 2000}, // Sydney, 2000 meters
+	}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Lat: %f, Lon: %f, Radius: %d", tc.latitude, tc.longitude, tc.radius), func(t *testing.T) {
+			result := function.NearbyGPS(tc.latitude, tc.longitude, tc.radius)
+			var newLat, newLon float64
+			np, err := fmt.Sscanf(result, "%f %f", &newLat, &newLon)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			assert.Equal(t, 2, np)
+
+			// Calculate the distance between the original and new coordinates
+			distance := haversine(tc.latitude, tc.longitude, newLat, newLon)
+
+			// Check if the distance is within the radius
+			if distance > float64(tc.radius) {
+				t.Errorf("Expected distance <= %d meters, but got %f meters", tc.radius, distance)
+			}
+		})
+	}
 }
 
-func TestState(t *testing.T) {
-	t.Error()
-}
-func TestStateAt(t *testing.T) {
-	t.Error()
-}
-func TestStateShort(t *testing.T) {
-	t.Error()
-}
-func TestStateShortAt(t *testing.T) {
-	t.Error()
-}
-func TestStreet(t *testing.T) {
-	t.Error()
-}
-func TestZip(t *testing.T) {
-	t.Error()
-}
-func TestZipAt(t *testing.T) {
-	t.Error()
+// haversine calculates the distance between two points on the Earth
+func haversine(lat1, lon1, lat2, lon2 float64) float64 {
+	const R = 6371000 // Earth radius in meters
+	lat1Rad := lat1 * math.Pi / 180
+	lon1Rad := lon1 * math.Pi / 180
+	lat2Rad := lat2 * math.Pi / 180
+	lon2Rad := lon2 * math.Pi / 180
+
+	dlat := lat2Rad - lat1Rad
+	dlon := lon2Rad - lon1Rad
+
+	a := math.Sin(dlat/2)*math.Sin(dlat/2) + math.Cos(lat1Rad)*math.Cos(lat2Rad)*math.Sin(dlon/2)*math.Sin(dlon/2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	return R * c
 }

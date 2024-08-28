@@ -188,6 +188,11 @@ func Street() string {
 	return Word("street")
 }
 
+// StreetAt returns a street at given index
+func StreetAt(index int) string {
+	return WordAt("street", index)
+}
+
 // Zip returns a random Zip code
 func Zip() string {
 	cityIndex := emitter.GetState().CityIndex
