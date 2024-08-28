@@ -25,13 +25,13 @@ import (
 	"net"
 )
 
-// HttpMethod returns a random http method
+// HTTPMethod returns a random http method
 func HTTPMethod() string {
 	method := []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
 	return method[Random.Intn(len(method))]
 }
 
-// Ip returns a random Ip Address matching the given cidr
+// IP returns a random Ip Address matching the given cidr
 func IP(cidr string) string {
 
 GENERATE:
@@ -64,19 +64,19 @@ GENERATE:
 	return ip.String()
 }
 
-// IpKnownPort returns a random known port number
+// IPKnownPort returns a random known port number
 func IPKnownPort() string {
 	ports := []string{"80", "81", "443", "22", "631"}
 	return ports[Random.Intn(len(ports))]
 }
 
-// IpKnownProtocol returns a random known protocol
+// IPKnownProtocol returns a random known protocol
 func IPKnownProtocol() string {
 	protocols := []string{"TCP", "UDP", "ICMP", "FTP", "HTTP", "SFTP"}
 	return protocols[Random.Intn(len(protocols))]
 }
 
-// Ipv6 returns a random Ipv6 Address
+// IPv6 returns a random Ipv6 Address
 func IPv6() string {
 	ip := make(net.IP, net.IPv6len)
 	for i := 0; i < net.IPv6len; i++ {
