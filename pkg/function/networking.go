@@ -21,7 +21,10 @@
 package function
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
+	"math/big"
 	"net"
 	"text/template"
 )
@@ -40,55 +43,57 @@ func init() {
 	})
 }
 
+var (
+	HTTPMethods = []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
+	Ports       = []string{"80", "81", "443", "22", "631"}
+	Protocols   = []string{"TCP", "UDP", "ICMP", "FTP", "HTTP", "SFTP"}
+)
+
 // HttpMethod returns a random http method
 func HTTPMethod() string {
-	method := []string{"GET", "POST", "PUT", "DELETE", "PATCH"}
-	return method[Random.Intn(len(method))]
+	return HTTPMethods[Random.Intn(len(HTTPMethods))]
 }
 
-// IP returns a random Ip Address matching the given cidr
 func IP(cidr string) string {
-
-GENERATE:
-
 	_, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		return "0.0.0.0"
 	}
 
-	ones, _ := ipnet.Mask.Size()
-	quotient := ones / 8
-	remainder := ones % 8
+	// Convert the IPNet to a big.Int
+	ipInt := big.NewInt(0).SetBytes(ipnet.IP.To4())
+	//	maskInt := big.NewInt(0).SetBytes(ipnet.Mask)
 
-	r := make([]byte, 4)
-	Random.Read(r)
+	// Calculate the network size
+	maskSize, _ := ipnet.Mask.Size()
+	networkSize := big.NewInt(0).Sub(big.NewInt(1).Lsh(big.NewInt(1), uint(32-maskSize)), big.NewInt(1))
+	networkSize.Sub(networkSize, big.NewInt(2)) // Exclude network and broadcast addresses
 
-	for i := 0; i <= quotient; i++ {
-		if i == quotient {
-			shifted := (r[i]) >> remainder
-			r[i] = ^ipnet.IP[i] & shifted
-		} else {
-			r[i] = ipnet.IP[i]
-		}
+	// Generate a random offset within the network size
+	offset, err := rand.Int(rand.Reader, networkSize)
+	if err != nil {
+		return "0.0.0.0"
 	}
-	ip := net.IPv4(r[0], r[1], r[2], r[3])
 
-	if ip.Equal(ipnet.IP) /*|| Ip.Equal(broadcast) */ {
-		goto GENERATE
-	}
+	// Add the offset to the network address
+	ipInt.Add(ipInt, offset)
+	ipInt.Add(ipInt, big.NewInt(1)) // Skip the network address
+
+	// Convert the big.Int back to an IP address
+	ip := make(net.IP, 4)
+	binary.BigEndian.PutUint32(ip, uint32(ipInt.Uint64())) //nolint
+
 	return ip.String()
 }
 
 // IPKnownPort returns a random known port number
 func IPKnownPort() string {
-	ports := []string{"80", "81", "443", "22", "631"}
-	return ports[Random.Intn(len(ports))]
+	return Ports[Random.Intn(len(Ports))]
 }
 
 // IPKnownProtocol returns a random known protocol
 func IPKnownProtocol() string {
-	protocols := []string{"TCP", "UDP", "ICMP", "FTP", "HTTP", "SFTP"}
-	return protocols[Random.Intn(len(protocols))]
+	return Protocols[Random.Intn(len(Protocols))]
 }
 
 // IPv6 returns a random Ipv6 Address
