@@ -42,6 +42,9 @@ func init() {
 
 // UnixTimeStamp returns a random unix timestamp not older than the given number of days
 func UnixTimeStamp(days int) int64 {
+	if days <= 0 {
+		return time.Now().Unix()
+	}
 	unixEpoch := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
 	now := time.Now()
 	first := now.AddDate(0, 0, -days).Sub(unixEpoch).Seconds()
@@ -59,6 +62,10 @@ func DateBetween(fromDate string, toDate string) string {
 	end, err := time.Parse(time.DateOnly, toDate)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Error parsing date")
+	}
+
+	if end.Before(start) {
+		return start.Format(time.DateOnly)
 	}
 
 	delta := end.Sub(start).Nanoseconds()
@@ -96,6 +103,9 @@ func BirthDate(minAge int, maxAge int) string {
 
 // Past returns a date in the past not before the given years
 func Past(years int) string {
+	if years <= 0 {
+		return time.Now().Format(time.DateOnly)
+	}
 	now := time.Now().UTC()
 	start := now.AddDate(-years, 0, 0)
 	delta := now.Sub(start).Nanoseconds()
@@ -106,6 +116,9 @@ func Past(years int) string {
 
 // Future returns a date in the future not after the given years
 func Future(years int) string {
+	if years <= 0 {
+		return time.Now().Format(time.DateOnly)
+	}
 	now := time.Now().UTC()
 	start := now.AddDate(years, 0, 0)
 	delta := start.Sub(now).Nanoseconds()
@@ -116,6 +129,9 @@ func Future(years int) string {
 
 // Recent returns a date in the past not before the given days
 func Recent(days int) string {
+	if days <= 0 {
+		return time.Now().Format(time.DateOnly)
+	}
 	now := time.Now().UTC()
 	start := now.AddDate(0, 0, -days)
 	delta := now.Sub(start).Nanoseconds()
@@ -126,6 +142,9 @@ func Recent(days int) string {
 
 // Soon returns a date in the future not after the given days
 func Soon(days int) string {
+	if days <= 0 {
+		return time.Now().Format(time.DateOnly)
+	}
 	now := time.Now().UTC()
 	start := now.AddDate(0, 0, days)
 	delta := start.Sub(now).Nanoseconds()
