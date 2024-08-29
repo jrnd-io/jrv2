@@ -23,6 +23,7 @@ package function
 import (
 	"text/template"
 
+	"github.com/biter777/countries"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
@@ -38,19 +39,25 @@ func init() {
 	})
 }
 
+const (
+	PhoneMap       = "phone"
+	MobilePhoneMap = "mobile_phone"
+)
+
 // CountryCode returns a random Country Code prefix
 func CountryCode() string {
 	countryIndex := emitter.GetState().CountryIndex
 	if countryIndex == -1 {
-		return Word("country_code")
+		index := Random.Intn(len(countries.All()))
+		return countries.ByNumeric(index).Info().CallCodes[0].String()
 	}
 
-	return WordAt("country_code", countryIndex)
+	return countries.ByNumeric(countryIndex).Info().CallCodes[0].String()
 }
 
 // CountryCodeAt returns a Country Code prefix at a given index
 func CountryCodeAt(index int) string {
-	return WordAt("country_code", index)
+	return countries.ByNumeric(index).Info().CallCodes[0].String()
 }
 
 // Imei returns a random imei number of 15 digits
@@ -67,7 +74,7 @@ func Imei() string {
 func Phone() string {
 	cityIndex := emitter.GetState().CityIndex
 	if cityIndex == -1 {
-		l := Word("phone")
+		l := Word(PhoneMap)
 		lp, _ := Regex(l)
 		return lp
 	}
@@ -77,7 +84,7 @@ func Phone() string {
 
 // PhoneAt returns a land prefix at a given index
 func PhoneAt(index int) string {
-	l := WordAt("phone", index)
+	l := WordAt(PhoneMap, index)
 	lp, _ := Regex(l)
 	return lp
 }
@@ -86,7 +93,7 @@ func PhoneAt(index int) string {
 func MobilePhone() string {
 	countryIndex := emitter.GetState().CountryIndex
 	if countryIndex == -1 {
-		m := Word("mobile_phone")
+		m := Word(MobilePhoneMap)
 		mp, _ := Regex(m)
 		return mp
 	}
@@ -96,7 +103,7 @@ func MobilePhone() string {
 
 // MobilePhoneAt returns a mobile phone at a given index
 func MobilePhoneAt(index int) string {
-	m := WordAt("mobile_phone", index)
+	m := WordAt(MobilePhoneMap, index)
 	mp, _ := Regex(m)
 	return mp
 }
