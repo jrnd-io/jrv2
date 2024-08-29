@@ -50,6 +50,16 @@ func init() {
 
 }
 
+// Get Alice text
+func GetAlice() string {
+	return alice
+}
+
+// Get Lorem text
+func GetLorem() string {
+	return lorem
+}
+
 // Prefix is a Markov chain prefix of one or more words.
 type Prefix []string
 
@@ -134,6 +144,9 @@ func Nonsense(prefixLen, numWords int, baseText string) string {
 
 // RandomStringVocabulary returns a random string long between min and max characters using a vocabulary
 func RandomStringVocabulary(min, max int, source string) string {
+	if len(source) == 0 {
+		return ""
+	}
 	textb := make([]byte, min+Random.Intn(max-min))
 	for i := range textb {
 		textb[i] = source[Random.Intn(len(source))]
