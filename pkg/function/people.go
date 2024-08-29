@@ -52,6 +52,14 @@ func init() {
 	})
 }
 
+const (
+	CompanyMap      = "company"
+	NameFMap        = "nameF"
+	NameMMap        = "nameM"
+	MailProviderMap = "mail_provider"
+	SurnameMap      = "surname"
+)
+
 // CodiceFiscale return a valid Italian Codice Fiscale
 func CodiceFiscale() string {
 
@@ -100,7 +108,7 @@ func CodiceFiscale() string {
 
 // Company returns a random Company Name
 func Company() string {
-	c := Word("company")
+	c := Word(CompanyMap)
 	emitter.GetState().Ctx.Store("_company", c)
 	return c
 }
@@ -128,7 +136,7 @@ func WorkEmail() string {
 func Email() string {
 	name := emitter.GetState().Value("_name").(string)
 	surname := emitter.GetState().Value("_surname").(string)
-	provider := Word("mail_provider")
+	provider := Word(MailProviderMap)
 
 	if name == "" {
 		name = Name()
@@ -142,7 +150,7 @@ func Email() string {
 
 // EmailProvider returns a random email provider
 func EmailProvider() string {
-	return Word("mail_provider")
+	return Word(MailProviderMap)
 }
 
 // Gender returns a random gender. Note: it gets the gender context automatically setup by previous name calls
@@ -174,7 +182,7 @@ func Name() string {
 
 // NameM returns a random male Name
 func NameM() string {
-	name := Word("nameM")
+	name := Word(NameMMap)
 	emitter.GetState().Ctx.Store("_name", name)
 	emitter.GetState().Ctx.Store("_gender", "M")
 	return name
@@ -182,7 +190,7 @@ func NameM() string {
 
 // NameF returns a random female Name
 func NameF() string {
-	name := Word("nameF")
+	name := Word(NameFMap)
 	emitter.GetState().Ctx.Store("_name", name)
 	emitter.GetState().Ctx.Store("_gender", "F")
 	return name
@@ -198,7 +206,7 @@ func Ssn() string {
 
 // Surname returns a random Surname
 func Surname() string {
-	s := Word("surname")
+	s := Word(SurnameMap)
 	emitter.GetState().Ctx.Store("_surname", "F")
 	return s
 }
