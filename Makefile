@@ -77,6 +77,7 @@ clean:
 	rm build/*
 
 test:
+	go clean -testcache
 	go test ./...
 
 test_coverage:
@@ -108,10 +109,6 @@ copy_config:
 
 install:
 	install build/jr /usr/local/bin
-
-test:
-	go clean -testcache
-	go test ./...
 
 all: hello install-gogen generate compile
 all_offline: hello generate compile
