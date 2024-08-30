@@ -28,8 +28,8 @@ import (
 func ReadConfig(plugin string) ([]byte, error) {
 
 	configFiles := []string{
-		fmt.Sprintf("%s%c/plugins/%s.json", constants.JRSystemDir, os.PathSeparator, plugin),
-		fmt.Sprintf("%s%c/plugins/%s.json", constants.JRUserDir, os.PathSeparator, plugin),
+		fmt.Sprintf("%s%cplugins%c%s.json", constants.JRSystemDir, os.PathSeparator, os.PathSeparator, plugin),
+		fmt.Sprintf("%s%cplugins%c%s.json", constants.JRUserDir, os.PathSeparator, os.PathSeparator, plugin),
 	}
 
 	for _, f := range configFiles {
