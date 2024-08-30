@@ -27,7 +27,6 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -67,19 +66,16 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 
 	rpcClient, err := client.Client()
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create client")
 		return nil, err
 	}
 
 	raw, err := rpcClient.Dispense(jrpc.JRProducerGRPCPlugin)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to dispense plugin")
 		return nil, err
 	}
 
 	p, ok := raw.(jrpc.Producer)
 	if !ok {
-		log.Error().Msg("failed to cast plugin")
 		return nil, err
 	}
 
