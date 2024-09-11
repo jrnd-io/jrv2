@@ -19,11 +19,132 @@
 // THE SOFTWARE.
 package function
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"slices"
+	"strings"
+
+	"github.com/fatih/color"
+	"github.com/jrnd-io/jrv2/pkg/function"
+	"github.com/spf13/cobra"
+)
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "describes available functions",
 	Long: "describes available functions. Example usage:\n" +
 		"jr function list lorem",
+	Run: list,
+}
+
+func list(cmd *cobra.Command, args []string) {
+	category, _ := cmd.Flags().GetBool("category")
+	find, _ := cmd.Flags().GetBool("find")
+	run, _ := cmd.Flags().GetBool("run")
+	isMarkdown, _ := cmd.Flags().GetBool("markdown")
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+
+	switch {
+	case category && len(args) > 0:
+		var functionNames []string
+		for k, v := range function.DescriptionMap() {
+			if v.Category == args[0] {
+				functionNames = append(functionNames, k)
+			}
+		}
+		sortAndPrint(functionNames, isMarkdown, noColor)
+	case find && len(args) > 0:
+		var functionNames []string
+		for k, v := range function.DescriptionMap() {
+			if strings.Contains(v.Description, args[0]) || strings.Contains(v.Name, args[0]) {
+				functionNames = append(functionNames, k)
+			}
+		}
+		sortAndPrint(functionNames, isMarkdown, noColor)
+	case len(args) == 1:
+		if run {
+			f, found := printFunction(args[0], isMarkdown, noColor)
+			if found {
+				fmt.Println()
+				cmd := exec.Command("/bin/sh", "-c", f.Example) // #nosec G204
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+			}
+		} else {
+			printFunction(args[0], isMarkdown, noColor)
+		}
+	default:
+		l := len(function.DescriptionMap())
+		functionNames := make([]string, l)
+
+		i := 0
+		for k := range function.DescriptionMap() {
+			functionNames[i] = k
+			i++
+		}
+		sortAndPrint(functionNames, isMarkdown, noColor)
+
+	}
+
+	fmt.Println()
+}
+
+func sortAndPrint(functionNames []string, isMarkdown bool, noColor bool) {
+	slices.Sort(functionNames)
+	for _, k := range functionNames {
+		printFunction(k, isMarkdown, noColor)
+	}
+	fmt.Println()
+	fmt.Printf("Total functions: %d\n", len(functionNames))
+}
+
+func printFunction(name string, isMarkdown bool, noColor bool) (function.Description, bool) {
+	f, found := function.GetDescription(name)
+
+	cyan := color.New(color.FgCyan)
+	var white = color.New(color.FgWhite)
+	if noColor {
+		cyan.DisableColor()
+		white.DisableColor()
+	}
+
+	cyanf := cyan.Printf
+	whitef := white.Sprintf
+
+	if !found {
+		return f, found
+	}
+
+	if isMarkdown {
+		fmt.Println()
+		fmt.Printf("### %s \n", f.Name)
+		fmt.Printf("**Category:** %s\\\n", f.Category)
+		fmt.Printf("**Description:** %s\\\n", f.Description)
+
+		if len(f.Parameters) > 0 {
+			fmt.Printf("**Parameters:** `%s`\\\n", f.Parameters)
+		} else {
+			fmt.Printf("**Parameters:** %s \\\n", f.Parameters)
+		}
+		fmt.Printf("**Localizable:** `%v`\\\n", f.Localizable)
+		fmt.Printf("**Return:** `%s`\\\n", f.Return)
+		fmt.Printf("**Example:** `%s`\\\n", f.Example)
+		fmt.Printf("**Output:** `%s`\n", f.Output)
+	} else {
+		fmt.Println()
+		cyanf("Name: %s\n", whitef(f.Name))                     //nolint
+		cyanf("Category: %s\n", whitef(f.Category))             //nolint
+		cyanf("Description: %s\n", whitef(f.Description))       //nolint
+		cyanf("Parameters: %s\n", whitef(f.Parameters))         //nolint
+		cyanf("Localizable: %v\n", whitef("%b", f.Localizable)) //nolint
+		cyanf("Return: %s\n", whitef(f.Return))                 //nolint
+		cyanf("Example: %s\n", whitef(f.Example))               //nolint
+		cyanf("Output: %s\n", whitef(f.Output))                 //nolint
+	}
+
+	return f, found
+
 }

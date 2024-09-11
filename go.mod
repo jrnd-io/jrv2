@@ -5,6 +5,7 @@ go 1.23
 require (
 	github.com/adrg/xdg v0.5.0
 	github.com/biter777/countries v1.7.5
+	github.com/fatih/color v1.13.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-plugin v1.6.1
@@ -12,6 +13,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/squeeze69/generacodicefiscale v1.0.5
 	github.com/stretchr/testify v1.9.0
+	github.com/tetratelabs/wazero v1.8.0
 	github.com/vadv/gopher-lua-libs v0.5.0
 	github.com/yuin/gopher-lua v1.1.1
 	golang.org/x/text v0.15.0
@@ -31,7 +33,6 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
@@ -55,7 +56,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/squeeze69/codicefiscale v1.0.2 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
-	github.com/tetratelabs/wazero v1.8.0 // indirect
 	github.com/yuin/gluamapper v0.0.0-20150323120927-d836955830e7 // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect

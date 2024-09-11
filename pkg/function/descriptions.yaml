@@ -843,11 +843,11 @@ random_v_from_list:
 randoms:
     name: randoms
     category: text
-    description: returns a random strings from a | separated list string
-    parameters: list string
+    description: returns a random strings from a | separated list string, the second parameter can be used, as a | separated list of float64 to specify the weights in a weighted random selection
+    parameters: list string, weights string
     localizable: false
     return: string
-    example: jr template run --embedded '{{randoms "ALPHA|BETA|GAMMA|DELTA"}}'
+    example: jr template run --embedded '{{randoms "ALPHA|BETA|GAMMA|DELTA"}} {{randoms "ALPHA|BETA|GAMMA|DELTA" "0.1|0.2|0.3|0.4"}}'
     output: BETA
 recent:
     name: recent
