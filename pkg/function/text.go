@@ -20,6 +20,8 @@
 package function
 
 import (
+	"errors"
+	"math/rand"
 	"strconv"
 	"strings"
 	"text/template"
@@ -62,6 +64,34 @@ func init() {
 		"title":                    cases.Title(language.English).String,
 		"upper":                    strings.ToUpper,
 	})
+
+}
+
+func Randoms(s ...string) string {
+	a := strings.Split(s[0], "|")
+	// use normal random if only one argument is provided
+	if len(s) == 1 {
+		a := strings.Split(s[0], "|")
+		return s[Random.Intn(len(a))]
+	}
+
+	// if more than one argument is provided, second argument is a list of float separated by "|"
+	// return a weighted random
+	ws := strings.Split(s[1], "|")
+	w := make([]float64, len(ws))
+	for i := range ws {
+		_w, err := strconv.ParseFloat(ws[i], 64)
+		if err != nil {
+			return ""
+		}
+		w[i] = _w
+	}
+
+	ret, err := WeightedRandomString(a, w)
+	if err != nil {
+		return ""
+	}
+	return ret
 
 }
 
@@ -148,4 +178,74 @@ func RandomIndex(name string) string {
 // RandomString returns a random string long between min and max characters
 func RandomString(min, max int) string {
 	return RandomStringVocabulary(min, max, alphabet)
+}
+
+// WeightedRandomString selects a random string from the given slice
+// with probability proportional to the corresponding weight.
+func WeightedRandomString(items []string, weights []float64) (string, error) {
+	if len(items) != len(weights) {
+		return "", errors.New("items and weights slices must have the same length")
+	}
+
+	if len(items) == 0 {
+		return "", errors.New("items slice cannot be empty")
+	}
+
+	// Calculate the sum of weights
+	totalWeight := 0.0
+	for _, w := range weights {
+		if w < 0 {
+			return "", errors.New("weights must be non-negative")
+		}
+		totalWeight += w
+	}
+
+	// Generate a random number between 0 and totalWeight
+	r := rand.Float64() * totalWeight //nolint no need for a secure random generator
+
+	// Find the selected item
+	for i, w := range weights {
+		r -= w
+		if r <= 0 {
+			return items[i], nil
+		}
+	}
+
+	// This should never happen, but return the last item just in case
+	return items[len(items)-1], nil
+}
+
+// WeightedRandomInt selects a random integer from the given slice
+// with probability proportional to the corresponding weight.
+func WeightedRandomInt(items []int, weights []float64) (int, error) {
+	if len(items) != len(weights) {
+		return 0, errors.New("items and weights slices must have the same length")
+	}
+
+	if len(items) == 0 {
+		return 0, errors.New("items slice cannot be empty")
+	}
+
+	// Calculate the sum of weights
+	totalWeight := float64(0.0)
+	for _, w := range weights {
+		if w < 0 {
+			return 0, errors.New("weights must be non-negative")
+		}
+		totalWeight += w
+	}
+
+	// Generate a random number between 0 and totalWeight
+	r := rand.Float64() * totalWeight //nolint no need for a secure random generator
+
+	// Find the selected item
+	for i, w := range weights {
+		r -= w
+		if r <= 0 {
+			return items[i], nil
+		}
+	}
+
+	// This should never happen, but return the last item just in case
+	return items[len(items)-1], nil
 }

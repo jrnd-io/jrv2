@@ -1,3 +1,22 @@
+// Copyright © 2024 JR team
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 package function_test
 
 import (
@@ -7,6 +26,61 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/function"
 )
+
+func TestRandoms(t *testing.T) {
+	// Test case 1: Single argument (normal random)
+	t.Run("Single argument", func(t *testing.T) {
+		input := "apple|banana|cherry"
+		result := function.Randoms(input)
+		if !strings.Contains(input, result) {
+			t.Errorf("Expected result to be one of %s, but got %s", input, result)
+		}
+	})
+
+	// Test case 2: Two arguments (weighted random)
+	t.Run("Two arguments (weighted random)", func(t *testing.T) {
+		input := "red|green|blue"
+		weights := "0.5|0.3|0.2"
+
+		// Run multiple times to check distribution
+		counts := make(map[string]int)
+		iterations := 1000
+
+		for i := 0; i < iterations; i++ {
+			result := function.Randoms(input, weights)
+			counts[result]++
+			if !strings.Contains(input, result) {
+				t.Errorf("Expected result to be one of %s, but got %s", input, result)
+			}
+		}
+
+		// Check if the distribution roughly matches the weights
+		expectedRatios := map[string]float64{
+			"red":   0.5,
+			"green": 0.3,
+			"blue":  0.2,
+		}
+
+		tolerance := 0.05 // Allow 5% tolerance
+		for color, count := range counts {
+			actualRatio := float64(count) / float64(iterations)
+			expectedRatio := expectedRatios[color]
+			if actualRatio < expectedRatio-tolerance || actualRatio > expectedRatio+tolerance {
+				t.Errorf("Distribution for %s is off. Expected around %.2f, got %.2f", color, expectedRatio, actualRatio)
+			}
+		}
+	})
+
+	// Test case 3: Invalid weight
+	t.Run("Invalid weight", func(t *testing.T) {
+		input := "apple|banana"
+		weights := "0.5|invalid"
+		result := function.Randoms(input, weights)
+		if result != "" {
+			t.Errorf("Expected empty string for invalid weight, but got %s", result)
+		}
+	})
+}
 
 func TestWeightedRandomString(t *testing.T) {
 	tests := []struct {
