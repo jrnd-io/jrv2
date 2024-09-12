@@ -39,6 +39,14 @@ var ListCmd = &cobra.Command{
 	Run: list,
 }
 
+var ManCmd = &cobra.Command{
+	Use:   "man",
+	Short: "describes available functions",
+	Long: "describes available functions. Example usage:\n" +
+		"jr function man lorem",
+	Run: list,
+}
+
 func list(cmd *cobra.Command, args []string) {
 	category, _ := cmd.Flags().GetBool("category")
 	find, _ := cmd.Flags().GetBool("find")

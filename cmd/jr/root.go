@@ -48,7 +48,8 @@ func init() {
 
 	rootCmd.AddCommand(emitter.NewCmd())
 	rootCmd.AddCommand(producer.NewCmd())
-	rootCmd.AddCommand(function.NewCmd())
+	rootCmd.AddCommand(function.NewListCmd())
+	rootCmd.AddCommand(function.NewManCmd())
 	rootCmd.AddCommand(template.NewCmd())
 }
 

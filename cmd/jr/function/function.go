@@ -30,7 +30,7 @@ var functionCmd = &cobra.Command{
 	GroupID: "resource",
 }
 
-func NewCmd() *cobra.Command {
+func NewListCmd() *cobra.Command {
 	ListCmd.Flags().BoolP("category", "c", false, "IndexOf in category")
 	ListCmd.Flags().BoolP("find", "f", false, "IndexOf in description and name")
 	ListCmd.Flags().BoolP("markdown", "m", false, "Output the list as markdown")
@@ -38,5 +38,13 @@ func NewCmd() *cobra.Command {
 	ListCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
 	functionCmd.AddCommand(ListCmd)
 	return functionCmd
+}
 
+func NewManCmd() *cobra.Command {
+	ManCmd.Flags().BoolP("category", "c", false, "IndexOf in category")
+	ManCmd.Flags().BoolP("find", "f", false, "IndexOf in description and name")
+	ManCmd.Flags().BoolP("markdown", "m", false, "Output the list as markdown")
+	ManCmd.Flags().BoolP("run", "r", false, "Run the example")
+	ManCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
+	return ManCmd
 }
