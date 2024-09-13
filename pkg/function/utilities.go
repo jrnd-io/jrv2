@@ -27,6 +27,7 @@ import (
 	"text/template"
 
 	"github.com/google/uuid"
+	"github.com/rs/xid"
 )
 
 func init() {
@@ -36,11 +37,12 @@ func init() {
 		"image":    Image,
 		"image_of": ImageOf,
 		"index_of": IndexOf,
+		"inject":   Inject,
 		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, Random.Intn(n)) },
 		"seed":     Seed,
 		"uuid":     UniqueID,
+		"xid":      Xid,
 		"yesorno":  YesOrNo,
-		"inject":   Inject,
 	})
 
 }
@@ -74,6 +76,9 @@ func RandomBool() string {
 func UniqueID() string {
 	return uuid.New().String()
 }
+
+// Xid returns a random uuid (xid is a globally unique id generator thought for the web)
+func Xid() string { return xid.New().String() }
 
 // YesOrNo returns a random yes or no
 func YesOrNo() string {

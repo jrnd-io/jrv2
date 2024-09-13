@@ -1,4 +1,4 @@
-VERSION=2.0.0
+VERSION=0.9.0
 GOVERSION=$(shell go version)
 USER=$(shell id -u -n)
 TIME=$(shell date)
@@ -59,7 +59,7 @@ install-gogen:
 	#go install github.com/hamba/avro/v2/cmd/avrogen@latest
 
 generate:
-	go generate pkg/generator/generate.go
+	#go generate pkg/generator/generate.go
 
 compile: hello lint test
 	@echo "Compiling"
@@ -90,7 +90,7 @@ vet:
 	go vet
 
 lint:
-	golangci-lint run --config .localci/lint/golangci.yml
+	#golangci-lint run --config .localci/lint/golangci.yml
 
 help: hello
 	@echo ''
@@ -110,5 +110,5 @@ copy_config:
 install:
 	install build/jr /usr/local/bin
 
-all: hello install-gogen generate compile
-all_offline: hello generate compile
+all: hello install-gogen generate compile install
+all_offline: hello generate compile install

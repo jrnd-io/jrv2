@@ -1164,6 +1164,15 @@ wkn:
     return: string
     example: jr template run --embedded '{{wkn}}'
     output: UFJKSNM
+xid:
+    name: xid
+    category: utilities
+    description: returns a random xid uuid
+    parameters: ""
+    localizable: false
+    return: string
+    example: jr template run --embedded '{{xid}}'
+    output:
 yesorno:
     name: yesorno
     category: utilities

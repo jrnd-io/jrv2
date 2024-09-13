@@ -32,11 +32,10 @@ var SystemDir = fmt.Sprintf("%s%c%s", xdg.ConfigHome, os.PathSeparator, "jr")
 var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 
 const (
-	Num       = 1
-	Locale    = "us"
-	Frequency = -1
-	Infinite  = 1<<63 - 1
-
+	Num                       = 1
+	Locale                    = "us"
+	Frequency                 = -1
+	Infinite                  = 1<<63 - 1
 	DefaultKey                = "null"
 	DefaultOutput             = "stdout"
 	DefaultOutputTemplate     = "{{.V}}\n"
@@ -49,7 +48,6 @@ const (
 	DefaultEmitterName        = "cli"
 	DefaultValueTemplate      = "user"
 	DefaultTopic              = "test"
-	DefaultHTTPPort           = 7482
-
-	DefaultLogLevel = "fatal"
+	DefaultHTTPPort           = 7482 //JR :)
+	DefaultLogLevel           = "fatal"
 )
