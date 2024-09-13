@@ -143,14 +143,14 @@ func printFunction(name string, isMarkdown bool, noColor bool) (function.Descrip
 		fmt.Printf("**Output:** `%s`\n", f.Output)
 	} else {
 		fmt.Println()
-		cyanf("Name: %s\n", whitef(f.Name))                     //nolint
-		cyanf("Category: %s\n", whitef(f.Category))             //nolint
-		cyanf("Description: %s\n", whitef(f.Description))       //nolint
-		cyanf("Parameters: %s\n", whitef(f.Parameters))         //nolint
-		cyanf("Localizable: %v\n", whitef("%b", f.Localizable)) //nolint
-		cyanf("Return: %s\n", whitef(f.Return))                 //nolint
-		cyanf("Example: %s\n", whitef(f.Example))               //nolint
-		cyanf("Output: %s\n", whitef(f.Output))                 //nolint
+		cyanf("Name: %s\n", whitef(f.Name))               //nolint
+		cyanf("Category: %s\n", whitef(f.Category))       //nolint
+		cyanf("Description: %s\n", whitef(f.Description)) //nolint
+		cyanf("Parameters: %s\n", whitef(f.Parameters))   //nolint
+		cyanf("Localizable: %s\n", whitef(f.Localizable)) //nolint
+		cyanf("Return: %s\n", whitef(f.Return))           //nolint
+		cyanf("Example: %s\n", whitef(f.Example))         //nolint
+		cyanf("Output: %s\n", whitef(f.Output))           //nolint
 	}
 
 	return f, found

@@ -54,7 +54,7 @@ type Description struct {
 	Category    string
 	Description string
 	Parameters  string
-	Localizable bool
+	Localizable string
 	Return      string
 	Example     string
 	Output      string
