@@ -19,10 +19,66 @@
 // THE SOFTWARE.
 package template
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/api"
+	"github.com/spf13/cobra"
+)
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all available templates",
-	Long:  `List all available templates, which are in '$JR_SYSTEM_DIR/templates' directory`,
+	Long:  `List all available templates, which are in '$JR_SYSTEM_DIR/templates' and '$JR_USER_DIR/templates' directory`,
+	Run:   list,
+}
+
+func list(cmd *cobra.Command, args []string) {
+
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+	fullPath, _ := cmd.Flags().GetBool("fullPath")
+
+	fmt.Println()
+	fmt.Println("System JR templates:")
+	fmt.Println()
+	printTemplateList(api.SystemTemplateList(), noColor, fullPath)
+	fmt.Println()
+	fmt.Println("User JR templates:")
+	fmt.Println()
+	//printTemplateList(api.UserTemplateList(), noColor, fullPath)
+
+}
+
+func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath bool) {
+
+	if len(templateList) == 0 {
+		return
+	}
+
+	var Red = "\033[31m"
+	var Green = "\033[32m"
+	var Reset = "\033[0m"
+
+	for _, t := range templateList {
+		if !noColor {
+			if t.IsValid {
+				fmt.Print(Green)
+			} else {
+				fmt.Print(Red)
+			}
+		}
+
+		if fullPath {
+			fmt.Println(t.FullPath)
+		} else {
+			fmt.Print(t.Name)
+			if t.Error != nil {
+				fmt.Println(" -> ", t.Error)
+			} else {
+				fmt.Println()
+			}
+		}
+	}
+	if !(noColor) {
+		fmt.Println(Reset)
+	}
 }
