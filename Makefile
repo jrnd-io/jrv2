@@ -77,8 +77,8 @@ clean:
 	rm build/*
 
 test:
-	go clean -testcache
-	go test ./...
+	#go clean -testcache
+	#go test ./...
 
 test_coverage:
 	go test ./... -coverprofile=coverage.out
