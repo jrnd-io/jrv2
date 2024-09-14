@@ -22,6 +22,7 @@ package api
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/constants"
 	"github.com/jrnd-io/jrv2/pkg/function"
@@ -38,13 +39,48 @@ type TemplateInfo struct {
 	Error    error
 }
 
-func UserTemplateList() []*TemplateInfo {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
-	return templateList(templateDir)
+func GetRawTemplate(name string) (string, error) {
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
+	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
+	if err != nil {
+		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
+		if err != nil {
+			return "", err
+		}
+	}
+	valid, err := IsValidTemplate(templateScript)
+
+	if !valid || err != nil {
+		return "", errors.New("invalid template")
+	} else {
+		return string(templateScript), nil
+	}
+}
+
+func IsValidTemplate(t []byte) (bool, error) {
+
+	tt, err := template.New("test").Funcs(function.Map()).Parse(string(t))
+	if err != nil {
+		return false, err
+	}
+
+	var buf bytes.Buffer
+	if err = tt.Execute(&buf, nil); err != nil {
+		return false, err
+	}
+
+	return true, err
+
 }
 
 func SystemTemplateList() []*TemplateInfo {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
+	return templateList(templateDir)
+}
+
+func UserTemplateList() []*TemplateInfo {
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
 	return templateList(templateDir)
 }
 
@@ -87,20 +123,4 @@ func countFilesInDir(dir string) int {
 		panic(err)
 	}
 	return len(list)
-}
-
-func IsValidTemplate(t []byte) (bool, error) {
-
-	tt, err := template.New("test").Funcs(function.Map()).Parse(string(t))
-	if err != nil {
-		return false, err
-	}
-
-	var buf bytes.Buffer
-	if err = tt.Execute(&buf, nil); err != nil {
-		return false, err
-	}
-
-	return true, err
-
 }

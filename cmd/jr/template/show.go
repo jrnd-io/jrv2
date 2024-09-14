@@ -22,7 +22,6 @@ package template
 import (
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/api"
-	"github.com/jrnd-io/jrv2/pkg/constants"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"os"
@@ -44,20 +43,7 @@ func show(cmd *cobra.Command, args []string) {
 	}
 
 	noColor, _ := cmd.Flags().GetBool("nocolor")
-	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
-	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
-	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, args[0]))
-	if err != nil {
-		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, args[0]))
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to ReadFile")
-		}
-	}
-	valid, err := api.IsValidTemplate(templateScript)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to read a valid template")
-	}
-	templateString := string(templateScript)
+	templateString, validError := api.GetRawTemplate(args[0])
 
 	var Reset = "\033[0m"
 	if runtime.GOOS != "windows" && !noColor {
@@ -69,7 +55,7 @@ func show(cmd *cobra.Command, args []string) {
 	}
 	fmt.Println(templateString)
 	fmt.Print(Reset)
-	if !valid {
+	if validError != nil {
 		log.Fatal().Msg("Invalid template")
 	}
 }
