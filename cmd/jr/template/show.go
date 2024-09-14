@@ -39,7 +39,7 @@ var ShowCmd = &cobra.Command{
 
 func show(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
-		log.Error().Msg("Template missing. Try the list command to see available templates")
+		log.Error().Msg("Missing template name: try the list command to see available templates")
 		os.Exit(1)
 	}
 
