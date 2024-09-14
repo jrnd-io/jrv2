@@ -36,11 +36,12 @@ func list(cmd *cobra.Command, args []string) {
 
 	noColor, _ := cmd.Flags().GetBool("nocolor")
 	fullPath, _ := cmd.Flags().GetBool("fullPath")
+	showError, _ := cmd.Flags().GetBool("error")
 
 	fmt.Println()
 	fmt.Println("System JR templates:")
 	fmt.Println()
-	printTemplateList(api.SystemTemplateList(), noColor, fullPath)
+	printTemplateList(api.SystemTemplateList(), noColor, fullPath, showError)
 	fmt.Println()
 	fmt.Println("User JR templates:")
 	fmt.Println()
@@ -48,7 +49,7 @@ func list(cmd *cobra.Command, args []string) {
 
 }
 
-func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath bool) {
+func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath bool, showError bool) {
 
 	if len(templateList) == 0 {
 		return
@@ -68,17 +69,25 @@ func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath 
 		}
 
 		if fullPath {
-			fmt.Println(t.FullPath)
+			fmt.Print(t.FullPath)
 		} else {
 			fmt.Print(t.Name)
-			if t.Error != nil {
-				fmt.Println(" -> ", t.Error)
-			} else {
-				fmt.Println()
-			}
 		}
+
+		if showError && t.Error != nil {
+			fmt.Println(" -> ", t.Error)
+		} else {
+			fmt.Println()
+		}
+
 	}
 	if !(noColor) {
 		fmt.Println(Reset)
 	}
+}
+
+func init() {
+	ListCmd.Flags().BoolP("fullPath", "f", false, "Print full path")
+	ListCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
+	ListCmd.Flags().BoolP("error", "e", false, "Show template errors")
 }
