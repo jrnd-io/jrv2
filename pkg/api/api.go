@@ -60,7 +60,7 @@ func templateList(templateDir string) []*TemplateInfo {
 		if !info.IsDir() && strings.HasSuffix(path, "tpl") {
 
 			t, _ := os.ReadFile(path)
-			valid, err := isValidTemplate(t)
+			valid, err := IsValidTemplate(t)
 			name, _ := strings.CutSuffix(info.Name(), ".tpl")
 			templateInfo := TemplateInfo{
 				Name:     name,
@@ -89,7 +89,7 @@ func countFilesInDir(dir string) int {
 	return len(list)
 }
 
-func isValidTemplate(t []byte) (bool, error) {
+func IsValidTemplate(t []byte) (bool, error) {
 
 	tt, err := template.New("test").Funcs(function.Map()).Parse(string(t))
 	if err != nil {

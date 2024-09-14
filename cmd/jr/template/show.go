@@ -19,10 +19,61 @@
 // THE SOFTWARE.
 package template
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/api"
+	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+	"os"
+	"runtime"
+	"strings"
+)
 
 var ShowCmd = &cobra.Command{
 	Use:   "show [template]",
 	Short: "Show a template",
-	Long:  `Show a template. Templates must be in templates directory, which is '$JR_SYSTEM_DIR/templates'`,
+	Long:  `Show a template. Templates must be in system or in user directory, which are '$JR_USER_DIR/templates' and '$JR_SYSTEM_DIR/templates'`,
+	Run:   show,
+}
+
+func show(cmd *cobra.Command, args []string) {
+	if len(args) == 0 {
+		log.Error().Msg("Template missing. Try the list command to see available templates")
+		os.Exit(1)
+	}
+
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
+	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, args[0]))
+	if err != nil {
+		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, args[0]))
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to ReadFile")
+		}
+	}
+	valid, err := api.IsValidTemplate(templateScript)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to read a valid template")
+	}
+	templateString := string(templateScript)
+
+	var Reset = "\033[0m"
+	if runtime.GOOS != "windows" && !noColor {
+		var Cyan = "\033[36m"
+		coloredOpeningBracket := fmt.Sprintf("%s%s", Cyan, "{{")
+		coloredClosingBracket := fmt.Sprintf("%s%s", "}}", Reset)
+		templateString = strings.ReplaceAll(templateString, "{{", coloredOpeningBracket)
+		templateString = strings.ReplaceAll(templateString, "}}", coloredClosingBracket)
+	}
+	fmt.Println(templateString)
+	fmt.Print(Reset)
+	if !valid {
+		log.Fatal().Msg("Invalid template")
+	}
+}
+
+func init() {
+	ShowCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
 }
