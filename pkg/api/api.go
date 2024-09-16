@@ -125,7 +125,7 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		Preload:        constants.DefaultPreloadSize,
 		KeyTemplate:    constants.DefaultKeyTemplate,
 		ValueTemplate:  constants.DefaultValueTemplate,
-		HeaderTemplate: constants.DefaultKeyTemplate,
+		HeaderTemplate: constants.DefaultHeaderTemplate,
 		OutputTemplate: constants.DefaultOutputTemplate,
 	}
 

@@ -37,7 +37,6 @@ const (
 	DefaultLocale             = "us"
 	DefaultFrequency          = "1s"
 	DefaultDuration           = "2190000h" // 250 years
-	Infinite                  = 1<<63 - 1
 	DefaultKeyTemplate        = "null"
 	DefaultOutput             = "stdout"
 	DefaultOutputTemplate     = "{{.V}}\n"
@@ -49,6 +48,7 @@ const (
 	DefaultEnvPrefix          = "JR"
 	DefaultEmitterName        = "cli"
 	DefaultValueTemplate      = "user"
+	DefaultHeaderTemplate     = "null"
 	DefaultTopic              = "test"
 	DefaultHTTPPort           = 7482 //JR :)
 	DefaultLogLevel           = "fatal"

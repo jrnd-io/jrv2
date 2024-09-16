@@ -44,13 +44,16 @@ func run(cmd *cobra.Command, args []string) {
 
 func init() {
 	RunCmd.Flags().IntP("num", "n", constants.DefaultNum, "Number of elements to create for each pass")
-	RunCmd.Flags().DurationP("frequency", "f", constants.DefaultFrequency, "how much time to wait for next generation pass")
-	RunCmd.Flags().DurationP("duration", "d", constants.Infinite, "If frequency is enabled, with Duration you can set a finite amount of time")
+	frequency, _ := time.ParseDuration(constants.DefaultFrequency)
+	RunCmd.Flags().DurationP("frequency", "f", frequency, "how much time to wait for next generation pass")
+	duration, _ := time.ParseDuration(constants.DefaultDuration)
+	RunCmd.Flags().DurationP("duration", "d", duration, "If frequency is enabled, with Duration you can set a finite amount of time")
 	RunCmd.Flags().String("throughput", "", "You can set throughput, JR will calculate frequency automatically.")
 	RunCmd.Flags().Int64("seed", time.Now().UTC().UnixNano(), "Seed to init pseudorandom generator")
 	RunCmd.Flags().String("csv", "", "Path to csv file to use")
 	RunCmd.Flags().Bool("embedded", false, "If enabled, [template] must be a string containing a template, to be embedded directly in the script")
 	RunCmd.Flags().StringP("key", "k", constants.DefaultKeyTemplate, "A template to generate a key")
+	RunCmd.Flags().StringP("header", "h", constants.DefaultHeaderTemplate, "A template to generate a header")
 
 	/*
 		templateRunCmd.Flags().StringP("kafkaConfig", "F", "", "Kafka configuration")
