@@ -140,10 +140,10 @@ func GetRawTemplate(name string) (string, error) {
 	return getTemplate(name)
 }
 
-func GetParsedTemplate(name string) (string, error) {
+func GetRawValidatedTemplate(name string) (string, error) {
 
 	t, err := getTemplate(name)
-	valid, err := IsValidTemplate([]byte(t))
+	valid, err := IsValidTemplate(t)
 
 	if !valid || err != nil {
 		return "", errors.New("invalid template")
@@ -152,9 +152,9 @@ func GetParsedTemplate(name string) (string, error) {
 	}
 }
 
-func IsValidTemplate(t []byte) (bool, error) {
+func IsValidTemplate(t string) (bool, error) {
 
-	tt, err := template.New("test").Funcs(function.Map()).Parse(string(t))
+	tt, err := template.New("test").Funcs(function.Map()).Parse(t)
 	if err != nil {
 		return false, err
 	}
@@ -203,7 +203,7 @@ func templateList(templateDir string) []*TemplateInfo {
 		if !info.IsDir() && strings.HasSuffix(path, "tpl") {
 
 			t, _ := os.ReadFile(path)
-			valid, err := IsValidTemplate(t)
+			valid, err := IsValidTemplate(string(t))
 			name, _ := strings.CutSuffix(info.Name(), ".tpl")
 			templateInfo := TemplateInfo{
 				Name:     name,
