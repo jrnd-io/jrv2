@@ -44,7 +44,7 @@ func show(cmd *cobra.Command, args []string) {
 	}
 
 	noColor, _ := cmd.Flags().GetBool("nocolor")
-	templateString, validError := api.GetRawTemplate(args[0])
+	templateString, validError := api.GetParsedTemplate(args[0])
 
 	var Reset = "\033[0m"
 	if runtime.GOOS != "windows" && !noColor {

@@ -43,14 +43,14 @@ func run(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	RunCmd.Flags().IntP("num", "n", constants.Num, "Number of elements to create for each pass")
-	RunCmd.Flags().DurationP("frequency", "f", constants.Frequency, "how much time to wait for next generation pass")
+	RunCmd.Flags().IntP("num", "n", constants.DefaultNum, "Number of elements to create for each pass")
+	RunCmd.Flags().DurationP("frequency", "f", constants.DefaultFrequency, "how much time to wait for next generation pass")
 	RunCmd.Flags().DurationP("duration", "d", constants.Infinite, "If frequency is enabled, with Duration you can set a finite amount of time")
 	RunCmd.Flags().String("throughput", "", "You can set throughput, JR will calculate frequency automatically.")
 	RunCmd.Flags().Int64("seed", time.Now().UTC().UnixNano(), "Seed to init pseudorandom generator")
 	RunCmd.Flags().String("csv", "", "Path to csv file to use")
 	RunCmd.Flags().Bool("embedded", false, "If enabled, [template] must be a string containing a template, to be embedded directly in the script")
-	RunCmd.Flags().StringP("key", "k", constants.DefaultKey, "A template to generate a key")
+	RunCmd.Flags().StringP("key", "k", constants.DefaultKeyTemplate, "A template to generate a key")
 
 	/*
 		templateRunCmd.Flags().StringP("kafkaConfig", "F", "", "Kafka configuration")
@@ -64,7 +64,7 @@ func init() {
 		templateRunCmd.Flags().String("outputTemplate", constants.DEFAULT_OUTPUT_TEMPLATE, "Formatting of K,V on standard output")
 		templateRunCmd.Flags().BoolP("oneline", "l", false, "strips /n from output, for example to be pipelined to tools like kcat")
 		templateRunCmd.Flags().BoolP("autocreate", "a", false, "if enabled, autocreate topics")
-		templateRunCmd.Flags().String("locale", constants.LOCALE, "Locale")
+		templateRunCmd.Flags().String("locale", constants.LOCALE, "DefaultLocale")
 
 		templateRunCmd.Flags().BoolP("schemaRegistry", "s", false, "If you want to use Confluent Schema Registry")
 		templateRunCmd.Flags().String("serializer", "", "Type of serializer: json-schema, avro-generic, avro, protobuf")

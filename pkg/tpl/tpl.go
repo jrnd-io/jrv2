@@ -1,4 +1,3 @@
-// Copyright © 2024 JR team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,38 +17,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package constants
+package tpl
 
 import (
-	"fmt"
-	"os"
+	"bytes"
+	"text/template"
 
-	"github.com/adrg/xdg"
+	"github.com/rs/zerolog/log"
 )
 
-var JRSystemDir string
-var JRUserDir string
-var SystemDir = fmt.Sprintf("%s%c%s", xdg.ConfigHome, os.PathSeparator, "jr")
-var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+type Tpl struct {
+	Context  any
+	Template *template.Template
+}
 
-const (
-	DefaultNum                = 1
-	DefaultLocale             = "us"
-	DefaultFrequency          = "1s"
-	DefaultDuration           = "2190000h" // 250 years
-	Infinite                  = 1<<63 - 1
-	DefaultKeyTemplate        = "null"
-	DefaultOutput             = "stdout"
-	DefaultOutputTemplate     = "{{.V}}\n"
-	DefaultOutputKcatTemplate = "{{.K}},{{.V}}\n"
-	KafkaConfig               = "./kafka/config.properties"
-	DefaultPartitions         = 6
-	DefaultReplica            = 3
-	DefaultPreloadSize        = 0
-	DefaultEnvPrefix          = "JR"
-	DefaultEmitterName        = "cli"
-	DefaultValueTemplate      = "user"
-	DefaultTopic              = "test"
-	DefaultHTTPPort           = 7482 //JR :)
-	DefaultLogLevel           = "fatal"
-)
+func NewTpl(name string, t string, fmap map[string]interface{}, ctx any) (Tpl, error) {
+
+	tp, err := template.New(name).Funcs(fmap).Parse(t)
+
+	tpl := Tpl{
+		Context:  ctx,
+		Template: tp,
+	}
+	return tpl, err
+}
+
+func (t *Tpl) Execute() string {
+	return t.ExecuteWith(t.Context)
+}
+
+func (t *Tpl) ExecuteWith(data any) string {
+	var buffer bytes.Buffer
+	err := t.Template.Execute(&buffer, data)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error executing template")
+	}
+	return buffer.String()
+}

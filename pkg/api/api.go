@@ -30,31 +30,125 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 )
 
-type TemplateInfo struct {
-	Name     string
-	IsValid  bool
-	FullPath string
-	Error    error
+func WithName(n string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.Name = n
+	}
+}
+
+func WithLocale(l string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.Locale = l
+	}
+}
+
+func WithNum(n int) func(*Emitter) {
+	if n < 1 {
+		panic("JR should generate at least 1 object per iteration")
+	}
+	return func(e *Emitter) {
+		e.Num = n
+	}
+}
+
+func WithFrequency(f time.Duration) func(*Emitter) {
+	if f <= 0 {
+		panic("non-positive interval for Frequency")
+	}
+	return func(e *Emitter) {
+		e.Duration = f
+	}
+}
+
+func WithDuration(d time.Duration) func(*Emitter) {
+	if d <= 0 {
+		panic("non-positive interval for NewTicker")
+	}
+	return func(e *Emitter) {
+		e.Duration = d
+	}
+}
+
+func WithPreload(n int) func(*Emitter) {
+	if n < 0 {
+		panic("Preload should be positive")
+	}
+	return func(e *Emitter) {
+		e.Preload = n
+	}
+}
+
+func WithKeyTemplate(k string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.KeyTemplate = k
+	}
+}
+
+func WithValueTemplate(v string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.ValueTemplate = v
+	}
+}
+
+func WithHeaderTemplate(h string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.HeaderTemplate = h
+	}
+}
+
+func WithOutputTemplate(o string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.OutputTemplate = o
+	}
+}
+
+func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
+
+	defaultDuration, err := time.ParseDuration(constants.DefaultDuration)
+	if err != nil {
+		return nil, err
+	}
+	defaultFrequency, err := time.ParseDuration(constants.DefaultFrequency)
+	if err != nil {
+		return nil, err
+	}
+
+	e := &Emitter{
+		Name:           constants.DefaultEmitterName,
+		Locale:         constants.DefaultLocale,
+		Num:            constants.DefaultNum,
+		Frequency:      defaultFrequency,
+		Duration:       defaultDuration,
+		Preload:        constants.DefaultPreloadSize,
+		KeyTemplate:    constants.DefaultKeyTemplate,
+		ValueTemplate:  constants.DefaultValueTemplate,
+		HeaderTemplate: constants.DefaultKeyTemplate,
+		OutputTemplate: constants.DefaultOutputTemplate,
+	}
+
+	for _, option := range options {
+		option(e)
+	}
+
+	return e, nil
 }
 
 func GetRawTemplate(name string) (string, error) {
-	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
-	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
-	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
-	if err != nil {
-		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
-		if err != nil {
-			return "", err
-		}
-	}
-	valid, err := IsValidTemplate(templateScript)
+	return getTemplate(name)
+}
+
+func GetParsedTemplate(name string) (string, error) {
+
+	t, err := getTemplate(name)
+	valid, err := IsValidTemplate([]byte(t))
 
 	if !valid || err != nil {
 		return "", errors.New("invalid template")
 	} else {
-		return string(templateScript), nil
+		return t, nil
 	}
 }
 
@@ -82,6 +176,19 @@ func SystemTemplateList() []*TemplateInfo {
 func UserTemplateList() []*TemplateInfo {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
 	return templateList(templateDir)
+}
+
+func getTemplate(name string) (string, error) {
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.SystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.UserDir, "templates"))
+	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
+	if err != nil {
+		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
+		if err != nil {
+			return "", err
+		}
+	}
+	return string(templateScript), nil
 }
 
 func templateList(templateDir string) []*TemplateInfo {
