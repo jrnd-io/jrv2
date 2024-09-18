@@ -14,8 +14,9 @@ type TemplateInfo struct {
 }
 
 type Emitter struct {
-	Name           string        `mapstructure:"Name"`
-	Locale         string        `mapstructure:"Locale"`
+	Name           string `mapstructure:"Name"`
+	Locale         string `mapstructure:"Locale"`
+	ImmediateStart bool
 	Num            int           `mapstructure:"Num"`
 	Frequency      time.Duration `mapstructure:"Frequency"`
 	Duration       time.Duration `mapstructure:"Duration"`

@@ -45,6 +45,12 @@ func WithLocale(l string) func(*Emitter) {
 	}
 }
 
+func WithImmediateStart(i bool) func(*Emitter) {
+	return func(e *Emitter) {
+		e.ImmediateStart = i
+	}
+}
+
 func WithNum(n int) func(*Emitter) {
 	if n < 1 {
 		panic("JR should generate at least 1 object per iteration")
@@ -119,6 +125,7 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 	e := &Emitter{
 		Name:           constants.DefaultEmitterName,
 		Locale:         constants.DefaultLocale,
+		ImmediateStart: false,
 		Num:            constants.DefaultNum,
 		Frequency:      defaultFrequency,
 		Duration:       defaultDuration,
