@@ -50,6 +50,6 @@ const (
 	DefaultValueTemplate      = "user"
 	DefaultHeaderTemplate     = "null"
 	DefaultTopic              = "test"
-	DefaultHTTPPort           = 7482 //JR :)
+	DefaultHTTPPort           = 7482 // JR :)
 	DefaultLogLevel           = "fatal"
 )

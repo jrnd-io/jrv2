@@ -21,9 +21,10 @@
 package template
 
 import (
+	"time"
+
 	"github.com/jrnd-io/jrv2/pkg/constants"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 var RunCmd = &cobra.Command{
@@ -38,7 +39,7 @@ jr template run --template "{{name}}"
 	Run: run,
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(_ *cobra.Command, _ []string) {
 
 }
 
