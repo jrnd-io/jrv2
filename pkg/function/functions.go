@@ -37,7 +37,7 @@ var defaultLocale = "us"
 var Random = rand.New(rand.NewSource(0)) //nolint no need for a secure random generator
 var data = map[string][]string{}
 
-// Cache is used to internally Cache data from word files
+// ClearCache is used to internally Cache data from word files
 func ClearCache(name string) {
 	data[name] = nil
 }
