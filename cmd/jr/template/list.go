@@ -23,6 +23,7 @@ package template
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -57,34 +58,33 @@ func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath 
 		return
 	}
 
-	var Red = "\033[31m"
-	var Green = "\033[32m"
-	var Reset = "\033[0m"
+	red := color.New(color.FgRed)
+	green := color.New(color.FgGreen)
+	if noColor {
+		red.DisableColor()
+		green.DisableColor()
+	}
 
 	for _, t := range templateList {
-		if !noColor {
-			if t.IsValid {
-				fmt.Print(Green)
-			} else {
-				fmt.Print(Red)
-			}
+		var c *color.Color
+		if t.IsValid {
+			c = green
+		} else {
+			c = red
 		}
 
 		if fullPath {
-			fmt.Print(t.FullPath)
+			c.Print(t.FullPath) //nolint
 		} else {
-			fmt.Print(t.Name)
+			c.Print(t.Name) //nolint
 		}
 
 		if showError && t.Error != nil {
-			fmt.Println(" -> ", t.Error)
+			c.Println(" -> ", t.Error) //nolint
 		} else {
-			fmt.Println()
+			c.Println() //nolint
 		}
 
-	}
-	if !(noColor) {
-		fmt.Println(Reset)
 	}
 }
 
