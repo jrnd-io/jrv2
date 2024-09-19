@@ -48,7 +48,7 @@ func list(cmd *cobra.Command, _ []string) {
 	fmt.Println()
 	fmt.Println("User JR templates:")
 	fmt.Println()
-	// printTemplateList(api.UserTemplateList(), noColor, fullPath)
+	printTemplateList(api.UserTemplateList(), noColor, fullPath, showError)
 
 }
 

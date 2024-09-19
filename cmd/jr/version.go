@@ -22,7 +22,7 @@ package main
 
 import (
 	"fmt"
-
+	"github.com/jrnd-io/jrv2/pkg/constants"
 	"github.com/spf13/cobra"
 )
 
@@ -36,10 +36,12 @@ var versionCmd = &cobra.Command{
 	Short: "prints JR version number",
 	Long:  `prints JR version number`,
 	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Printf("JR Version: %s\n", Version)
-		fmt.Printf("Built with: %s\n", GoVersion)
-		fmt.Printf("        by: %s\n", BuildUser)
-		fmt.Printf("        at: %s\n", BuildTime)
+		fmt.Printf("JR System Dir: %s\n", constants.JRSystemDir)
+		fmt.Printf("JR User Dir  : %s\n", constants.JRUserDir)
+		fmt.Printf("JR Version   : %s\n", Version)
+		fmt.Printf("Built with   : %s\n", GoVersion)
+		fmt.Printf("By           : %s\n", BuildUser)
+		fmt.Printf("At           : %s\n", BuildTime)
 	},
 }
 
