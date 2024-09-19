@@ -49,7 +49,7 @@ var (
 	Protocols   = []string{"TCP", "UDP", "ICMP", "FTP", "HTTP", "SFTP"}
 )
 
-// HttpMethod returns a random http method
+// HTTPMethod returns a random http method
 func HTTPMethod() string {
 	return HTTPMethods[Random.Intn(len(HTTPMethods))]
 }
