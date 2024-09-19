@@ -13,16 +13,22 @@ type TemplateInfo struct {
 	Error    error
 }
 
-type Emitter struct {
-	Name           string `mapstructure:"Name"`
-	Locale         string `mapstructure:"Locale"`
+type Ticker struct {
+	Type           string
 	ImmediateStart bool
-	Num            int           `mapstructure:"Num"`
-	Frequency      time.Duration `mapstructure:"Frequency"`
-	Duration       time.Duration `mapstructure:"Duration"`
-	Preload        int           `mapstructure:"Preload"`
-	KeyTemplate    string        `mapstructure:"KeyTemplate"`
-	ValueTemplate  string        `mapstructure:"ValueTemplate"`
-	HeaderTemplate string        `mapstructure:"HeaderTemplate"`
-	OutputTemplate string        `mapstructure:"OutputTemplate"`
+	Num            int
+	Frequency      time.Duration
+	Duration       time.Duration
+	Parameters     map[string]any `mapstructure:",remain"`
+}
+
+type Emitter struct {
+	Tick           Ticker `mapstructure:",squash"`
+	Preload        int
+	Name           string
+	Locale         string
+	KeyTemplate    string
+	ValueTemplate  string
+	HeaderTemplate string
+	OutputTemplate string
 }

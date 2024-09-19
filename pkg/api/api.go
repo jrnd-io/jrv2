@@ -48,7 +48,7 @@ func WithLocale(l string) func(*Emitter) {
 
 func WithImmediateStart(i bool) func(*Emitter) {
 	return func(e *Emitter) {
-		e.ImmediateStart = i
+		e.Tick.ImmediateStart = i
 	}
 }
 
@@ -57,7 +57,7 @@ func WithNum(n int) func(*Emitter) {
 		panic("JR should generate at least 1 object per iteration")
 	}
 	return func(e *Emitter) {
-		e.Num = n
+		e.Tick.Num = n
 	}
 }
 
@@ -66,7 +66,7 @@ func WithFrequency(f time.Duration) func(*Emitter) {
 		panic("non-positive interval for Frequency")
 	}
 	return func(e *Emitter) {
-		e.Duration = f
+		e.Tick.Frequency = f
 	}
 }
 
@@ -75,7 +75,7 @@ func WithDuration(d time.Duration) func(*Emitter) {
 		panic("non-positive interval for NewTicker")
 	}
 	return func(e *Emitter) {
-		e.Duration = d
+		e.Tick.Duration = d
 	}
 }
 
@@ -123,14 +123,19 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		return nil, err
 	}
 
-	e := &Emitter{
-		Name:           constants.DefaultEmitterName,
-		Locale:         constants.DefaultLocale,
+	t := &Ticker{
+		Type:           "simple",
 		ImmediateStart: false,
 		Num:            constants.DefaultNum,
 		Frequency:      defaultFrequency,
 		Duration:       defaultDuration,
+	}
+
+	e := &Emitter{
+		Tick:           *t,
 		Preload:        constants.DefaultPreloadSize,
+		Name:           constants.DefaultEmitterName,
+		Locale:         constants.DefaultLocale,
 		KeyTemplate:    constants.DefaultKeyTemplate,
 		ValueTemplate:  constants.DefaultValueTemplate,
 		HeaderTemplate: constants.DefaultHeaderTemplate,
