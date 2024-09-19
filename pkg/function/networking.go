@@ -66,8 +66,8 @@ func IP(cidr string) string {
 
 	// Calculate the network size
 	maskSize, _ := ipnet.Mask.Size()
-	networkSize := big.NewInt(0).Sub(big.NewInt(1).Lsh(big.NewInt(1), uint(32-maskSize)), big.NewInt(1))
-	networkSize.Sub(networkSize, big.NewInt(2)) // Exclude network and broadcast addresses
+	networkSize := big.NewInt(0).Sub(big.NewInt(1).Lsh(big.NewInt(1), uint(32-maskSize)), big.NewInt(1)) //nolint:gosec // disable G115
+	networkSize.Sub(networkSize, big.NewInt(2))                                                          // Exclude network and broadcast addresses
 
 	// Generate a random offset within the network size
 	offset, err := rand.Int(rand.Reader, networkSize)
