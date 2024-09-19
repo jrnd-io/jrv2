@@ -1,1 +1,0 @@
-{{$userid := (print "user_" (counter "user_id" 1 1 ) )}}{{add_v_to_list "userId"  $userid }}
