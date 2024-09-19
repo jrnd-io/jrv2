@@ -24,13 +24,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/constants"
-	"github.com/jrnd-io/jrv2/pkg/function"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/function"
 )
 
 func WithName(n string) func(*Emitter) {
@@ -150,13 +151,15 @@ func GetRawTemplate(name string) (string, error) {
 func GetRawValidatedTemplate(name string) (string, error) {
 
 	t, err := getTemplate(name)
+	if err != nil {
+		return "", err
+	}
 	valid, err := IsValidTemplate(t)
 
 	if !valid || err != nil {
 		return "", errors.New("invalid template")
-	} else {
-		return t, nil
 	}
+	return t, nil
 }
 
 func IsValidTemplate(t string) (bool, error) {
@@ -206,7 +209,7 @@ func templateList(templateDir string) []*TemplateInfo {
 		return templateList
 	}
 
-	_ = filepath.Walk(templateDir, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(templateDir, func(path string, info os.FileInfo, _ error) error {
 		if !info.IsDir() && strings.HasSuffix(path, "tpl") {
 
 			t, _ := os.ReadFile(path)
@@ -225,16 +228,21 @@ func templateList(templateDir string) []*TemplateInfo {
 	return templateList
 }
 
+/*
 func countFilesInDir(dir string) int {
 	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
 	}
 	list, err := f.Readdirnames(-1)
-	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
 
+	err = f.Close()
 	if err != nil {
 		panic(err)
 	}
 	return len(list)
 }
+*/

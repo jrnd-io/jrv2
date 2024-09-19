@@ -90,7 +90,7 @@ vet:
 	go vet
 
 lint:
-	#golangci-lint run --config .localci/lint/golangci.yml
+	golangci-lint run --config .localci/lint/golangci.yml
 
 help: hello
 	@echo ''

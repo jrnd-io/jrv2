@@ -22,6 +22,7 @@ package template
 
 import (
 	"fmt"
+
 	"github.com/jrnd-io/jrv2/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -33,7 +34,7 @@ var ListCmd = &cobra.Command{
 	Run:   list,
 }
 
-func list(cmd *cobra.Command, args []string) {
+func list(cmd *cobra.Command, _ []string) {
 
 	noColor, _ := cmd.Flags().GetBool("nocolor")
 	fullPath, _ := cmd.Flags().GetBool("fullPath")
@@ -46,7 +47,7 @@ func list(cmd *cobra.Command, args []string) {
 	fmt.Println()
 	fmt.Println("User JR templates:")
 	fmt.Println()
-	//printTemplateList(api.UserTemplateList(), noColor, fullPath)
+	// printTemplateList(api.UserTemplateList(), noColor, fullPath)
 
 }
 
