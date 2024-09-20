@@ -24,12 +24,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"slices"
 	"strings"
 
 	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/spf13/cobra"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 var ListCmd = &cobra.Command{
@@ -57,21 +57,21 @@ func list(cmd *cobra.Command, args []string) {
 
 	switch {
 	case category && len(args) > 0:
-		var functionNames []string
+		funcMap := orderedmap.New[string, function.Description]()
 		for k, v := range function.DescriptionMap() {
 			if v.Category == args[0] {
-				functionNames = append(functionNames, k)
+				funcMap.Set(k, v)
 			}
 		}
-		sortAndPrint(functionNames, isMarkdown, noColor)
+		printFunctionList(funcMap, isMarkdown, noColor)
 	case find && len(args) > 0:
-		var functionNames []string
+		funcMap := orderedmap.New[string, function.Description]()
 		for k, v := range function.DescriptionMap() {
 			if strings.Contains(v.Description, args[0]) || strings.Contains(v.Name, args[0]) {
-				functionNames = append(functionNames, k)
+				funcMap.Set(k, v)
 			}
 		}
-		sortAndPrint(functionNames, isMarkdown, noColor)
+		printFunctionList(funcMap, isMarkdown, noColor)
 	case len(args) == 1:
 		if run {
 			f, found := printFunction(args[0], isMarkdown, noColor)
@@ -86,21 +86,25 @@ func list(cmd *cobra.Command, args []string) {
 			printFunction(args[0], isMarkdown, noColor)
 		}
 	default:
-		l := len(function.DescriptionMap())
-		functionNames := make([]string, l)
+		funcMap := orderedmap.New[string, function.Description]()
 
-		i := 0
-		for k := range function.DescriptionMap() {
-			functionNames[i] = k
-			i++
+		for k, v := range function.DescriptionMap() {
+			funcMap.Set(k, v)
 		}
-		sortAndPrint(functionNames, isMarkdown, noColor)
+		printFunctionList(funcMap, isMarkdown, noColor)
 
 	}
 
 	fmt.Println()
 }
 
+func printFunctionList(om *orderedmap.OrderedMap[string, function.Description], isMarkdown bool, noColor bool) {
+	for pair := om.Oldest(); pair != nil; pair = pair.Next() {
+		printFunction(pair.Key, isMarkdown, noColor)
+	}
+}
+
+/*
 func sortAndPrint(functionNames []string, isMarkdown bool, noColor bool) {
 	slices.Sort(functionNames)
 	for _, k := range functionNames {
@@ -109,6 +113,7 @@ func sortAndPrint(functionNames []string, isMarkdown bool, noColor bool) {
 	fmt.Println()
 	fmt.Printf("Total functions: %d\n", len(functionNames))
 }
+*/
 
 func printFunction(name string, isMarkdown bool, noColor bool) (function.Description, bool) {
 	f, found := function.GetDescription(name)
@@ -144,14 +149,16 @@ func printFunction(name string, isMarkdown bool, noColor bool) (function.Descrip
 		fmt.Printf("**Output:** `%s`\n", f.Output)
 	} else {
 		fmt.Println()
-		cyanf("Name: %s\n", whitef(f.Name))               //nolint
-		cyanf("Category: %s\n", whitef(f.Category))       //nolint
-		cyanf("Description: %s\n", whitef(f.Description)) //nolint
-		cyanf("Parameters: %s\n", whitef(f.Parameters))   //nolint
-		cyanf("Localizable: %s\n", whitef(f.Localizable)) //nolint
-		cyanf("Return: %s\n", whitef(f.Return))           //nolint
-		cyanf("Example: %s\n", whitef(f.Example))         //nolint
-		cyanf("Output: %s\n", whitef(f.Output))           //nolint
+		cyanf("Name: %s\n", whitef(f.Name)) //nolint
+		/*
+			cyanf("Category: %s\n", whitef(f.Category))       //nolint
+			cyanf("Description: %s\n", whitef(f.Description)) //nolint
+			cyanf("Parameters: %s\n", whitef(f.Parameters))   //nolint
+			cyanf("Localizable: %s\n", whitef(f.Localizable)) //nolint
+			cyanf("Return: %s\n", whitef(f.Return))           //nolint
+			cyanf("Example: %s\n", whitef(f.Example))         //nolint
+			cyanf("Output: %s\n", whitef(f.Output))           //nolint
+		*/
 	}
 
 	return f, found

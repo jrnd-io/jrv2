@@ -22,11 +22,11 @@ package template
 
 import (
 	"fmt"
-	orderedmap "github.com/wk8/go-ordered-map/v2"
 
 	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/api"
 	"github.com/spf13/cobra"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 var ListCmd = &cobra.Command{
