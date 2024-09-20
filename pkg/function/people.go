@@ -22,6 +22,7 @@ package function
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"strconv"
 	"strings"
 	"text/template"
@@ -158,7 +159,7 @@ func Gender() string {
 	g := emitter.GetState().Value("_gender").(string)
 	if g == "" {
 		gender := []string{"M", "F"}
-		g = gender[Random.Intn(len(gender))]
+		g = gender[config.Random.Intn(len(gender))]
 		emitter.GetState().Ctx.Store("_gender", g)
 	}
 	return g
@@ -167,12 +168,12 @@ func Gender() string {
 // Middlename returns a random Middlename
 func Middlename() string {
 	middles := []string{"M", "J", "K", "P", "T", "S"}
-	return middles[Random.Intn(len(middles))]
+	return middles[config.Random.Intn(len(middles))]
 }
 
 // Name returns a random Name (male/female)
 func Name() string {
-	s := Random.Intn(2)
+	s := config.Random.Intn(2)
 	if s == 0 {
 		return NameM()
 	}
@@ -198,9 +199,9 @@ func NameF() string {
 
 // Ssn return a valid Social Security Number id
 func Ssn() string {
-	first := Random.Intn(899) + 1
-	second := Random.Intn(99) + 1
-	third := Random.Intn(9999) + 1
+	first := config.Random.Intn(899) + 1
+	second := config.Random.Intn(99) + 1
+	third := config.Random.Intn(9999) + 1
 	return fmt.Sprintf("%03d-%02d-%04d", first, second, third)
 }
 
@@ -218,10 +219,10 @@ func Username(firstName string, lastName string) string {
 	lastName = strings.ToLower(lastName)
 
 	separators := []string{".", "-", "", "_", "."}
-	separator := separators[Random.Intn(len(separators))]
-	onlyInitialForName := (Random.Intn(2)) != 0
-	onlyInitialForSurname := (Random.Intn(2)) != 0
-	useSurname := (Random.Intn(2)) != 0
+	separator := separators[config.Random.Intn(len(separators))]
+	onlyInitialForName := (config.Random.Intn(2)) != 0
+	onlyInitialForSurname := (config.Random.Intn(2)) != 0
+	useSurname := (config.Random.Intn(2)) != 0
 
 	if onlyInitialForName {
 		firstName = firstName[:1]
@@ -244,8 +245,8 @@ func User(firstName string, lastName string, size int) string {
 
 	var name string
 
-	useSurname := (Random.Intn(2)) != 0
-	shuffleName := (Random.Intn(2)) != 0
+	useSurname := (config.Random.Intn(2)) != 0
+	shuffleName := (config.Random.Intn(2)) != 0
 	if useSurname || len(name) < size {
 		name = firstName + lastName
 	} else {
@@ -254,7 +255,7 @@ func User(firstName string, lastName string, size int) string {
 
 	if shuffleName {
 		nameRunes := []rune(name)
-		Random.Shuffle(len(nameRunes), func(i, j int) {
+		config.Random.Shuffle(len(nameRunes), func(i, j int) {
 			nameRunes[i], nameRunes[j] = nameRunes[j], nameRunes[i]
 		})
 		name = string(nameRunes)
@@ -265,7 +266,7 @@ func User(firstName string, lastName string, size int) string {
 		username += string(name[i])
 	}
 
-	username += strconv.Itoa(50 + Random.Intn(49))
+	username += strconv.Itoa(50 + config.Random.Intn(49))
 
 	return username
 }

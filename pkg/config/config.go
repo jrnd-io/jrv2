@@ -22,13 +22,18 @@ package config
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/adrg/xdg"
 )
 
 var JrSystemDir string
 var JrUserDir string
+var JrSeed int64
+var Random *rand.Rand
 
 var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
@@ -56,8 +61,21 @@ const (
 )
 
 func init() {
+	initEnvironmentVariables()
+}
+
+func initEnvironmentVariables() {
 	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
 	JrUserDir = os.Getenv("JR_USER_DIR")
+	seed, err := strconv.ParseInt(os.Getenv("JR_SEED"), 10, 64)
+
+	if (seed == -1) || (err != nil) {
+		JrSeed = time.Now().UTC().UnixNano()
+	} else {
+		JrSeed = seed
+	}
+
+	Random = rand.New(rand.NewSource(JrSeed)) //nolint no need for a secure random generator
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir

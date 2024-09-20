@@ -22,26 +22,21 @@ package main
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
 )
 
-var Version = "DEV"
-var GoVersion string
-var BuildTime string
-var BuildUser string
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "prints JR version number",
-	Long:  `prints JR version number`,
+var envCmd = &cobra.Command{
+	Use:   "env",
+	Short: "prints JR environment variables",
+	Long:  `prints JR environment variables`,
 	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Printf("JR Version   : %s\n", Version)
-		fmt.Printf("Built with   : %s\n", GoVersion)
-		fmt.Printf("By           : %s\n", BuildUser)
-		fmt.Printf("At           : %s\n", BuildTime)
+		fmt.Printf("JR System Dir: %s\n", config.JrSystemDir)
+		fmt.Printf("JR User Dir  : %s\n", config.JrUserDir)
+		fmt.Printf("JR Seed      : %d\n", config.JrSeed)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(envCmd)
 }

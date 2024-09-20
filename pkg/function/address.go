@@ -22,6 +22,7 @@ package function
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"math"
 	"text/template"
 
@@ -70,9 +71,9 @@ var CardinalLong = []string{"North", "South", "East", "Ovest", "North-East", "No
 
 // BuildingNumber generates a random building number of max n digits
 func BuildingNumber(n int) string {
-	building := make([]byte, Random.Intn(n)+1)
+	building := make([]byte, config.Random.Intn(n)+1)
 	for i := range building {
-		building[i] = digits[Random.Intn(len(digits))]
+		building[i] = digits[config.Random.Intn(len(digits))]
 	}
 	return string(building)
 }
@@ -95,7 +96,7 @@ func Cardinal(short bool) string {
 		directions = CardinalShort
 	}
 
-	return directions[Random.Intn(len(directions))]
+	return directions[config.Random.Intn(len(directions))]
 }
 
 // City returns a random City
@@ -115,7 +116,7 @@ func CityAt(index int) string {
 func Country() string {
 	countryIndex := emitter.GetState().CountryIndex
 	if countryIndex == -1 || countryIndex == 0 {
-		emitter.GetState().LastIndex = Random.Intn(len(countries.All()))
+		emitter.GetState().LastIndex = config.Random.Intn(len(countries.All()))
 		c := countries.All()[emitter.GetState().LastIndex].Alpha2()
 		return c
 	}
@@ -125,7 +126,7 @@ func Country() string {
 
 // CountryRandom returns a random ISO 3166 Country
 func CountryRandom() string {
-	emitter.GetState().LastIndex = Random.Intn(len(countries.All()))
+	emitter.GetState().LastIndex = config.Random.Intn(len(countries.All()))
 	return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
 }
 
@@ -136,13 +137,13 @@ func CountryAt(index int) string {
 
 // Latitude returns a random latitude between -90 and 90
 func Latitude() string {
-	latitude := -90 + Random.Float64()*(180)
+	latitude := -90 + config.Random.Float64()*(180)
 	return fmt.Sprintf("%.4f", latitude)
 }
 
 // Longitude returns a random longitude between -180 and 180
 func Longitude() string {
-	longitude := -180 + Random.Float64()*(360)
+	longitude := -180 + config.Random.Float64()*(360)
 	return fmt.Sprintf("%.4f", longitude)
 }
 
@@ -151,10 +152,10 @@ func NearbyGPS(latitude float64, longitude float64, radius int) string {
 	radiusInMeters := float64(radius)
 
 	// Generate a random angle in radians
-	randomAngle := Random.Float64() * 2 * math.Pi
+	randomAngle := config.Random.Float64() * 2 * math.Pi
 
 	// Calculate the distance from the center point
-	distanceInMeters := Random.Float64() * radiusInMeters
+	distanceInMeters := config.Random.Float64() * radiusInMeters
 
 	// Convert the distance to degrees
 	distanceInDegrees := distanceInMeters * degreesPerMeter

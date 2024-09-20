@@ -22,6 +22,7 @@ package function
 
 import (
 	"errors"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -48,8 +49,8 @@ func init() {
 		"join":                     strings.Join,
 		"len":                      Len,
 		"lower":                    strings.ToLower,
-		"random":                   func(s []string) string { return s[Random.Intn(len(s))] },
-		"randoms":                  func(s string) string { a := strings.Split(s, "|"); return a[Random.Intn(len(a))] },
+		"random":                   func(s []string) string { return s[config.Random.Intn(len(s))] },
+		"randoms":                  func(s string) string { a := strings.Split(s, "|"); return a[config.Random.Intn(len(a))] },
 		"random_index":             RandomIndex,
 		"random_string":            RandomString,
 		"random_string_vocabulary": RandomStringVocabulary,
@@ -73,7 +74,7 @@ func Randoms(s ...string) string {
 	// use normal random if only one argument is provided
 	if len(s) == 1 {
 		a := strings.Split(s[0], "|")
-		return s[Random.Intn(len(a))]
+		return s[config.Random.Intn(len(a))]
 	}
 
 	// if more than one argument is provided, second argument is a list of float separated by "|"
@@ -117,7 +118,7 @@ func Word(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = Random.Intn(len(words))
+	emitter.GetState().LastIndex = config.Random.Intn(len(words))
 	return words[emitter.GetState().LastIndex]
 }
 
@@ -148,7 +149,7 @@ func WordShuffleN(name string, n int) []string {
 		return []string{""}
 	}
 	words := data[name]
-	Random.Shuffle(len(words), func(i, j int) {
+	config.Random.Shuffle(len(words), func(i, j int) {
 		words[i], words[j] = words[j], words[i]
 	})
 	number := Minint(n, len(words))
@@ -172,7 +173,7 @@ func RandomIndex(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = Random.Intn(len(words))
+	emitter.GetState().LastIndex = config.Random.Intn(len(words))
 	return strconv.Itoa(emitter.GetState().LastIndex)
 }
 

@@ -24,7 +24,6 @@ import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
-	"math/rand"
 	"os"
 	"strings"
 
@@ -34,7 +33,6 @@ import (
 )
 
 var defaultLocale = "us"
-var Random = rand.New(rand.NewSource(0)) //nolint no need for a secure random generator
 var data = map[string][]string{}
 
 // ClearCache is used to internally Cache data from word files

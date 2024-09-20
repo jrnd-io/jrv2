@@ -21,6 +21,7 @@
 package function
 
 import (
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"text/template"
 	"time"
 
@@ -49,7 +50,7 @@ func UnixTimeStamp(days int) int64 {
 	now := time.Now()
 	first := now.AddDate(0, 0, -days).Sub(unixEpoch).Seconds()
 	last := now.Sub(unixEpoch).Seconds()
-	return Random.Int63n(int64(last-first)) + int64(first)
+	return config.Random.Int63n(int64(last-first)) + int64(first)
 }
 
 // DateBetween returns a date between fromDate and toDate
@@ -69,7 +70,7 @@ func DateBetween(fromDate string, toDate string) string {
 	}
 
 	delta := end.Sub(start).Nanoseconds()
-	randNsec := Random.Int63n(delta)
+	randNsec := config.Random.Int63n(delta)
 
 	d := start.Add(time.Duration(randNsec))
 	return d.Format(time.DateOnly)
@@ -91,11 +92,11 @@ func BirthDate(minAge int, maxAge int) string {
 	maxBirthYear := time.Now().Year() - minAge
 	minBirthYear := maxBirthYear - (maxAge - minAge)
 
-	birthYear := Random.Intn(maxBirthYear-minBirthYear+1) + minBirthYear
+	birthYear := config.Random.Intn(maxBirthYear-minBirthYear+1) + minBirthYear
 
-	birthMonth := Random.Intn(12) + 1
+	birthMonth := config.Random.Intn(12) + 1
 	lastDayOfMonth := time.Date(birthYear, time.Month(birthMonth+1), 0, 0, 0, 0, 0, time.UTC).Day()
-	birthDay := Random.Intn(lastDayOfMonth) + 1
+	birthDay := config.Random.Intn(lastDayOfMonth) + 1
 
 	d := time.Date(birthYear, time.Month(birthMonth), birthDay, 0, 0, 0, 0, time.UTC)
 	return d.Format(time.DateOnly)
@@ -109,7 +110,7 @@ func Past(years int) string {
 	now := time.Now().UTC()
 	start := now.AddDate(-years, 0, 0)
 	delta := now.Sub(start).Nanoseconds()
-	randNsec := Random.Int63n(delta)
+	randNsec := config.Random.Int63n(delta)
 	d := start.Add(time.Duration(randNsec))
 	return d.Format(time.DateOnly)
 }
@@ -122,7 +123,7 @@ func Future(years int) string {
 	now := time.Now().UTC()
 	start := now.AddDate(years, 0, 0)
 	delta := start.Sub(now).Nanoseconds()
-	randNsec := Random.Int63n(delta)
+	randNsec := config.Random.Int63n(delta)
 	d := now.Add(time.Duration(randNsec))
 	return d.Format(time.DateOnly)
 }
@@ -135,7 +136,7 @@ func Recent(days int) string {
 	now := time.Now().UTC()
 	start := now.AddDate(0, 0, -days)
 	delta := now.Sub(start).Nanoseconds()
-	randNsec := Random.Int63n(delta)
+	randNsec := config.Random.Int63n(delta)
 	d := start.Add(time.Duration(randNsec))
 	return d.Format(time.DateOnly)
 }
@@ -148,7 +149,7 @@ func Soon(days int) string {
 	now := time.Now().UTC()
 	start := now.AddDate(0, 0, days)
 	delta := start.Sub(now).Nanoseconds()
-	randNsec := Random.Int63n(delta)
+	randNsec := config.Random.Int63n(delta)
 	d := now.Add(time.Duration(randNsec))
 	return d.Format(time.DateOnly)
 }

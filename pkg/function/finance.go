@@ -22,6 +22,7 @@ package function
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -55,14 +56,14 @@ func init() {
 func Account(length int) string {
 	account := make([]byte, length)
 	for i := range account {
-		account[i] = digits[Random.Intn(len(digits))] //nolint no need to use a secure random generator
+		account[i] = digits[config.Random.Intn(len(digits))] //nolint no need to use a secure random generator
 	}
 	return string(account)
 }
 
 // Amount returns an amount of money between min and max, and given currency
 func Amount(min float32, max float32, currency string) string {
-	amount := min + Random.Float32()*(max-min)
+	amount := min + config.Random.Float32()*(max-min)
 	return fmt.Sprintf("%s%.2f", currency, amount)
 }
 
