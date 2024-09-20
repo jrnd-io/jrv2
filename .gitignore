@@ -23,6 +23,7 @@
 _obj
 _test
 kafka
+bin
 
 # Architecture specific extensions/prefixes
 *.[568vq]

@@ -4,6 +4,13 @@ USER=$(shell id -u -n)
 TIME=$(shell date)
 JR_HOME=jr
 
+GOLANCI_LINT_VERSION ?= v1.61.0
+GOVULNCHECK_VERSION ?= latest
+
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
+LOCALBIN := $(PROJECT_PATH)/bin
+
 ifndef XDG_DATA_DIRS
 ifeq ($(OS), Windows_NT)
 	detectedOS := Windows
@@ -87,10 +94,18 @@ dep:
 	go mod download
 
 vet:
-	go vet
+	go vet ./...
 
-lint:
-	golangci-lint run --config .localci/lint/golangci.yml
+.PHONY: lint
+lint: golangci-lint
+	$(LOCALBIN)/golangci-lint run --config .localci/lint/golangci.yml
+
+.PHONY: vuln
+vuln: govulncheck
+	$(LOCALBIN)/govulncheck -show verbose ./...
+
+.PHONY: check
+check: vet lint vuln
 
 help: hello
 	@echo ''
@@ -112,3 +127,16 @@ install:
 
 all: hello install-gogen generate compile install
 all_offline: hello generate compile install
+
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+.PHONY: golangci-lint
+golangci-lint: $(LOCALBIN)
+	@test -s $(LOCALBIN)/golangci-lint || \
+	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANCI_LINT_VERSION)
+
+.PHONY: govulncheck
+govulncheck: $(LOCALBIN)
+	@test -s $(LOCALBIN)/govulncheck || \
+	GOBIN=$(LOCALBIN) go install golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION)
