@@ -36,8 +36,8 @@ var versionCmd = &cobra.Command{
 	Short: "prints JR version number",
 	Long:  `prints JR version number`,
 	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Printf("JR System Dir: %s\n", constants.JRSystemDir)
-		fmt.Printf("JR User Dir  : %s\n", constants.JRUserDir)
+		fmt.Printf("JR System Dir: %s\n", constants.JR_SystemDir)
+		fmt.Printf("JR User Dir  : %s\n", constants.JR_UserDir)
 		fmt.Printf("JR Version   : %s\n", Version)
 		fmt.Printf("Built with   : %s\n", GoVersion)
 		fmt.Printf("By           : %s\n", BuildUser)

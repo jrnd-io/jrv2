@@ -50,7 +50,7 @@ func Cache(name string) (bool, error) {
 	if v != nil {
 		return false, nil
 	}
-	templateDir := fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates")
+	templateDir := fmt.Sprintf("%s/%s", constants.JR_SystemDir, "templates")
 
 	locale := emitter.GetState().Locale
 	fileName := fmt.Sprintf("%s%cdata%c%s%c%s",

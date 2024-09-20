@@ -15,7 +15,7 @@ ifeq ($(detectedOS), Darwin)
 	JR_SYSTEM_DIR="/Library/Application Support"
 endif
 ifeq ($(detectedOS),  Linux)
-	JR_SYSTEM_DIR="/usr/share"
+	JR_SYSTEM_DIR="/usr/local/share"
 endif
 ifeq ($(detectedOS), Windows_NT)
 	JR_SYSTEM_DIR="$(APPADATA)"

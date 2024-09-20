@@ -27,8 +27,11 @@ import (
 	"github.com/adrg/xdg"
 )
 
-var JRSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
-var JRUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+var JR_SystemDir string
+var JR_UserDir string
+
+var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
+var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 
 const (
 	DefaultNum                = 1

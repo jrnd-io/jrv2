@@ -184,18 +184,18 @@ func IsValidTemplate(t string) (bool, error) {
 }
 
 func SystemTemplateList() []*TemplateInfo {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JR_SystemDir, "templates"))
 	return templateList(templateDir)
 }
 
 func UserTemplateList() []*TemplateInfo {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRUserDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JR_UserDir, "templates"))
 	return templateList(templateDir)
 }
 
 func getTemplate(name string) (string, error) {
-	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates"))
-	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRUserDir, "templates"))
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JR_SystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JR_UserDir, "templates"))
 	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
 	if err != nil {
 		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
