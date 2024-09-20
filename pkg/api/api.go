@@ -185,18 +185,18 @@ func IsValidTemplate(t string) (bool, *template.Template, error) {
 }
 
 func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrSystemDir, "templates"))
 	return templateList(templateDir)
 }
 
 func UserTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRUserDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrUserDir, "templates"))
 	return templateList(templateDir)
 }
 
 func getTemplate(name string) (string, error) {
-	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates"))
-	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRUserDir, "templates"))
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrSystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrUserDir, "templates"))
 	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
 	if err != nil {
 		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))

@@ -27,8 +27,8 @@ import (
 	"github.com/adrg/xdg"
 )
 
-var JRSystemDir string
-var JRUserDir string
+var JrSystemDir string
+var JrUserDir string
 
 var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
@@ -56,6 +56,13 @@ const (
 )
 
 func init() {
-	JRSystemDir = SystemDir
-	JRUserDir = UserDir
+	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
+	JrUserDir = os.Getenv("JR_USER_DIR")
+
+	if JrSystemDir == "" {
+		JrSystemDir = SystemDir
+	}
+	if JrUserDir == "" {
+		JrUserDir = UserDir
+	}
 }
