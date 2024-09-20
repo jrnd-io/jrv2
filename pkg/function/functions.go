@@ -28,7 +28,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/rs/zerolog/log"
 )
@@ -50,7 +50,7 @@ func Cache(name string) (bool, error) {
 	if v != nil {
 		return false, nil
 	}
-	templateDir := fmt.Sprintf("%s/%s", constants.JrSystemDir, "templates")
+	templateDir := fmt.Sprintf("%s/%s", config.JrSystemDir, "templates")
 
 	locale := emitter.GetState().Locale
 	fileName := fmt.Sprintf("%s%cdata%c%s%c%s",

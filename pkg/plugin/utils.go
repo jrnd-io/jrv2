@@ -23,14 +23,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 )
 
 func ReadConfig(plugin string) ([]byte, error) {
 
 	configFiles := []string{
-		fmt.Sprintf("%s%cplugins%c%s.json", constants.JrSystemDir, os.PathSeparator, os.PathSeparator, plugin),
-		fmt.Sprintf("%s%cplugins%c%s.json", constants.JrUserDir, os.PathSeparator, os.PathSeparator, plugin),
+		fmt.Sprintf("%s%cplugins%c%s.json", config.JrSystemDir, os.PathSeparator, os.PathSeparator, plugin),
+		fmt.Sprintf("%s%cplugins%c%s.json", config.JrUserDir, os.PathSeparator, os.PathSeparator, plugin),
 	}
 
 	for _, f := range configFiles {

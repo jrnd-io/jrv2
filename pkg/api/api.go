@@ -30,7 +30,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/wk8/go-ordered-map/v2"
 )
@@ -115,11 +115,11 @@ func WithOutputTemplate(o string) func(*Emitter) {
 
 func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 
-	defaultDuration, err := time.ParseDuration(constants.DefaultDuration)
+	defaultDuration, err := time.ParseDuration(config.DefaultDuration)
 	if err != nil {
 		return nil, err
 	}
-	defaultFrequency, err := time.ParseDuration(constants.DefaultFrequency)
+	defaultFrequency, err := time.ParseDuration(config.DefaultFrequency)
 	if err != nil {
 		return nil, err
 	}
@@ -127,20 +127,20 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 	t := &Ticker{
 		Type:           "simple",
 		ImmediateStart: false,
-		Num:            constants.DefaultNum,
+		Num:            config.DefaultNum,
 		Frequency:      defaultFrequency,
 		Duration:       defaultDuration,
 	}
 
 	e := &Emitter{
 		Tick:           *t,
-		Preload:        constants.DefaultPreloadSize,
-		Name:           constants.DefaultEmitterName,
-		Locale:         constants.DefaultLocale,
-		KeyTemplate:    constants.DefaultKeyTemplate,
-		ValueTemplate:  constants.DefaultValueTemplate,
-		HeaderTemplate: constants.DefaultHeaderTemplate,
-		OutputTemplate: constants.DefaultOutputTemplate,
+		Preload:        config.DefaultPreloadSize,
+		Name:           config.DefaultEmitterName,
+		Locale:         config.DefaultLocale,
+		KeyTemplate:    config.DefaultKeyTemplate,
+		ValueTemplate:  config.DefaultValueTemplate,
+		HeaderTemplate: config.DefaultHeaderTemplate,
+		OutputTemplate: config.DefaultOutputTemplate,
 	}
 
 	for _, option := range options {
@@ -185,18 +185,18 @@ func IsValidTemplate(t string) (bool, *template.Template, error) {
 }
 
 func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrSystemDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
 	return templateList(templateDir)
 }
 
 func UserTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
-	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrUserDir, "templates"))
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
 	return templateList(templateDir)
 }
 
 func getTemplate(name string) (string, error) {
-	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrSystemDir, "templates"))
-	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JrUserDir, "templates"))
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
 	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
 	if err != nil {
 		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))

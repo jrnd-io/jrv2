@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jrnd-io/jrv2/pkg/api"
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,23 +16,23 @@ func TestNewEmitter(t *testing.T) {
 		assert.NotNil(t, emitter)
 
 		// Check default values
-		assert.Equal(t, constants.DefaultEmitterName, emitter.Name)
-		assert.Equal(t, constants.DefaultLocale, emitter.Locale)
-		assert.Equal(t, constants.DefaultPreloadSize, emitter.Preload)
-		assert.Equal(t, constants.DefaultKeyTemplate, emitter.KeyTemplate)
-		assert.Equal(t, constants.DefaultValueTemplate, emitter.ValueTemplate)
-		assert.Equal(t, constants.DefaultHeaderTemplate, emitter.HeaderTemplate)
-		assert.Equal(t, constants.DefaultOutputTemplate, emitter.OutputTemplate)
+		assert.Equal(t, config.DefaultEmitterName, emitter.Name)
+		assert.Equal(t, config.DefaultLocale, emitter.Locale)
+		assert.Equal(t, config.DefaultPreloadSize, emitter.Preload)
+		assert.Equal(t, config.DefaultKeyTemplate, emitter.KeyTemplate)
+		assert.Equal(t, config.DefaultValueTemplate, emitter.ValueTemplate)
+		assert.Equal(t, config.DefaultHeaderTemplate, emitter.HeaderTemplate)
+		assert.Equal(t, config.DefaultOutputTemplate, emitter.OutputTemplate)
 
 		// Check Ticker default values
 		assert.Equal(t, "simple", emitter.Tick.Type)
 		assert.False(t, emitter.Tick.ImmediateStart)
-		assert.Equal(t, constants.DefaultNum, emitter.Tick.Num)
+		assert.Equal(t, config.DefaultNum, emitter.Tick.Num)
 
-		defaultFrequency, _ := time.ParseDuration(constants.DefaultFrequency)
+		defaultFrequency, _ := time.ParseDuration(config.DefaultFrequency)
 		assert.Equal(t, defaultFrequency, emitter.Tick.Frequency)
 
-		defaultDuration, _ := time.ParseDuration(constants.DefaultDuration)
+		defaultDuration, _ := time.ParseDuration(config.DefaultDuration)
 		assert.Equal(t, defaultDuration, emitter.Tick.Duration)
 	})
 

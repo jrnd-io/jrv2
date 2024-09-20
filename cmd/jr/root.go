@@ -25,12 +25,12 @@ import (
 	"github.com/jrnd-io/jrv2/cmd/jr/function"
 	"github.com/jrnd-io/jrv2/cmd/jr/producer"
 	"github.com/jrnd-io/jrv2/cmd/jr/template"
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )
 
-var logLevel = constants.DefaultLogLevel
+var logLevel = config.DefaultLogLevel
 
 var rootCmd = &cobra.Command{
 	Use:   "jr",
@@ -45,7 +45,7 @@ func init() {
 		Title: "Resources",
 	})
 
-	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", constants.DefaultLogLevel, "JR Log Level")
+	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", config.DefaultLogLevel, "JR Log Level")
 
 	rootCmd.AddCommand(emitter.NewCmd())
 	rootCmd.AddCommand(producer.NewCmd())

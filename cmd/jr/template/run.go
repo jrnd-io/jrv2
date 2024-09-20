@@ -23,7 +23,7 @@ package template
 import (
 	"time"
 
-	"github.com/jrnd-io/jrv2/pkg/constants"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
 )
 
@@ -44,17 +44,17 @@ func run(_ *cobra.Command, _ []string) {
 }
 
 func init() {
-	RunCmd.Flags().IntP("num", "n", constants.DefaultNum, "Number of elements to create for each pass")
-	frequency, _ := time.ParseDuration(constants.DefaultFrequency)
+	RunCmd.Flags().IntP("num", "n", config.DefaultNum, "Number of elements to create for each pass")
+	frequency, _ := time.ParseDuration(config.DefaultFrequency)
 	RunCmd.Flags().DurationP("frequency", "f", frequency, "how much time to wait for next generation pass")
-	duration, _ := time.ParseDuration(constants.DefaultDuration)
+	duration, _ := time.ParseDuration(config.DefaultDuration)
 	RunCmd.Flags().DurationP("duration", "d", duration, "If frequency is enabled, with Duration you can set a finite amount of time")
 	RunCmd.Flags().String("throughput", "", "You can set throughput, JR will calculate frequency automatically.")
 	RunCmd.Flags().Int64("seed", time.Now().UTC().UnixNano(), "Seed to init pseudorandom generator")
 	RunCmd.Flags().String("csv", "", "Path to csv file to use")
 	RunCmd.Flags().Bool("embedded", false, "If enabled, [template] must be a string containing a template, to be embedded directly in the script")
-	RunCmd.Flags().StringP("key", "k", constants.DefaultKeyTemplate, "A template to generate a key")
-	RunCmd.Flags().StringP("header", "h", constants.DefaultHeaderTemplate, "A template to generate a header")
+	RunCmd.Flags().StringP("key", "k", config.DefaultKeyTemplate, "A template to generate a key")
+	RunCmd.Flags().StringP("header", "h", config.DefaultHeaderTemplate, "A template to generate a header")
 
 	/*
 		templateRunCmd.Flags().StringP("kafkaConfig", "F", "", "Kafka configuration")
