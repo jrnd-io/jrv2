@@ -1,6 +1,9 @@
 package api
 
-import "time"
+import (
+	"text/template"
+	"time"
+)
 
 type Templates struct {
 	TemplateList []*TemplateInfo
@@ -11,6 +14,7 @@ type TemplateInfo struct {
 	IsValid  bool
 	FullPath string
 	Error    error
+	Template *template.Template
 }
 
 type Ticker struct {

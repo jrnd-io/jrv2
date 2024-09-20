@@ -54,3 +54,8 @@ const (
 	DefaultHTTPPort           = 7482 // JR :)
 	DefaultLogLevel           = "fatal"
 )
+
+func init() {
+	JRSystemDir = SystemDir
+	JRUserDir = UserDir
+}

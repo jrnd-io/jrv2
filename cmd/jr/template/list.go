@@ -22,6 +22,7 @@ package template
 
 import (
 	"fmt"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 
 	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/api"
@@ -52,9 +53,9 @@ func list(cmd *cobra.Command, _ []string) {
 
 }
 
-func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath bool, showError bool) {
+func printTemplateList(templateList *orderedmap.OrderedMap[string, *api.TemplateInfo], noColor bool, fullPath bool, showError bool) {
 
-	if len(templateList) == 0 {
+	if templateList.Len() == 0 {
 		return
 	}
 
@@ -65,22 +66,22 @@ func printTemplateList(templateList []*api.TemplateInfo, noColor bool, fullPath 
 		green.DisableColor()
 	}
 
-	for _, t := range templateList {
+	for t := templateList.Oldest(); t != nil; t = t.Next() {
 		var c *color.Color
-		if t.IsValid {
+		if t.Value.IsValid {
 			c = green
 		} else {
 			c = red
 		}
 
 		if fullPath {
-			c.Print(t.FullPath) //nolint
+			c.Print(t.Value.FullPath) //nolint
 		} else {
-			c.Print(t.Name) //nolint
+			c.Print(t.Value.Name) //nolint
 		}
 
-		if showError && t.Error != nil {
-			c.Println(" -> ", t.Error) //nolint
+		if showError && t.Value.Error != nil {
+			c.Println(" -> ", t.Value.Error) //nolint
 		} else {
 			c.Println() //nolint
 		}

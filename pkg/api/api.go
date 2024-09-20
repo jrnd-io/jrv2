@@ -32,6 +32,7 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/constants"
 	"github.com/jrnd-io/jrv2/pkg/function"
+	"github.com/wk8/go-ordered-map/v2"
 )
 
 func WithName(n string) func(*Emitter) {
@@ -159,7 +160,7 @@ func GetRawValidatedTemplate(name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	valid, err := IsValidTemplate(t)
+	valid, _, err := IsValidTemplate(t)
 
 	if !valid || err != nil {
 		return "", errors.New("invalid template")
@@ -167,28 +168,28 @@ func GetRawValidatedTemplate(name string) (string, error) {
 	return t, nil
 }
 
-func IsValidTemplate(t string) (bool, error) {
+func IsValidTemplate(t string) (bool, *template.Template, error) {
 
 	tt, err := template.New("test").Funcs(function.Map()).Parse(t)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
 
 	var buf bytes.Buffer
 	if err = tt.Execute(&buf, nil); err != nil {
-		return false, err
+		return false, nil, err
 	}
 
-	return true, err
+	return true, tt, err
 
 }
 
-func SystemTemplateList() []*TemplateInfo {
+func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRSystemDir, "templates"))
 	return templateList(templateDir)
 }
 
-func UserTemplateList() []*TemplateInfo {
+func UserTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", constants.JRUserDir, "templates"))
 	return templateList(templateDir)
 }
@@ -206,9 +207,9 @@ func getTemplate(name string) (string, error) {
 	return string(templateScript), nil
 }
 
-func templateList(templateDir string) []*TemplateInfo {
+func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateInfo] {
 
-	templateList := make([]*TemplateInfo, 0)
+	templateList := orderedmap.New[string, *TemplateInfo](countFilesInDir(templateDir))
 
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		return templateList
@@ -218,22 +219,22 @@ func templateList(templateDir string) []*TemplateInfo {
 		if !info.IsDir() && strings.HasSuffix(path, "tpl") {
 
 			t, _ := os.ReadFile(path)
-			valid, err := IsValidTemplate(string(t))
+			valid, tt, err := IsValidTemplate(string(t))
 			name, _ := strings.CutSuffix(info.Name(), ".tpl")
 			templateInfo := TemplateInfo{
 				Name:     name,
 				IsValid:  valid,
 				FullPath: path,
+				Template: tt,
 				Error:    err,
 			}
-			templateList = append(templateList, &templateInfo)
+			templateList.Set(name, &templateInfo)
 		}
 		return nil
 	})
 	return templateList
 }
 
-/*
 func countFilesInDir(dir string) int {
 	f, err := os.Open(dir)
 	if err != nil {
@@ -250,4 +251,3 @@ func countFilesInDir(dir string) int {
 	}
 	return len(list)
 }
-*/
