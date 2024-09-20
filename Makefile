@@ -12,13 +12,13 @@ else
 endif
 
 ifeq ($(detectedOS), Darwin)
-	JR_SYSTEM_DIR=/Library/Application\ Support
+	JR_SYSTEM_DIR="/Library/Application Support"
 endif
 ifeq ($(detectedOS),  Linux)
-	JR_SYSTEM_DIR=/usr/local/share
+	JR_SYSTEM_DIR="/usr/share"
 endif
 ifeq ($(detectedOS), Windows_NT)
-	JR_SYSTEM_DIR=$(APPADATA)
+	JR_SYSTEM_DIR="$(APPADATA)"
 endif
 else
 	JR_SYSTEM_DIR=$(XDG_DATA_DIRS[0])
@@ -32,13 +32,13 @@ else
 endif
 
 ifeq ($(detectedOS), Darwin)
-	JR_USER_DIR=$(HOME)/Library/Application\ Support
+	JR_USER_DIR="$(HOME)/Library/Application Support"
 endif
 ifeq ($(detectedOS),  Linux)
-	JR_USER_DIR=$(HOME)/.local/share
+	JR_USER_DIR="$(HOME)/.local/share"
 endif
 ifeq ($(detectedOS), Windows_NT)
-	JR_USER_DIR='$(LOCALAPPDATA)'
+	JR_USER_DIR="$(LOCALAPPDATA)"
 endif
 else
 	JR_USER_DIR=$(XDG_DATA_HOME)
