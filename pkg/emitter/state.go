@@ -89,7 +89,10 @@ func GetState() *State {
 func (st *State) AddValueToList(key string, value any) {
 	st.listLock.Lock()
 	defer st.listLock.Unlock()
-	list, _ := st.List.Load(key)
+	list, ok := st.List.Load(key)
+	if !ok {
+		list = []any{}
+	}
 	list = append(list.([]any), value)
 	st.List.Store(key, list)
 }

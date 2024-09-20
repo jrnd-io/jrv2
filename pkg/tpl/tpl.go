@@ -31,7 +31,7 @@ type Tpl struct {
 	Template *template.Template
 }
 
-func NewTpl(name string, t string, fmap map[string]interface{}, ctx any) (Tpl, error) {
+func New(name string, t string, fmap map[string]interface{}, ctx any) (Tpl, error) {
 
 	tp, err := template.New(name).Funcs(fmap).Parse(t)
 
