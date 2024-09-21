@@ -236,6 +236,12 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 }
 
 func countFilesInDir(dir string) int {
+
+	existentDir, _ := exists(dir)
+	if !existentDir {
+		return 0
+	}
+
 	f, err := os.Open(dir)
 	if err != nil {
 		panic(err)
@@ -250,4 +256,15 @@ func countFilesInDir(dir string) int {
 		panic(err)
 	}
 	return len(list)
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
