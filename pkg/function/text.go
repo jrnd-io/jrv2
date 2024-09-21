@@ -49,8 +49,8 @@ func init() {
 		"join":                     strings.Join,
 		"len":                      Len,
 		"lower":                    strings.ToLower,
-		"random":                   func(s []string) string { return s[config.Random.Intn(len(s))] },
-		"randoms":                  func(s string) string { a := strings.Split(s, "|"); return a[config.Random.Intn(len(a))] },
+		"random":                   func(s []string) string { return s[config.Random.IntN(len(s))] },
+		"randoms":                  func(s string) string { a := strings.Split(s, "|"); return a[config.Random.IntN(len(a))] },
 		"random_index":             RandomIndex,
 		"random_string":            RandomString,
 		"random_string_vocabulary": RandomStringVocabulary,
@@ -74,7 +74,7 @@ func Randoms(s ...string) string {
 	// use normal random if only one argument is provided
 	if len(s) == 1 {
 		a := strings.Split(s[0], "|")
-		return s[config.Random.Intn(len(a))]
+		return s[config.Random.IntN(len(a))]
 	}
 
 	// if more than one argument is provided, second argument is a list of float separated by "|"
@@ -118,7 +118,7 @@ func Word(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = config.Random.Intn(len(words))
+	emitter.GetState().LastIndex = config.Random.IntN(len(words))
 	return words[emitter.GetState().LastIndex]
 }
 
@@ -173,7 +173,7 @@ func RandomIndex(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = config.Random.Intn(len(words))
+	emitter.GetState().LastIndex = config.Random.IntN(len(words))
 	return strconv.Itoa(emitter.GetState().LastIndex)
 }
 

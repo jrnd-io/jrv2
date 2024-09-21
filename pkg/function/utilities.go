@@ -39,7 +39,7 @@ func init() {
 		"image_of": ImageOf,
 		"index_of": IndexOf,
 		"inject":   Inject,
-		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, config.Random.Intn(n)) },
+		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, config.Random.IntN(n)) },
 		"seed":     Seed,
 		"uuid":     UniqueID,
 		"xid":      Xid,
@@ -54,7 +54,7 @@ func Image(width int, height int) string {
 	return ImageOf(
 		width,
 		height,
-		imageType[config.Random.Intn(len(imageType))],
+		imageType[config.Random.IntN(len(imageType))],
 	)
 }
 
@@ -65,7 +65,7 @@ func ImageOf(width int, height int, imageType string) string {
 
 // RandomBool returns a random boolean
 func RandomBool() string {
-	b := config.Random.Intn(2)
+	b := config.Random.IntN(2)
 	if b == 0 {
 		return "false"
 	}
@@ -83,7 +83,7 @@ func Xid() string { return xid.New().String() }
 
 // YesOrNo returns a random yes or no
 func YesOrNo() string {
-	b := config.Random.Intn(2)
+	b := config.Random.IntN(2)
 	if b == 0 {
 		return "no"
 	}
@@ -110,15 +110,15 @@ func Inject(probability float64, injected, original any) any {
 }
 
 // Seed sets seeds and can be used in a template
-func Seed(rndSeed int64) string {
+func Seed(rndSeed uint64) string {
 	SetSeed(rndSeed)
 	return ""
 }
 
 // SetSeed sets seeds for all random JR objects
-func SetSeed(rndSeed int64) {
-	config.Random.Seed(rndSeed)
-	uuid.SetRand(config.Random)
+func SetSeed(rndSeed uint64) {
+	config.ChaCha8.Seed(config.CreateSeed(rndSeed))
+	uuid.SetRand(config.ChaCha8)
 }
 
 // IndexOf returns the index of the s string in a file

@@ -71,9 +71,9 @@ var CardinalLong = []string{"North", "South", "East", "Ovest", "North-East", "No
 
 // BuildingNumber generates a random building number of max n digits
 func BuildingNumber(n int) string {
-	building := make([]byte, config.Random.Intn(n)+1)
+	building := make([]byte, config.Random.IntN(n)+1)
 	for i := range building {
-		building[i] = digits[config.Random.Intn(len(digits))]
+		building[i] = digits[config.Random.IntN(len(digits))]
 	}
 	return string(building)
 }
@@ -96,7 +96,7 @@ func Cardinal(short bool) string {
 		directions = CardinalShort
 	}
 
-	return directions[config.Random.Intn(len(directions))]
+	return directions[config.Random.IntN(len(directions))]
 }
 
 // City returns a random City
@@ -116,7 +116,7 @@ func CityAt(index int) string {
 func Country() string {
 	countryIndex := emitter.GetState().CountryIndex
 	if countryIndex == -1 || countryIndex == 0 {
-		emitter.GetState().LastIndex = config.Random.Intn(len(countries.All()))
+		emitter.GetState().LastIndex = config.Random.IntN(len(countries.All()))
 		c := countries.All()[emitter.GetState().LastIndex].Alpha2()
 		return c
 	}
@@ -126,7 +126,7 @@ func Country() string {
 
 // CountryRandom returns a random ISO 3166 Country
 func CountryRandom() string {
-	emitter.GetState().LastIndex = config.Random.Intn(len(countries.All()))
+	emitter.GetState().LastIndex = config.Random.IntN(len(countries.All()))
 	return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
 }
 

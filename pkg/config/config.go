@@ -21,8 +21,9 @@
 package config
 
 import (
+	"encoding/binary"
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"os"
 	"strconv"
 	"time"
@@ -32,7 +33,8 @@ import (
 
 var JrSystemDir string
 var JrUserDir string
-var JrSeed int64
+var JrSeed uint64
+var ChaCha8 *rand.ChaCha8
 var Random *rand.Rand
 
 var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
@@ -70,12 +72,15 @@ func initEnvironmentVariables() {
 	seed, err := strconv.ParseInt(os.Getenv("JR_SEED"), 10, 64)
 
 	if (seed == -1) || (err != nil) {
-		JrSeed = time.Now().UTC().UnixNano()
+		JrSeed = uint64(time.Now().UTC().UnixNano()) //nolint
 	} else {
-		JrSeed = seed
+		JrSeed = uint64(seed) //nolint
 	}
 
-	Random = rand.New(rand.NewSource(JrSeed)) //nolint no need for a secure random generator
+	b := CreateSeed(JrSeed)
+
+	ChaCha8 = rand.NewChaCha8((b))
+	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir
@@ -83,4 +88,13 @@ func initEnvironmentVariables() {
 	if JrUserDir == "" {
 		JrUserDir = UserDir
 	}
+}
+
+func CreateSeed(seed uint64) [32]byte {
+	b := make([]byte, 32)
+	binary.LittleEndian.PutUint64(b, seed)
+	binary.LittleEndian.PutUint64(b[8:], seed+1000)
+	binary.LittleEndian.PutUint64(b[16:], seed+2000)
+	binary.LittleEndian.PutUint64(b[24:], seed+3000)
+	return [32]byte(b)
 }

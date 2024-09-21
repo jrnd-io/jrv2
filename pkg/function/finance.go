@@ -56,7 +56,7 @@ func init() {
 func Account(length int) string {
 	account := make([]byte, length)
 	for i := range account {
-		account[i] = digits[config.Random.Intn(len(digits))] //nolint no need to use a secure random generator
+		account[i] = digits[config.Random.IntN(len(digits))] //nolint no need to use a secure random generator
 	}
 	return string(account)
 }

@@ -113,7 +113,7 @@ func (c *Chain) Generate(n int) string {
 		if len(choices) == 0 {
 			break
 		}
-		next := choices[config.Random.Intn(len(choices))]
+		next := choices[config.Random.IntN(len(choices))]
 
 		if i == n-1 {
 			if strings.HasSuffix(next, ",") {
@@ -148,9 +148,9 @@ func RandomStringVocabulary(min, max int, source string) string {
 	if len(source) == 0 {
 		return ""
 	}
-	textb := make([]byte, min+config.Random.Intn(max-min))
+	textb := make([]byte, min+config.Random.IntN(max-min))
 	for i := range textb {
-		textb[i] = source[config.Random.Intn(len(source))]
+		textb[i] = source[config.Random.IntN(len(source))]
 	}
 	return string(textb)
 }

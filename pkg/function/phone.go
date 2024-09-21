@@ -49,7 +49,7 @@ const (
 func CountryCode() string {
 	countryIndex := emitter.GetState().CountryIndex
 	if countryIndex == -1 {
-		index := config.Random.Intn(len(countries.All()))
+		index := config.Random.IntN(len(countries.All()))
 		return countries.ByNumeric(index).Info().CallCodes[0].String()
 	}
 
@@ -65,7 +65,7 @@ func CountryCodeAt(index int) string {
 func Imei() string {
 	account := make([]byte, 14)
 	for i := range account {
-		account[i] = digits[config.Random.Intn(len(digits))]
+		account[i] = digits[config.Random.IntN(len(digits))]
 	}
 	first14 := string(account)
 	return first14 + LuhnCheckDigit(first14)
