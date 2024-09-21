@@ -34,13 +34,16 @@ var envCmd = &cobra.Command{
 	Long:  `prints JR environment variables`,
 	Run: func(_ *cobra.Command, _ []string) {
 
-		seed := "DEFAULT"
+		seed := "AUTO"
+		randomGen := "Global default (not reproducible, thread safe)"
 		if random.JrSeed != -1 {
 			seed = fmt.Sprintf("%x", random.CreateByteSeed(uint64(random.JrSeed)))
+			randomGen = "Local ChaCha8 (reproducible, not thread safe)"
 		}
 		fmt.Printf("JR System Dir: %s\n", config.JrSystemDir)
 		fmt.Printf("JR User Dir  : %s\n", config.JrUserDir)
 		fmt.Printf("JR Seed      : %s\n", seed)
+		fmt.Printf("Random Gen   : %s\n", randomGen)
 	},
 }
 
