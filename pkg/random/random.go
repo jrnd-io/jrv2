@@ -27,7 +27,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var JrSeed uint64
+var JrSeed int64 = -1
 var ChaCha8 *rand.ChaCha8
 
 var Random randomI
@@ -66,14 +66,14 @@ func (r *globalRandom) Uint64() uint64 {
 }
 func SetRandom(seed int64) {
 
+	JrSeed = seed //nolint
 	if seed == -1 {
 		// return a random/v2 object
 		Random = &globalRandom{}
 		return
 	}
 
-	JrSeed = uint64(seed) //nolint
-	ChaCha8 = rand.NewChaCha8(CreateByteSeed(JrSeed))
+	ChaCha8 = rand.NewChaCha8(CreateByteSeed(uint64(JrSeed))) //nolint
 	uuid.SetRand(ChaCha8)
 	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
 

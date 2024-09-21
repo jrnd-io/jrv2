@@ -70,20 +70,12 @@ func init() {
 func initEnvironmentVariables() {
 	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
 	JrUserDir = os.Getenv("JR_USER_DIR")
-	seed, err := strconv.ParseInt(os.Getenv("JR_SEED"), 10, 64)
-	if err != nil {
+	JrSeed := os.Getenv("JR_SEED")
+	seed, err := strconv.ParseInt(JrSeed, 10, 64)
+	if err != nil || JrSeed == "" {
 		seed = -1
 	}
 	random.SetRandom(seed)
-
-	/*
-		if (seed == -1) || (err != nil) { //nolint
-			// expose internal Global generator with golinkname?
-			// Random = &rand.Rand{}
-		} else {
-			Seed(seed)
-		}
-	*/
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir
