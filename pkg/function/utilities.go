@@ -117,7 +117,7 @@ func Seed(rndSeed uint64) string {
 
 // SetSeed sets seeds for all random JR objects
 func SetSeed(rndSeed uint64) {
-	config.ChaCha8.Seed(config.CreateSeed(rndSeed))
+	config.ChaCha8.Seed(config.CreateByteSeed(rndSeed))
 	uuid.SetRand(config.ChaCha8)
 }
 

@@ -23,13 +23,11 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/adrg/xdg"
 	"github.com/google/uuid"
 	"math/rand/v2"
 	"os"
 	"strconv"
-	"time"
-
-	"github.com/adrg/xdg"
 )
 
 var JrSystemDir string
@@ -72,15 +70,12 @@ func initEnvironmentVariables() {
 	JrUserDir = os.Getenv("JR_USER_DIR")
 	seed, err := strconv.ParseInt(os.Getenv("JR_SEED"), 10, 64)
 
-	if (seed == -1) || (err != nil) {
-		JrSeed = uint64(time.Now().UTC().UnixNano()) //nolint
+	if (seed == -1) || (err != nil) { //nolint
+		// expose internal Global generator with golinkname?
+		// Random = &rand.Rand{}
 	} else {
-		JrSeed = uint64(seed) //nolint
+		Seed(seed)
 	}
-
-	ChaCha8 = rand.NewChaCha8(CreateSeed(JrSeed))
-	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
-	uuid.SetRand(ChaCha8)
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir
@@ -90,7 +85,14 @@ func initEnvironmentVariables() {
 	}
 }
 
-func CreateSeed(seed uint64) [32]byte {
+func Seed(seed int64) {
+	JrSeed = uint64(seed) //nolint
+	ChaCha8 = rand.NewChaCha8(CreateByteSeed(JrSeed))
+	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
+	uuid.SetRand(ChaCha8)
+}
+
+func CreateByteSeed(seed uint64) [32]byte {
 	b := make([]byte, 32)
 	binary.LittleEndian.PutUint64(b, seed)
 	binary.LittleEndian.PutUint64(b[8:], seed+1000)

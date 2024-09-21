@@ -110,11 +110,12 @@ func IPv6() string {
 
 // Mac returns a random Mac Address
 func Mac() string {
-	mac := make(net.HardwareAddr, 6)
-	config.ChaCha8.Read(mac) //nolint
-	mac[0] &= 0xfe           // Set the "locally administered" flag
-	mac[0] |= 0x02           // Set the "unicast" flag
-	return mac.String()
+	mac := make(net.HardwareAddr, 8)
+	// config.ChaCha8.Read(mac) //nolint
+	binary.LittleEndian.PutUint64(mac, config.Random.Uint64())
+	mac[0] &= 0xfe // Set the "locally administered" flag
+	mac[0] |= 0x02 // Set the "unicast" flag
+	return mac[0:6].String()
 }
 
 // Password returns a random Password of given length, memorable, and with prefix and suffix
