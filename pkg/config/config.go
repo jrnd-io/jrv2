@@ -21,20 +21,22 @@
 package config
 
 import (
-	"encoding/binary"
 	"fmt"
-	"github.com/adrg/xdg"
-	"github.com/google/uuid"
-	"math/rand/v2"
 	"os"
 	"strconv"
+
+	"github.com/adrg/xdg"
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 var JrSystemDir string
 var JrUserDir string
+
+/*
 var JrSeed uint64
 var ChaCha8 *rand.ChaCha8
-var Random *rand.Rand
+var Random random.Random
+*/
 
 var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
@@ -69,13 +71,19 @@ func initEnvironmentVariables() {
 	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
 	JrUserDir = os.Getenv("JR_USER_DIR")
 	seed, err := strconv.ParseInt(os.Getenv("JR_SEED"), 10, 64)
-
-	if (seed == -1) || (err != nil) { //nolint
-		// expose internal Global generator with golinkname?
-		// Random = &rand.Rand{}
-	} else {
-		Seed(seed)
+	if err != nil {
+		seed = -1
 	}
+	random.SetRandom(seed)
+
+	/*
+		if (seed == -1) || (err != nil) { //nolint
+			// expose internal Global generator with golinkname?
+			// Random = &rand.Rand{}
+		} else {
+			Seed(seed)
+		}
+	*/
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir
@@ -83,20 +91,4 @@ func initEnvironmentVariables() {
 	if JrUserDir == "" {
 		JrUserDir = UserDir
 	}
-}
-
-func Seed(seed int64) {
-	JrSeed = uint64(seed) //nolint
-	ChaCha8 = rand.NewChaCha8(CreateByteSeed(JrSeed))
-	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
-	uuid.SetRand(ChaCha8)
-}
-
-func CreateByteSeed(seed uint64) [32]byte {
-	b := make([]byte, 32)
-	binary.LittleEndian.PutUint64(b, seed)
-	binary.LittleEndian.PutUint64(b[8:], seed+1000)
-	binary.LittleEndian.PutUint64(b[16:], seed+2000)
-	binary.LittleEndian.PutUint64(b[24:], seed+3000)
-	return [32]byte(b)
 }

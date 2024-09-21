@@ -22,7 +22,9 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/random"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +35,7 @@ var envCmd = &cobra.Command{
 	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf("JR System Dir: %s\n", config.JrSystemDir)
 		fmt.Printf("JR User Dir  : %s\n", config.JrUserDir)
-		fmt.Printf("JR Seed      : %d\n", config.JrSeed)
+		fmt.Printf("JR Seed      : %d\n", random.JrSeed)
 	},
 }
 

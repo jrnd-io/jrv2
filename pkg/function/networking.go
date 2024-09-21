@@ -24,10 +24,11 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"math/big"
 	"net"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 // adding functions to map
@@ -52,7 +53,7 @@ var (
 
 // HTTPMethod returns a random http method
 func HTTPMethod() string {
-	return HTTPMethods[config.Random.IntN(len(HTTPMethods))]
+	return HTTPMethods[random.Random.IntN(len(HTTPMethods))]
 }
 
 func IP(cidr string) string {
@@ -89,19 +90,19 @@ func IP(cidr string) string {
 
 // IPKnownPort returns a random known port number
 func IPKnownPort() string {
-	return Ports[config.Random.IntN(len(Ports))]
+	return Ports[random.Random.IntN(len(Ports))]
 }
 
 // IPKnownProtocol returns a random known protocol
 func IPKnownProtocol() string {
-	return Protocols[config.Random.IntN(len(Protocols))]
+	return Protocols[random.Random.IntN(len(Protocols))]
 }
 
 // IPv6 returns a random Ipv6 Address
 func IPv6() string {
 	ip := make(net.IP, net.IPv6len)
 	for i := 0; i < net.IPv6len; i++ {
-		ip[i] = byte(config.Random.IntN(256))
+		ip[i] = byte(random.Random.IntN(256))
 	}
 	ip[0] &= 0xfe // Set the "locally administered" flag
 	ip[0] |= 0x02 // Set the "unicast" flag
@@ -112,7 +113,7 @@ func IPv6() string {
 func Mac() string {
 	mac := make(net.HardwareAddr, 8)
 	// config.ChaCha8.Read(mac) //nolint
-	binary.LittleEndian.PutUint64(mac, config.Random.Uint64())
+	binary.LittleEndian.PutUint64(mac, random.Random.Uint64())
 	mac[0] &= 0xfe // Set the "locally administered" flag
 	mac[0] |= 0x02 // Set the "unicast" flag
 	return mac[0:6].String()
@@ -134,11 +135,11 @@ func Password(length int, memorable bool, prefix string, suffix string) string {
 		for i := range password {
 			if i%2 == 0 {
 				// Use a vowel.
-				char := vowels[config.Random.IntN(len(vowels))]
+				char := vowels[random.Random.IntN(len(vowels))]
 				password[i] = char
 			} else {
 				// Use a consonant.
-				char := consonants[config.Random.IntN(len(consonants))]
+				char := consonants[random.Random.IntN(len(consonants))]
 				password[i] = char
 			}
 		}
@@ -146,7 +147,7 @@ func Password(length int, memorable bool, prefix string, suffix string) string {
 		// Generate a random Password using the full charset.
 		charset := vowels + consonants + "0123456789!@#$%^&*()_+{}:\"<>?,./;'[]\\-=`~"
 		for i := range password {
-			char := charset[config.Random.IntN(len(charset))]
+			char := charset[random.Random.IntN(len(charset))]
 			password[i] = char
 		}
 	}
@@ -174,32 +175,32 @@ func UserAgent() string {
 	}
 
 	// Generate random desktop user agent
-	isDesktop := config.Random.IntN(2) == 0
+	isDesktop := random.Random.IntN(2) == 0
 	var os string
 	var browser string
 	var version string
 	if isDesktop {
-		os = desktopOperatingSystems[config.Random.IntN(len(desktopOperatingSystems))]
-		browser = desktopBrowsers[config.Random.IntN(len(desktopBrowsers))]
-		version = fmt.Sprintf("%d.%d.%d.%d", config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10))
+		os = desktopOperatingSystems[random.Random.IntN(len(desktopOperatingSystems))]
+		browser = desktopBrowsers[random.Random.IntN(len(desktopBrowsers))]
+		version = fmt.Sprintf("%d.%d.%d.%d", random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10))
 	} else {
-		os = mobileOperatingSystems[config.Random.IntN(len(mobileOperatingSystems))]
-		browser = mobileBrowsers[config.Random.IntN(len(mobileBrowsers))]
+		os = mobileOperatingSystems[random.Random.IntN(len(mobileOperatingSystems))]
+		browser = mobileBrowsers[random.Random.IntN(len(mobileBrowsers))]
 		switch browser {
 		case "Chrome Mobile":
-			version = fmt.Sprintf("%d.%d.%d.%d", config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10))
+			version = fmt.Sprintf("%d.%d.%d.%d", random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10))
 		case "Safari Mobile":
-			version = fmt.Sprintf("%d.%d", config.Random.IntN(14)+1, config.Random.IntN(3)+1)
+			version = fmt.Sprintf("%d.%d", random.Random.IntN(14)+1, random.Random.IntN(3)+1)
 		case "Firefox Mobile":
-			version = fmt.Sprintf("%d.%d", config.Random.IntN(10)+1, config.Random.IntN(10))
+			version = fmt.Sprintf("%d.%d", random.Random.IntN(10)+1, random.Random.IntN(10))
 		case "Opera Mobile":
-			version = fmt.Sprintf("%d.%d.%d.%d", config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10))
+			version = fmt.Sprintf("%d.%d.%d.%d", random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10))
 		case "Edge Mobile":
-			version = fmt.Sprintf("%d.%d.%d.%d", config.Random.IntN(10)+40, config.Random.IntN(10), config.Random.IntN(10), config.Random.IntN(10))
+			version = fmt.Sprintf("%d.%d.%d.%d", random.Random.IntN(10)+40, random.Random.IntN(10), random.Random.IntN(10), random.Random.IntN(10))
 		}
 	}
 
-	userAgent := fmt.Sprintf("Mozilla/5.0 (%s) AppleWebKit/%d.%d (KHTML, like Gecko) %s/%s Mobile Safari/%d.%d", os, config.Random.IntN(100)+500, config.Random.IntN(100)+1, browser, version, config.Random.IntN(10)+1, config.Random.IntN(10)+1)
+	userAgent := fmt.Sprintf("Mozilla/5.0 (%s) AppleWebKit/%d.%d (KHTML, like Gecko) %s/%s Mobile Safari/%d.%d", os, random.Random.IntN(100)+500, random.Random.IntN(100)+1, browser, version, random.Random.IntN(10)+1, random.Random.IntN(10)+1)
 
 	return userAgent
 

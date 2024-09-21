@@ -22,10 +22,11 @@ package function
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/random"
 
 	"github.com/google/uuid"
 	"github.com/rs/xid"
@@ -39,7 +40,7 @@ func init() {
 		"image_of": ImageOf,
 		"index_of": IndexOf,
 		"inject":   Inject,
-		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, config.Random.IntN(n)) },
+		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, random.Random.IntN(n)) },
 		"seed":     Seed,
 		"uuid":     UniqueID,
 		"xid":      Xid,
@@ -54,7 +55,7 @@ func Image(width int, height int) string {
 	return ImageOf(
 		width,
 		height,
-		imageType[config.Random.IntN(len(imageType))],
+		imageType[random.Random.IntN(len(imageType))],
 	)
 }
 
@@ -65,7 +66,7 @@ func ImageOf(width int, height int, imageType string) string {
 
 // RandomBool returns a random boolean
 func RandomBool() string {
-	b := config.Random.IntN(2)
+	b := random.Random.IntN(2)
 	if b == 0 {
 		return "false"
 	}
@@ -83,7 +84,7 @@ func Xid() string { return xid.New().String() }
 
 // YesOrNo returns a random yes or no
 func YesOrNo() string {
-	b := config.Random.IntN(2)
+	b := random.Random.IntN(2)
 	if b == 0 {
 		return "no"
 	}
@@ -103,7 +104,7 @@ func Contains(s []string, str string) bool {
 
 // Inject is used to inject a different value with a given probability, typically used to generate a bad value
 func Inject(probability float64, injected, original any) any {
-	if config.Random.Float64() < probability {
+	if random.Random.Float64() < probability {
 		return injected
 	}
 	return original
@@ -117,8 +118,8 @@ func Seed(rndSeed uint64) string {
 
 // SetSeed sets seeds for all random JR objects
 func SetSeed(rndSeed uint64) {
-	config.ChaCha8.Seed(config.CreateByteSeed(rndSeed))
-	uuid.SetRand(config.ChaCha8)
+	random.ChaCha8.Seed(random.CreateByteSeed(rndSeed))
+	uuid.SetRand(random.ChaCha8)
 }
 
 // IndexOf returns the index of the s string in a file

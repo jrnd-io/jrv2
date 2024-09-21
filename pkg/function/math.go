@@ -22,9 +22,10 @@ package function
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"math"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 func init() {
@@ -32,9 +33,9 @@ func init() {
 		"add":          func(a, b int) int { return a + b },
 		"div":          func(a, b int) int { return a / b },
 		"format_float": func(f string, v float32) string { return fmt.Sprintf(f, v) },
-		"integer":      func(min, max int) int { return min + config.Random.IntN(max-min) },
-		"integer64":    func(min, max int64) int64 { return min + config.Random.Int64N(max-min) },
-		"floating":     func(min, max float32) float32 { return min + config.Random.Float32()*(max-min) },
+		"integer":      func(min, max int) int { return min + random.Random.IntN(max-min) },
+		"integer64":    func(min, max int64) int64 { return min + random.Random.Int64N(max-min) },
+		"floating":     func(min, max float32) float32 { return min + random.Random.Float32()*(max-min) },
 		"sub":          func(a, b int) int { return a - b },
 		"max":          math.Max,
 		"min":          math.Min,

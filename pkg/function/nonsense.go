@@ -26,10 +26,11 @@ import (
 	"bufio"
 	_ "embed"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"io"
 	"strings"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -113,7 +114,7 @@ func (c *Chain) Generate(n int) string {
 		if len(choices) == 0 {
 			break
 		}
-		next := choices[config.Random.IntN(len(choices))]
+		next := choices[random.Random.IntN(len(choices))]
 
 		if i == n-1 {
 			if strings.HasSuffix(next, ",") {
@@ -148,9 +149,9 @@ func RandomStringVocabulary(min, max int, source string) string {
 	if len(source) == 0 {
 		return ""
 	}
-	textb := make([]byte, min+config.Random.IntN(max-min))
+	textb := make([]byte, min+random.Random.IntN(max-min))
 	for i := range textb {
-		textb[i] = source[config.Random.IntN(len(source))]
+		textb[i] = source[random.Random.IntN(len(source))]
 	}
 	return string(textb)
 }

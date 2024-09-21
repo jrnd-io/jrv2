@@ -24,11 +24,12 @@ package function
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"math"
 	"os"
 	"regexp/syntax"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 const runeRangeEnd = 0x10ffff
@@ -90,14 +91,14 @@ func generate(s *regexState, re *syntax.Regexp) string {
 			}
 			// fmt.Println("Possible chars: ", possibleChars)
 			if len(possibleChars) > 0 {
-				c := possibleChars[config.Random.IntN(len(possibleChars))]
+				c := possibleChars[random.Random.IntN(len(possibleChars))]
 				// fmt.Printf("Generated rune %c for inverse range %v\n", c, re)
 				return string([]byte{c})
 			}
 		}
 
 		// fmt.Println("Char range: ", sum)
-		r := config.Random.IntN(sum)
+		r := random.Random.IntN(sum)
 		var ru rune
 		sum = 0
 		for i := 0; i < len(re.Rune); i += 2 {
@@ -117,7 +118,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 		if op == syntax.OpAnyCharNotNL {
 			chars = printableCharsNoNL
 		}
-		c := chars[config.Random.IntN(len(chars))]
+		c := chars[random.Random.IntN(len(chars))]
 		return string([]byte{c})
 	case syntax.OpBeginLine:
 	case syntax.OpEndLine:
@@ -131,7 +132,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 	case syntax.OpStar:
 		// Repeat zero or more times
 		res := ""
-		count := config.Random.IntN(s.limit + 1)
+		count := random.Random.IntN(s.limit + 1)
 		for i := 0; i < count; i++ {
 			for _, r := range re.Sub {
 				res += generate(s, r)
@@ -141,7 +142,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 	case syntax.OpPlus:
 		// Repeat one or more times
 		res := ""
-		count := config.Random.IntN(s.limit) + 1
+		count := random.Random.IntN(s.limit) + 1
 		for i := 0; i < count; i++ {
 			for _, r := range re.Sub {
 				res += generate(s, r)
@@ -151,7 +152,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 	case syntax.OpQuest:
 		// Zero or one instances
 		res := ""
-		count := config.Random.IntN(2)
+		count := random.Random.IntN(2)
 		// fmt.Println("Quest", count)
 		for i := 0; i < count; i++ {
 			for _, r := range re.Sub {
@@ -167,7 +168,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 		count := 0
 		re.Max = int(math.Min(float64(re.Max), float64(s.limit)))
 		if re.Max > re.Min {
-			count = config.Random.IntN(re.Max - re.Min + 1)
+			count = random.Random.IntN(re.Max - re.Min + 1)
 		}
 		// fmt.Println(re.Max, count)
 
@@ -187,7 +188,7 @@ func generate(s *regexState, re *syntax.Regexp) string {
 	case syntax.OpAlternate:
 		// fmt.Println("OpAlternative", re.Sub, len(re.Sub))
 
-		i := config.Random.IntN(len(re.Sub))
+		i := random.Random.IntN(len(re.Sub))
 		return generate(s, re.Sub[i])
 	default:
 		_, _ = fmt.Fprintln(os.Stderr, "[reg-gen] Unhandled op: ", op)
