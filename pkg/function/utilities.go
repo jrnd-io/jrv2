@@ -41,7 +41,6 @@ func init() {
 		"index_of": IndexOf,
 		"inject":   Inject,
 		"key":      func(name string, n int) string { return fmt.Sprintf("%s%d", name, random.Random.IntN(n)) },
-		"seed":     Seed,
 		"uuid":     UniqueID,
 		"xid":      Xid,
 		"yesorno":  YesOrNo,
@@ -108,18 +107,6 @@ func Inject(probability float64, injected, original any) any {
 		return injected
 	}
 	return original
-}
-
-// Seed sets seeds and can be used in a template
-func Seed(rndSeed uint64) string {
-	SetSeed(rndSeed)
-	return ""
-}
-
-// SetSeed sets seeds for all random JR objects
-func SetSeed(rndSeed uint64) {
-	random.ChaCha8.Seed(random.CreateByteSeed(rndSeed))
-	uuid.SetRand(random.ChaCha8)
 }
 
 // IndexOf returns the index of the s string in a file

@@ -894,15 +894,6 @@ sedol:
     return: string
     example: jr template run --embedded '{{sedol}}'
     output: ""
-seed:
-    name: seed
-    category: utilities
-    description: set seed directly in a template
-    parameters: rndSeed int64
-    localizable: false
-    return: ' '
-    example: jr template run --embedded '{{seed 12345}}'
-    output: ""
 sentence:
     name: sentence
     category: text
