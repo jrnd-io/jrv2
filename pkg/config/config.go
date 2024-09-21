@@ -23,6 +23,7 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/google/uuid"
 	"math/rand/v2"
 	"os"
 	"strconv"
@@ -79,6 +80,7 @@ func initEnvironmentVariables() {
 
 	ChaCha8 = rand.NewChaCha8(CreateSeed(JrSeed))
 	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
+	uuid.SetRand(ChaCha8)
 
 	if JrSystemDir == "" {
 		JrSystemDir = SystemDir
