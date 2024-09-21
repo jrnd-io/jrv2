@@ -77,9 +77,7 @@ func initEnvironmentVariables() {
 		JrSeed = uint64(seed) //nolint
 	}
 
-	b := CreateSeed(JrSeed)
-
-	ChaCha8 = rand.NewChaCha8((b))
+	ChaCha8 = rand.NewChaCha8(CreateSeed(JrSeed))
 	Random = rand.New(ChaCha8) //nolint no need for a secure random generator
 
 	if JrSystemDir == "" {
