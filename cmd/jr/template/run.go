@@ -79,7 +79,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	if throughputString != "" {
-		bytes, err := api.ExecuteTemplate(valueTemplate, nil)
+		result, err := api.ExecuteTemplate(valueTemplate, nil)
 		if err != nil {
 			panic(err)
 		}
@@ -87,7 +87,7 @@ func run(cmd *cobra.Command, args []string) {
 		if err != nil {
 			panic(err)
 		}
-		frequency = api.CalculateFrequency(len(bytes), num, throughput)
+		frequency = api.CalculateFrequency(len([]byte(result)), num, throughput)
 	}
 
 	e, err := api.NewEmitter(
