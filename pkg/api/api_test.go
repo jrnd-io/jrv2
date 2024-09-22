@@ -29,7 +29,7 @@ func TestParseThroughput(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, TwoMegaBytesPerSecond, actual)
 		throughput = "500Kb/s"
-		FiveHundredKilobitPerSecond := api.Throughput(500 * 1024 * 8)
+		FiveHundredKilobitPerSecond := api.Throughput(500 * 1024 / 8)
 		actual, err = api.ParseThroughput(throughput)
 		assert.NoError(t, err)
 		assert.Equal(t, FiveHundredKilobitPerSecond, actual)

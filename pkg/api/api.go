@@ -319,17 +319,17 @@ func ParseThroughput(input string) (Throughput, error) {
 
 	switch unitStr {
 	case "b":
-		return Throughput(value * bitMultiplier), nil
+		return Throughput(value / bitMultiplier), nil
 	case "B":
 		return Throughput(value), nil
 	case "kb", "Kb":
-		return Throughput(value * 1024 * bitMultiplier), nil
+		return Throughput(value * 1024 / bitMultiplier), nil
 	case "mb", "Mb":
-		return Throughput(value * 1024 * 1024 * bitMultiplier), nil
+		return Throughput(value * 1024 * 1024 / bitMultiplier), nil
 	case "gb", "Gb":
-		return Throughput(value * 1024 * 1024 * 1024 * bitMultiplier), nil
+		return Throughput(value * 1024 * 1024 * 1024 / bitMultiplier), nil
 	case "tb", "Tb":
-		return Throughput(value * 1024 * 1024 * 1024 * 1024 * bitMultiplier), nil
+		return Throughput(value * 1024 * 1024 * 1024 * 1024 / bitMultiplier), nil
 	case "kB", "KB":
 		return Throughput(value * 1024), nil
 	case "mB", "MB":
