@@ -9,6 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestParseThroughput(t *testing.T) {
+	t.Run("ParseThroughput", func(t *testing.T) {
+		throughput := "1Mb/s"
+		expected := api.Throughput(8.388608e+06)
+		actual, err := api.ParseThroughput(throughput)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
+}
+
 func TestNewEmitter(t *testing.T) {
 	t.Run("Default values", func(t *testing.T) {
 		emitter, err := api.NewEmitter()

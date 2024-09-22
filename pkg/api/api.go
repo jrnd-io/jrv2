@@ -294,11 +294,11 @@ func ParseThroughput(input string) (Throughput, error) {
 	case "s":
 		// nothing to do
 	case "m":
-		value = value / 60
+		value /= 60
 	case "h":
-		value = value / 3600
+		value /= 3600
 	case "d":
-		value = value / 86400
+		value /= 86400
 	default:
 		return 0, fmt.Errorf("unsupported time unit: %s", unitStr)
 	}
