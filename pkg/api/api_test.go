@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,18 +10,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestThroughput(t *testing.T) {
+	t.Run("Throughput", func(t *testing.T) {
+		throughput, err := api.ParseThroughput("200KB/s")
+		assert.NoError(t, err)
+		frequency := api.CalculateFrequency(1024, 2, throughput)
+		fmt.Println(frequency.Milliseconds())
+		expected := 10 * time.Millisecond
+		assert.Equal(t, expected, frequency)
+	})
+}
+
 func TestParseThroughput(t *testing.T) {
 	t.Run("ParseThroughput", func(t *testing.T) {
 		throughput := "2MB/s"
-		TwoMegaBytesperSecond := api.Throughput(2 * 1024 * 1024)
+		TwoMegaBytesPerSecond := api.Throughput(2 * 1024 * 1024)
 		actual, err := api.ParseThroughput(throughput)
 		assert.NoError(t, err)
-		assert.Equal(t, TwoMegaBytesperSecond, actual)
+		assert.Equal(t, TwoMegaBytesPerSecond, actual)
 		throughput = "500Kb/s"
-		FiveHundredKilobitperSecond := api.Throughput(500 * 1024 * 8)
+		FiveHundredKilobitPerSecond := api.Throughput(500 * 1024 * 8)
 		actual, err = api.ParseThroughput(throughput)
 		assert.NoError(t, err)
-		assert.Equal(t, FiveHundredKilobitperSecond, actual)
+		assert.Equal(t, FiveHundredKilobitPerSecond, actual)
 	})
 }
 

@@ -269,6 +269,19 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 	return templateList
 }
 
+func CalculateFrequency(bytes int, num int, throughput Throughput) time.Duration {
+
+	if throughput == 0 {
+		return 0
+	}
+	totalBytes := float64(bytes) * float64(num)
+
+	// Calculate the frequency in milliseconds
+	frequency := (totalBytes / float64(throughput)) * 1000
+
+	return time.Duration(frequency) * time.Millisecond
+}
+
 //gocyclo:ignore
 func ParseThroughput(input string) (Throughput, error) {
 
