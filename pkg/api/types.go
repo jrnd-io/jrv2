@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	bitMultiplier = 8
+)
+
 type Templates struct {
 	TemplateList []*TemplateInfo
 }
@@ -38,3 +42,5 @@ type Emitter struct {
 	Output         string
 	Oneline        bool
 }
+
+type Throughput float64
