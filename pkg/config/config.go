@@ -22,6 +22,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/api"
 	"os"
 	"strconv"
 
@@ -45,6 +46,7 @@ const (
 	DefaultNum                = 1
 	DefaultLocale             = "us"
 	DefaultFrequency          = "1s"
+	DefaultThroughput         = api.Throughput(-1)
 	DefaultDuration           = "2190000h" // 250 years
 	DefaultKeyTemplate        = "null"
 	DefaultOutput             = "stdout"

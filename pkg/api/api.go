@@ -88,6 +88,16 @@ func WithFrequency(f time.Duration) func(*Emitter) {
 	}
 }
 
+func WithThroughput(t string) func(*Emitter) {
+	throughput, err := ParseThroughput(t)
+	if err != nil {
+		panic("invalid throughput: " + t)
+	}
+	return func(e *Emitter) {
+		e.Tick.Throughput = throughput
+	}
+}
+
 func WithDuration(d time.Duration) func(*Emitter) {
 	if d <= 0 {
 		panic("non-positive interval for NewTicker")
@@ -147,6 +157,7 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		Num:            config.DefaultNum,
 		Frequency:      defaultFrequency,
 		Duration:       defaultDuration,
+		Throughput:     config.DefaultThroughput,
 	}
 
 	e := &Emitter{

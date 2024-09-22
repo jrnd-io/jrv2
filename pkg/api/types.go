@@ -27,6 +27,7 @@ type Ticker struct {
 	Num            int
 	Frequency      time.Duration
 	Duration       time.Duration
+	Throughput     Throughput
 	Parameters     map[string]any `mapstructure:",remain"`
 }
 
