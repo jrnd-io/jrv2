@@ -122,7 +122,7 @@ func Country() string {
 		return c
 	}
 
-	return countries.ByNumeric(emitter.GetState().CountryIndex).Alpha2()
+	return countries.All()[emitter.GetState().CountryIndex].Alpha2()
 }
 
 // CountryRandom returns a random ISO 3166 Country

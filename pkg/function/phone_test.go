@@ -70,6 +70,7 @@ func TestCountryCode(t *testing.T) {
 	// Test case when countryIndex is -1
 	originalIndex := emitter.GetState().CountryIndex
 	defer func() { emitter.GetState().CountryIndex = originalIndex }()
+
 	emitter.GetState().CountryIndex = -1
 	countryCode := function.CountryCode()
 	assert.NotEmpty(t, countryCode, "Country code should not be empty when countryIndex is -1")
@@ -121,4 +122,5 @@ func TestMobilePhone(t *testing.T) {
 	emitter.GetState().CountryIndex = -1
 	phone = function.MobilePhoneAt(1)
 	assert.NotEmpty(t, phone, "Phone number should not be empty when countryIndex is -1")
+
 }

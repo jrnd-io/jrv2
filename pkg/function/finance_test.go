@@ -285,7 +285,6 @@ func TestStockSymbol(t *testing.T) {
 }
 
 func TestSwift(t *testing.T) {
-	t.Skip("TO BE FIXED")
 	// Define the expected SWIFT code pattern
 	pattern := `^[A-Z]{4}[A-Z]{2}\d{2}\d{3}$`
 	re := regexp.MustCompile(pattern)

@@ -64,6 +64,13 @@ type State struct {
 }
 
 func GetState() *State {
+
+	cIndex := 0
+	for i, c := range countries.All() {
+		if c.Alpha2() == "US" {
+			cIndex = i
+		}
+	}
 	if _state == nil {
 		_state = &State{
 			Execution: Execution{
@@ -78,7 +85,7 @@ func GetState() *State {
 			CSVMap:       make(CSVMap),
 			csvLock:      sync.RWMutex{},
 			LastIndex:    -1,
-			CountryIndex: int(countries.UnitedStatesOfAmerica),
+			CountryIndex: cIndex, // int(countries.UnitedStatesOfAmerica),
 			CityIndex:    -1,
 			Random:       rand.New(rand.NewSource(0)), //nolint no need for a secure random number generator
 		}
