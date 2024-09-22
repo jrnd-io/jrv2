@@ -283,6 +283,7 @@ func TestStockSymbol(t *testing.T) {
 	assert.Contains(t, function.GetCache(function.StockSymbolMap), c)
 	function.ClearCache(function.StockSymbolMap)
 }
+
 func TestSwift(t *testing.T) {
 	t.Skip("TO BE FIXED")
 	// Define the expected SWIFT code pattern
