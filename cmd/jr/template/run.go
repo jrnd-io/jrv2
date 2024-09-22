@@ -87,7 +87,7 @@ func run(cmd *cobra.Command, args []string) {
 		if err != nil {
 			panic(err)
 		}
-		frequency = api.CalculateFrequency(bytes, num, throughput)
+		frequency = api.CalculateFrequency(len(bytes), num, throughput)
 	}
 
 	e, err := api.NewEmitter(
