@@ -72,9 +72,9 @@ func init() {
 func initEnvironmentVariables() {
 	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
 	JrUserDir = os.Getenv("JR_USER_DIR")
-	JrSeed := os.Getenv("JR_SEED")
-	seed, err := strconv.ParseInt(JrSeed, 10, 64)
-	if err != nil || JrSeed == "" {
+	JrSeedEnv := os.Getenv("JR_SEED")
+	seed, err := strconv.ParseInt(JrSeedEnv, 10, 64)
+	if err != nil || JrSeedEnv == "" {
 		seed = -1
 	}
 	random.SetRandom(seed)
