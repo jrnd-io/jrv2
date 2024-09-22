@@ -43,25 +43,25 @@ var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 
 const (
-	DefaultNum                = 1
+	DefaultEmitterName        = "cli"
 	DefaultLocale             = "us"
+	DefaultNum                = 1
+	DefaultPreloadSize        = 0
 	DefaultFrequency          = "1s"
 	DefaultThroughput         = api.Throughput(-1)
 	DefaultDuration           = "2190000h" // 250 years
 	DefaultKeyTemplate        = "null"
+	DefaultValueTemplate      = "net_device"
+	DefaultHeaderTemplate     = "null"
 	DefaultOutput             = "stdout"
 	DefaultOutputTemplate     = "{{.V}}\n"
 	DefaultOutputKcatTemplate = "{{.K}},{{.V}}\n"
 	KafkaConfig               = "./kafka/config.properties"
 	DefaultPartitions         = 6
 	DefaultReplica            = 3
-	DefaultPreloadSize        = 0
-	DefaultEnvPrefix          = "JR"
-	DefaultEmitterName        = "cli"
-	DefaultValueTemplate      = "user"
-	DefaultHeaderTemplate     = "null"
 	DefaultTopic              = "test"
 	DefaultHTTPPort           = 7482 // JR :)
+	DefaultEnvPrefix          = "JR"
 	DefaultLogLevel           = "fatal"
 )
 
