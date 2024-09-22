@@ -30,7 +30,6 @@ import (
 
 func TestRandoms(t *testing.T) {
 
-	t.Skip("TO BE FIXED")
 	// Test case 1: Single argument (normal random)
 	t.Run("Single argument", func(t *testing.T) {
 		input := "apple|banana|cherry"

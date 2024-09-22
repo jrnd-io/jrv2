@@ -74,7 +74,7 @@ func Randoms(s ...string) string {
 	// use normal random if only one argument is provided
 	if len(s) == 1 {
 		a := strings.Split(s[0], "|")
-		return s[random.Random.IntN(len(a))]
+		return a[random.Random.IntN(len(a))]
 	}
 
 	// if more than one argument is provided, second argument is a list of float separated by "|"

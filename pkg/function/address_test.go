@@ -46,7 +46,6 @@ type funcT func() string
 type funcTAt func(int) string
 
 func TestFun(t *testing.T) {
-	t.Skip("TO BE FIXED")
 	// Define test cases
 	testCases := []struct {
 		name    string

@@ -106,7 +106,10 @@ func initialize(filename string) []string {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		words = append(words, scanner.Text())
+		word := scanner.Text()
+		if word != "" {
+			words = append(words, word)
+		}
 	}
 
 	return words
