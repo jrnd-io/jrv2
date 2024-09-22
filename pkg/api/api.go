@@ -32,6 +32,7 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/function"
+	"github.com/jrnd-io/jrv2/pkg/utils"
 	"github.com/wk8/go-ordered-map/v2"
 )
 
@@ -209,7 +210,7 @@ func getTemplate(name string) (string, error) {
 
 func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateInfo] {
 
-	templateList := orderedmap.New[string, *TemplateInfo](countFilesInDir(templateDir))
+	templateList := orderedmap.New[string, *TemplateInfo](utils.CountFilesInDir(templateDir))
 
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		return templateList
@@ -233,38 +234,4 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 		return nil
 	})
 	return templateList
-}
-
-func countFilesInDir(dir string) int {
-
-	existentDir, _ := exists(dir)
-	if !existentDir {
-		return 0
-	}
-
-	f, err := os.Open(dir)
-	if err != nil {
-		panic(err)
-	}
-	list, err := f.Readdirnames(-1)
-	if err != nil {
-		panic(err)
-	}
-
-	err = f.Close()
-	if err != nil {
-		panic(err)
-	}
-	return len(list)
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
 }
