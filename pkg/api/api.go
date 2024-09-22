@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/tpl"
 	"os"
 	"path/filepath"
 	"strings"
@@ -197,6 +198,22 @@ func IsValidTemplate(t string) (bool, *template.Template, error) {
 
 	return true, tt, err
 
+}
+
+func ExecuteTemplate(stringTemplate string, ctx any) (string, error) {
+	tt, err := tpl.New("test", stringTemplate, function.Map(), ctx)
+	if err != nil {
+		return "", err
+	}
+	return tt.Execute(), nil
+}
+
+func ExecuteTemplateByName(name string, ctx any) (string, error) {
+	t, err := getTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	return ExecuteTemplate(t, ctx)
 }
 
 func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
