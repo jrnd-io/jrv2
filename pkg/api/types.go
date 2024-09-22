@@ -35,4 +35,6 @@ type Emitter struct {
 	ValueTemplate  string
 	HeaderTemplate string
 	OutputTemplate string
+	Output         string
+	Oneline        bool
 }

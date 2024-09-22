@@ -48,6 +48,18 @@ func WithLocale(l string) func(*Emitter) {
 	}
 }
 
+func WithOutput(o string) func(*Emitter) {
+	return func(e *Emitter) {
+		e.Output = o
+	}
+}
+
+func WithOneline(o bool) func(*Emitter) {
+	return func(e *Emitter) {
+		e.Oneline = o
+	}
+}
+
 func WithImmediateStart(i bool) func(*Emitter) {
 	return func(e *Emitter) {
 		e.Tick.ImmediateStart = i
@@ -138,10 +150,12 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		Preload:        config.DefaultPreloadSize,
 		Name:           config.DefaultEmitterName,
 		Locale:         config.DefaultLocale,
+		Output:         config.DefaultOutput,
 		KeyTemplate:    config.DefaultKeyTemplate,
 		ValueTemplate:  config.DefaultValueTemplate,
 		HeaderTemplate: config.DefaultHeaderTemplate,
 		OutputTemplate: config.DefaultOutputTemplate,
+		Oneline:        false,
 	}
 
 	for _, option := range options {
