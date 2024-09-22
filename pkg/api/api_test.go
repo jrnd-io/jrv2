@@ -11,11 +11,16 @@ import (
 
 func TestParseThroughput(t *testing.T) {
 	t.Run("ParseThroughput", func(t *testing.T) {
-		throughput := "1Mb/s"
-		expected := api.Throughput(8.388608e+06)
+		throughput := "2MB/s"
+		TwoMegaBytesperSecond := api.Throughput(2 * 1024 * 1024)
 		actual, err := api.ParseThroughput(throughput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, TwoMegaBytesperSecond, actual)
+		throughput = "500Kb/s"
+		FiveHundredKilobitperSecond := api.Throughput(500 * 1024 * 8)
+		actual, err = api.ParseThroughput(throughput)
+		assert.NoError(t, err)
+		assert.Equal(t, FiveHundredKilobitperSecond, actual)
 	})
 }
 
