@@ -25,6 +25,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/tpl"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -249,12 +250,12 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 		return templateList
 	}
 
-	_ = filepath.Walk(templateDir, func(path string, info os.FileInfo, _ error) error {
-		if !info.IsDir() && strings.HasSuffix(path, "tpl") {
+	_ = filepath.WalkDir(templateDir, func(path string, f fs.DirEntry, _ error) error {
+		if strings.HasSuffix(path, "tpl") {
 
 			t, _ := os.ReadFile(path)
 			valid, tt, err := IsValidTemplate(string(t))
-			name, _ := strings.CutSuffix(info.Name(), ".tpl")
+			name, _ := strings.CutSuffix(f.Name(), ".tpl")
 			templateInfo := TemplateInfo{
 				Name:     name,
 				IsValid:  valid,
