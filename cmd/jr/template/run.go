@@ -56,7 +56,7 @@ func run(cmd *cobra.Command, args []string) {
 	frequency, _ := cmd.Flags().GetDuration("frequency")
 	duration, _ := cmd.Flags().GetDuration("duration")
 	immediateStart, _ := cmd.Flags().GetBool("immediate")
-	// throughputString, _ := cmd.Flags().GetString("throughput")
+	throughputString, _ := cmd.Flags().GetString("throughput")
 	preload, _ := cmd.Flags().GetInt("preload")
 
 	// csv, _ := cmd.Flags().GetString("csv")
@@ -76,6 +76,18 @@ func run(cmd *cobra.Command, args []string) {
 		if err != nil {
 			panic(err)
 		}
+	}
+
+	if throughputString != "" {
+		bytes, err := api.ExecuteTemplate(valueTemplate, nil)
+		if err != nil {
+			panic(err)
+		}
+		throughput, err := api.ParseThroughput(throughputString)
+		if err != nil {
+			panic(err)
+		}
+		frequency = api.CalculateFrequency(bytes, num, throughput)
 	}
 
 	e, err := api.NewEmitter(
