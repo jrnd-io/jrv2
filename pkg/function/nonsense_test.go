@@ -76,7 +76,6 @@ func TestLorem(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := function.Lorem(tt.size)
-			fmt.Println("result", result)
 			if len(strings.Fields(result)) > tt.expected {
 				t.Errorf("Lorem(%d) = %d words; want %d words", tt.size, len(strings.Fields(result)), tt.expected)
 			}

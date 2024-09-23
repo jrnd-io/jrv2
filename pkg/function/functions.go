@@ -68,7 +68,7 @@ func Cache(name string) (bool, error) {
 			name)
 	}
 
-	return CacheFromFile(name, fileName)
+	return CacheFromFile(fileName, name)
 
 }
 

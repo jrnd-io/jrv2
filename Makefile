@@ -115,8 +115,8 @@ help: hello
 
 copy_templates:
 	mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka && \
-	cp -r templates $(JR_SYSTEM_DIR)/$(JR_HOME) && \
-	cp -r pkg/producers/kafka/*.properties.example $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka/
+	cp -r templates $(JR_SYSTEM_DIR)/$(JR_HOME)
+#	cp -r pkg/producers/kafka/*.properties.example $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka/
 
 copy_config:
 	mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME) && \
