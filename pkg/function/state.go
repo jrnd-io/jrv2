@@ -61,7 +61,7 @@ func RandomNValuesFromList(s string, n int) []string {
 	return r
 }
 
-// GetValuesFromList returns a value from Context list l at index
+// GetValueFromListAtIndex returns a value from Context list l at index
 func GetValueFromListAtIndex(s string, index int) string {
 
 	return emitter.GetState().GetValueFromListAtIndex(s, index).(string)
@@ -79,7 +79,7 @@ func SetV(s string, v string) string {
 	return ""
 }
 
-// FromCsv gets the label value from csv file
+// FromCSV gets the label value from csv file
 func FromCSV(c string) string {
 	return emitter.GetState().FromCSV(c)
 }
