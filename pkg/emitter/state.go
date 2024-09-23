@@ -108,6 +108,9 @@ func (st *State) RandomValueFromList(s string) any {
 	st.listLock.Lock()
 	defer st.listLock.Unlock()
 	list, _ := st.List.Load(s)
+	if list == nil {
+		return ""
+	}
 	l := len(list.([]any))
 	if l != 0 {
 		return list.([]any)[st.Random.Intn(l)]
@@ -120,6 +123,9 @@ func (st *State) GetValueFromListAtIndex(s string, index int) any {
 	st.listLock.Lock()
 	defer st.listLock.Unlock()
 	list, _ := st.List.Load(s)
+	if list == nil {
+		return ""
+	}
 	l := len(list.([]any))
 	if l != 0 && index < l {
 		return list.([]any)[index]
@@ -133,6 +139,10 @@ func (st *State) RandomNValuesFromList(s string, n int) []any {
 	st.listLock.Lock()
 	defer st.listLock.Unlock()
 	list, _ := st.List.Load(s)
+	if list == nil {
+		return []any{""}
+
+	}
 	l := len(list.([]any))
 	if l != 0 {
 		ints := st.findNDifferentInts(n, l)
