@@ -22,7 +22,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/api"
 	"os"
 	"strconv"
 
@@ -48,7 +47,7 @@ const (
 	DefaultNum                = 1
 	DefaultPreloadSize        = 0
 	DefaultFrequency          = "1s"
-	DefaultThroughput         = api.Throughput(-1)
+	DefaultThroughput         = -1
 	DefaultDuration           = "2190000h" // 250 years
 	DefaultKeyTemplate        = "null"
 	DefaultValueTemplate      = "net_device"
