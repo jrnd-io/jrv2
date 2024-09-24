@@ -20,10 +20,44 @@
 
 package emitter
 
-import "github.com/spf13/cobra"
+import (
+	"context"
+	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/spf13/cobra"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
+)
 
 var RunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run all or selected configured emitters",
 	Long:  `Run all or selected configured emitters`,
+	Args:  cobra.MinimumNArgs(1),
+	Run:   run,
+}
+
+func run(cmd *cobra.Command, args []string) {
+	dryrun, _ := cmd.Flags().GetBool("dryrun")
+
+	emitters := orderedmap.New[string, []*types.Emitter](len(args))
+	for _, name := range args {
+		emitters.Set(name, config.Emitters[name])
+	}
+	RunEmitters(cmd.Context(), emitters, dryrun)
+
+}
+
+func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []*types.Emitter], dryrun bool) {
+	// defer emitter.WriteStats()
+	// defer emitter.CloseProducers(ctx, ems)
+	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
+	// emitter.DoLoop(ctx, emittersToRun)
+	fmt.Println(ctx)
+	fmt.Println(emitters)
+	fmt.Println(dryrun)
+}
+
+func init() {
+	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
 }

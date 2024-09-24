@@ -38,7 +38,8 @@ jr template run net_device
   With the --embedded flag, [template] is a string containing a full template. Example:
 jr template run --embedded "{{name}}"
 `,
-	Run: run,
+	Args: cobra.ExactArgs(1),
+	Run:  run,
 }
 
 func run(cmd *cobra.Command, args []string) {

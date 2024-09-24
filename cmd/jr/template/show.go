@@ -34,6 +34,7 @@ var ShowCmd = &cobra.Command{
 	Use:   "show [template]",
 	Short: "Show a template",
 	Long:  `Show a template. Templates must be in system or in user directory, which are '$JR_USER_DIR/templates' and '$JR_SYSTEM_DIR/templates'`,
+	Args:  cobra.ExactArgs(1),
 	Run:   show,
 }
 

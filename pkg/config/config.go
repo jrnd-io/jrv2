@@ -38,7 +38,7 @@ var JrUserDir string
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 var LogLevel = DefaultLogLevel
-var Emitters map[string][]types.Emitter
+var Emitters map[string][]*types.Emitter
 
 const (
 	DefaultEmitterName        = "cli"
