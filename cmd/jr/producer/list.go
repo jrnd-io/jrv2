@@ -20,11 +20,40 @@
 
 package producer
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/fatih/color"
+	"github.com/spf13/cobra"
+)
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "describes available producers",
 	Long: "describes available producers. Example usage:\n" +
 		"jr producer list",
+	Run: list,
+}
+
+func list(cmd *cobra.Command, _ []string) {
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+
+	green := color.New(color.FgGreen)
+	cyan := color.New(color.FgCyan)
+	white := color.New(color.FgWhite)
+	if noColor {
+		cyan.DisableColor()
+		white.DisableColor()
+	}
+
+	cyanf := cyan.Printf
+	whitef := white.Sprintf
+
+	if !noColor {
+		green.Println("GREEN")
+		cyanf("cyan") //nolint
+		whitef("white")
+	}
+}
+
+func init() {
+	ListCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
 }
