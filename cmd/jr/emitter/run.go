@@ -44,7 +44,7 @@ func run(cmd *cobra.Command, args []string) {
 	for _, name := range args {
 		e := config.Emitters[name]
 		if dryrun {
-			// set output to stdout
+			fmt.Println("should set output to stdout")
 		}
 		emitters.Set(name, e)
 	}
@@ -58,7 +58,6 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
 	// emitter.DoLoop(ctx, emittersToRun)
 	fmt.Println(ctx)
-	fmt.Println(dryrun)
 	for e := emitters.Oldest(); e != nil; e = e.Next() {
 		fmt.Println(e.Key)
 		for _, v := range e.Value {
