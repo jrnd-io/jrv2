@@ -115,19 +115,19 @@ help: hello
 	@echo ''
 
 copy_templates:
-	mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka && \
-	cp -r templates $(JR_SYSTEM_DIR)/$(JR_HOME)
+	sudo mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka && \
+	sudo cp -r templates $(JR_SYSTEM_DIR)/$(JR_HOME)
 #	cp -r pkg/producers/kafka/*.properties.example $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka/
 
 copy_config:
-	mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME) && \
-	cp config/* $(JR_SYSTEM_DIR)/$(JR_HOME)/
+	sudo mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME) && \
+	sudo cp config/* $(JR_SYSTEM_DIR)/$(JR_HOME)/
 
-install:
-	install build/jr /usr/local/bin
+install: copy_templates copy_config
+	sudo install build/jr /usr/local/bin
 
-all: hello install-gogen generate compile install
-all_offline: hello generate compile install
+all: hello install-gogen generate compile
+all_offline: hello generate compile
 
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
