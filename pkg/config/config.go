@@ -32,12 +32,6 @@ import (
 var JrSystemDir string
 var JrUserDir string
 
-/*
-var JrSeed uint64
-var ChaCha8 *rand.ChaCha8
-var Random random.Random
-*/
-
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 
