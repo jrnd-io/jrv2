@@ -54,8 +54,13 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
 	// emitter.DoLoop(ctx, emittersToRun)
 	fmt.Println(ctx)
-	fmt.Println(emitters)
 	fmt.Println(dryrun)
+	for e := emitters.Oldest(); e != nil; e = e.Next() {
+		fmt.Println(e.Key)
+		for _, v := range e.Value {
+			fmt.Println(v)
+		}
+	}
 }
 
 func init() {
