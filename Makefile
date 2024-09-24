@@ -85,7 +85,7 @@ clean:
 
 test:
 	go clean -testcache
-	go test ./...
+	go test --tags=testing ./...
 
 test_coverage:
 	go test ./... -coverprofile=coverage.out

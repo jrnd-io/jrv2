@@ -22,18 +22,23 @@ package config
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/rs/zerolog/log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/adrg/xdg"
 	"github.com/jrnd-io/jrv2/pkg/random"
+	"github.com/spf13/viper"
 )
 
 var JrSystemDir string
 var JrUserDir string
-
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+
+var emitters map[string][]types.Emitter
 
 const (
 	DefaultEmitterName        = "cli"
@@ -58,11 +63,7 @@ const (
 	DefaultLogLevel           = "fatal"
 )
 
-func init() {
-	initEnvironmentVariables()
-}
-
-func initEnvironmentVariables() {
+func InitEnvironmentVariables() {
 	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
 	JrUserDir = os.Getenv("JR_USER_DIR")
 	JrSeedEnv := os.Getenv("JR_SEED")
@@ -77,5 +78,25 @@ func initEnvironmentVariables() {
 	}
 	if JrUserDir == "" {
 		JrUserDir = DefaultUserDir
+	}
+}
+
+func InitEmitters() {
+	viper.SetConfigName("jrconfig")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(".")
+	for _, path := range strings.Split(os.ExpandEnv("$PATH"), ":") {
+		viper.AddConfigPath(path)
+	}
+	viper.AddConfigPath(JrSystemDir)
+
+	if err := viper.ReadInConfig(); err == nil {
+		log.Debug().Str("file", viper.ConfigFileUsed()).Msg("JR configuration")
+	} else {
+		log.Error().Err(err).Msg("JR configuration not found")
+	}
+	err := viper.UnmarshalKey("emitters", &emitters)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to unmarshal emitter configuration")
 	}
 }

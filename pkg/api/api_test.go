@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/types"
 	"testing"
 	"time"
 
@@ -24,12 +25,12 @@ func TestThroughput(t *testing.T) {
 func TestParseThroughput(t *testing.T) {
 	t.Run("ParseThroughput", func(t *testing.T) {
 		throughput := "2MB/s"
-		TwoMegaBytesPerSecond := api.Throughput(2 * 1024 * 1024)
+		TwoMegaBytesPerSecond := types.Throughput(2 * 1024 * 1024)
 		actual, err := api.ParseThroughput(throughput)
 		assert.NoError(t, err)
 		assert.Equal(t, TwoMegaBytesPerSecond, actual)
 		throughput = "500Kb/s"
-		FiveHundredKilobitPerSecond := api.Throughput(500 * 1024 / 8)
+		FiveHundredKilobitPerSecond := types.Throughput(500 * 1024 / 8)
 		actual, err = api.ParseThroughput(throughput)
 		assert.NoError(t, err)
 		assert.Equal(t, FiveHundredKilobitPerSecond, actual)

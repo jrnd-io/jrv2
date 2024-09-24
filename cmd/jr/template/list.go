@@ -22,6 +22,7 @@ package template
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/types"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 
 	"github.com/fatih/color"
@@ -53,7 +54,7 @@ func list(cmd *cobra.Command, _ []string) {
 
 }
 
-func printTemplateList(templateList *orderedmap.OrderedMap[string, *api.TemplateInfo], noColor bool, fullPath bool, showError bool) {
+func printTemplateList(templateList *orderedmap.OrderedMap[string, *types.TemplateInfo], noColor bool, fullPath bool, showError bool) {
 
 	if templateList.Len() == 0 {
 		return

@@ -25,6 +25,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/tpl"
+	"github.com/jrnd-io/jrv2/pkg/types"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -40,107 +41,107 @@ import (
 	"github.com/wk8/go-ordered-map/v2"
 )
 
-func WithName(n string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithName(n string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.Name = n
 	}
 }
 
-func WithLocale(l string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithLocale(l string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.Locale = l
 	}
 }
 
-func WithOutput(o string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithOutput(o string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.Output = o
 	}
 }
 
-func WithOneline(o bool) func(*Emitter) {
-	return func(e *Emitter) {
+func WithOneline(o bool) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.Oneline = o
 	}
 }
 
-func WithImmediateStart(i bool) func(*Emitter) {
-	return func(e *Emitter) {
+func WithImmediateStart(i bool) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.Tick.ImmediateStart = i
 	}
 }
 
-func WithNum(n int) func(*Emitter) {
+func WithNum(n int) func(*types.Emitter) {
 	if n < 1 {
 		panic("JR should generate at least 1 object per iteration")
 	}
-	return func(e *Emitter) {
+	return func(e *types.Emitter) {
 		e.Tick.Num = n
 	}
 }
 
-func WithFrequency(f time.Duration) func(*Emitter) {
+func WithFrequency(f time.Duration) func(*types.Emitter) {
 	if f <= 0 {
 		panic("non-positive interval for Frequency")
 	}
-	return func(e *Emitter) {
+	return func(e *types.Emitter) {
 		e.Tick.Frequency = f
 	}
 }
 
-func WithThroughput(t string) func(*Emitter) {
+func WithThroughput(t string) func(*types.Emitter) {
 	throughput, err := ParseThroughput(t)
 	if err != nil {
 		panic("invalid throughput: " + t)
 	}
-	return func(e *Emitter) {
+	return func(e *types.Emitter) {
 		e.Tick.Throughput = throughput
 	}
 }
 
-func WithDuration(d time.Duration) func(*Emitter) {
+func WithDuration(d time.Duration) func(*types.Emitter) {
 	if d <= 0 {
 		panic("non-positive interval for NewTicker")
 	}
-	return func(e *Emitter) {
+	return func(e *types.Emitter) {
 		e.Tick.Duration = d
 	}
 }
 
-func WithPreload(n int) func(*Emitter) {
+func WithPreload(n int) func(*types.Emitter) {
 	if n < 0 {
 		panic("Preload should be positive")
 	}
-	return func(e *Emitter) {
+	return func(e *types.Emitter) {
 		e.Preload = n
 	}
 }
 
-func WithKeyTemplate(k string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithKeyTemplate(k string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.KeyTemplate = k
 	}
 }
 
-func WithValueTemplate(v string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithValueTemplate(v string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.ValueTemplate = v
 	}
 }
 
-func WithHeaderTemplate(h string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithHeaderTemplate(h string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.HeaderTemplate = h
 	}
 }
 
-func WithOutputTemplate(o string) func(*Emitter) {
-	return func(e *Emitter) {
+func WithOutputTemplate(o string) func(*types.Emitter) {
+	return func(e *types.Emitter) {
 		e.OutputTemplate = o
 	}
 }
 
-func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
+func NewEmitter(options ...func(*types.Emitter)) (*types.Emitter, error) {
 
 	defaultDuration, err := time.ParseDuration(config.DefaultDuration)
 	if err != nil {
@@ -151,7 +152,7 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		return nil, err
 	}
 
-	t := &Ticker{
+	t := &types.Ticker{
 		Type:           "simple",
 		ImmediateStart: false,
 		Num:            config.DefaultNum,
@@ -160,7 +161,7 @@ func NewEmitter(options ...func(*Emitter)) (*Emitter, error) {
 		Throughput:     config.DefaultThroughput,
 	}
 
-	e := &Emitter{
+	e := &types.Emitter{
 		Tick:           *t,
 		Preload:        config.DefaultPreloadSize,
 		Name:           config.DefaultEmitterName,
@@ -230,12 +231,12 @@ func ExecuteTemplateByName(name string, ctx any) (string, error) {
 	return ExecuteTemplate(t, ctx)
 }
 
-func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
+func SystemTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
 	return templateList(templateDir)
 }
 
-func UserTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
+func UserTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
 	return templateList(templateDir)
 }
@@ -253,9 +254,9 @@ func getTemplate(name string) (string, error) {
 	return string(templateScript), nil
 }
 
-func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateInfo] {
+func templateList(templateDir string) *orderedmap.OrderedMap[string, *types.TemplateInfo] {
 
-	templateList := orderedmap.New[string, *TemplateInfo](utils.CountFilesInDir(templateDir))
+	templateList := orderedmap.New[string, *types.TemplateInfo](utils.CountFilesInDir(templateDir))
 
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		return templateList
@@ -267,7 +268,7 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 			t, _ := os.ReadFile(path)
 			valid, tt, err := IsValidTemplate(string(t))
 			name, _ := strings.CutSuffix(f.Name(), ".tpl")
-			templateInfo := TemplateInfo{
+			templateInfo := types.TemplateInfo{
 				Name:     name,
 				IsValid:  valid,
 				FullPath: path,
@@ -281,7 +282,7 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateIn
 	return templateList
 }
 
-func CalculateFrequency(bytes int, num int, throughput Throughput) time.Duration {
+func CalculateFrequency(bytes int, num int, throughput types.Throughput) time.Duration {
 
 	if throughput == 0 {
 		return 0
@@ -295,7 +296,7 @@ func CalculateFrequency(bytes int, num int, throughput Throughput) time.Duration
 }
 
 //gocyclo:ignore
-func ParseThroughput(input string) (Throughput, error) {
+func ParseThroughput(input string) (types.Throughput, error) {
 
 	if input == "" {
 		return -1, nil
@@ -330,25 +331,25 @@ func ParseThroughput(input string) (Throughput, error) {
 
 	switch unitStr {
 	case "b":
-		return Throughput(value / bitMultiplier), nil
+		return types.Throughput(value / 8), nil
 	case "B":
-		return Throughput(value), nil
+		return types.Throughput(value), nil
 	case "kb", "Kb":
-		return Throughput(value * 1024 / bitMultiplier), nil
+		return types.Throughput(value * 1024 / 8), nil
 	case "mb", "Mb":
-		return Throughput(value * 1024 * 1024 / bitMultiplier), nil
+		return types.Throughput(value * 1024 * 1024 / 8), nil
 	case "gb", "Gb":
-		return Throughput(value * 1024 * 1024 * 1024 / bitMultiplier), nil
+		return types.Throughput(value * 1024 * 1024 * 1024 / 8), nil
 	case "tb", "Tb":
-		return Throughput(value * 1024 * 1024 * 1024 * 1024 / bitMultiplier), nil
+		return types.Throughput(value * 1024 * 1024 * 1024 * 1024 / 8), nil
 	case "kB", "KB":
-		return Throughput(value * 1024), nil
+		return types.Throughput(value * 1024), nil
 	case "mB", "MB":
-		return Throughput(value * 1024 * 1024), nil
+		return types.Throughput(value * 1024 * 1024), nil
 	case "gB", "GB":
-		return Throughput(value * 1024 * 1024 * 1024), nil
+		return types.Throughput(value * 1024 * 1024 * 1024), nil
 	case "tB", "TB":
-		return Throughput(value * 1024 * 1024 * 1024 * 1024), nil
+		return types.Throughput(value * 1024 * 1024 * 1024 * 1024), nil
 	default:
 		return 0, fmt.Errorf("unsupported unit: %s", unitStr)
 	}
