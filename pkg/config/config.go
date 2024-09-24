@@ -37,6 +37,7 @@ var JrSystemDir string
 var JrUserDir string
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+var LogLevel = DefaultLogLevel
 
 var emitters map[string][]types.Emitter
 
@@ -90,9 +91,7 @@ func InitEmitters() {
 	}
 	viper.AddConfigPath(JrSystemDir)
 
-	if err := viper.ReadInConfig(); err == nil {
-		log.Debug().Str("file", viper.ConfigFileUsed()).Msg("JR configuration")
-	} else {
+	if err := viper.ReadInConfig(); err != nil {
 		log.Error().Err(err).Msg("JR configuration not found")
 	}
 	err := viper.UnmarshalKey("emitters", &emitters)

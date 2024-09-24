@@ -22,10 +22,10 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/random"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var envCmd = &cobra.Command{
@@ -43,7 +43,9 @@ var envCmd = &cobra.Command{
 		fmt.Printf("JR System Dir: %s\n", config.JrSystemDir)
 		fmt.Printf("JR User Dir  : %s\n", config.JrUserDir)
 		fmt.Printf("JR Seed      : %s\n", seed)
+		fmt.Printf("JR conf file : %s\n", viper.ConfigFileUsed())
 		fmt.Printf("Random Gen   : %s\n", randomGen)
+		fmt.Printf("Log Level    : %s\n", config.LogLevel)
 	},
 }
 

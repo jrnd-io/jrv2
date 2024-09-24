@@ -30,8 +30,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logLevel = config.DefaultLogLevel
-
 var rootCmd = &cobra.Command{
 	Use:   "jr",
 	Short: "jr, the data random generator",
@@ -47,7 +45,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&config.JrSystemDir, "jr_system_dir", config.JrSystemDir, "JR system dir")
 	rootCmd.PersistentFlags().StringVar(&config.JrUserDir, "jr_user_dir", config.JrUserDir, "JR user dir")
-	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", config.DefaultLogLevel, "JR Log Level")
+	rootCmd.PersistentFlags().StringVar(&config.LogLevel, "log_level", config.DefaultLogLevel, "JR Log Level")
 
 	rootCmd.AddCommand(emitter.NewCmd())
 	rootCmd.AddCommand(producer.NewCmd())
@@ -62,9 +60,10 @@ func init() {
 func initConfig() {
 
 	// setting zerolog level
-	zlogLevel, err := zerolog.ParseLevel(logLevel)
+	zlogLevel, err := zerolog.ParseLevel(config.LogLevel)
 	if err != nil {
 		zlogLevel = zerolog.PanicLevel
 	}
 	zerolog.SetGlobalLevel(zlogLevel)
+
 }
