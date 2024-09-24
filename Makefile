@@ -120,11 +120,11 @@ copy_templates:
 #	cp -r pkg/producers/kafka/*.properties.example $(JR_SYSTEM_DIR)/$(JR_HOME)/kafka/
 
 copy_config:
-	sudo mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME) && \
-	sudo cp config/* $(JR_SYSTEM_DIR)/$(JR_HOME)/
+	mkdir -p $(JR_SYSTEM_DIR)/$(JR_HOME) && \
+	cp config/* $(JR_SYSTEM_DIR)/$(JR_HOME)/
 
 install: copy_templates copy_config
-	sudo install build/jr /usr/local/bin
+	install build/jr /usr/local/bin
 
 all: hello install-gogen generate compile
 all_offline: hello generate compile
