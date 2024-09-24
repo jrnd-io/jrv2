@@ -38,8 +38,7 @@ var JrUserDir string
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 var LogLevel = DefaultLogLevel
-
-var emitters map[string][]types.Emitter
+var Emitters map[string][]types.Emitter
 
 const (
 	DefaultEmitterName        = "cli"
@@ -94,7 +93,7 @@ func InitEmitters() {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Error().Err(err).Msg("JR configuration not found")
 	}
-	err := viper.UnmarshalKey("emitters", &emitters)
+	err := viper.UnmarshalKey("Emitters", &Emitters)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to unmarshal emitter configuration")
 	}

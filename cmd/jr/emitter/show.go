@@ -20,11 +20,54 @@
 
 package emitter
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/spf13/cobra"
+)
 
 var ShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "show a configured emitter",
 	Long: `show a configured emitter:
 jr emitter show net_device`,
+	Args: cobra.ExactArgs(1),
+	Run:  show,
+}
+
+func show(cmd *cobra.Command, args []string) {
+
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+
+	var Green = ""
+	var Reset = ""
+	if !noColor {
+		Green = "\033[32m"
+		Reset = "\033[0m"
+	}
+
+	fmt.Println()
+	for k, v := range config.Emitters {
+		if k == args[0] {
+			for _, e := range v {
+				fmt.Printf("%sName:%s%s\n", Green, Reset, e.Name)
+				fmt.Printf("%sLocale: %s%s\n", Green, Reset, e.Locale)
+				fmt.Printf("%sNum: %s%d\n", Green, Reset, e.Tick.Num)
+				fmt.Printf("%sFrequency: %s%s\n", Green, Reset, e.Tick.Frequency)
+				fmt.Printf("%sDuration: %s%s\n", Green, Reset, e.Tick.Duration)
+				fmt.Printf("%sPreload: %s%d\n", Green, Reset, e.Preload)
+				fmt.Printf("%sOutput: %s%s\n", Green, Reset, e.Output)
+				fmt.Printf("%sOneline: %s%v\n", Green, Reset, e.Oneline)
+				fmt.Printf("%sKey Template: %s%s\n", Green, Reset, e.KeyTemplate)
+				fmt.Printf("%sValue Template: %s%s\n", Green, Reset, e.ValueTemplate)
+				fmt.Printf("%sOutput Template: %s%s\n", Green, Reset, e.OutputTemplate)
+			}
+		}
+	}
+	fmt.Println()
+
+}
+
+func init() {
+	ShowCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
 }

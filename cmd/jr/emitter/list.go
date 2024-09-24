@@ -20,11 +20,52 @@
 
 package emitter
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/spf13/cobra"
+)
 
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "describes available emitters",
 	Long: "describes available emitters. Example usage:\n" +
 		"jr emitter list",
+	Run: list,
+}
+
+func list(cmd *cobra.Command, _ []string) {
+	noColor, _ := cmd.Flags().GetBool("nocolor")
+	all, _ := cmd.Flags().GetBool("full")
+
+	var Green = ""
+	var Reset = ""
+	if !noColor {
+		Green = "\033[32m"
+		Reset = "\033[0m"
+	}
+
+	fmt.Println()
+	fmt.Println("List of JR emitters:")
+	fmt.Println()
+
+	for k, v := range config.Emitters {
+		if all {
+			fmt.Printf("%s%s%s", Green, k, Reset)
+			fmt.Print(" -> (")
+			for _, e := range v {
+				fmt.Printf(" %s ", e.Name)
+			}
+			fmt.Println(")")
+
+		} else {
+			fmt.Printf("%s%s%s\n", Green, k, Reset)
+		}
+	}
+	fmt.Println()
+}
+
+func init() {
+	ListCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
+	ListCmd.Flags().BoolP("full", "f", false, "Show list of templates for each emitter")
 }
