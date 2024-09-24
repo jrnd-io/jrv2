@@ -22,6 +22,8 @@ package emitter
 
 import (
 	"fmt"
+
+	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -38,11 +40,9 @@ func list(cmd *cobra.Command, _ []string) {
 	noColor, _ := cmd.Flags().GetBool("nocolor")
 	all, _ := cmd.Flags().GetBool("full")
 
-	var Green = ""
-	var Reset = ""
-	if !noColor {
-		Green = "\033[32m"
-		Reset = "\033[0m"
+	green := color.New(color.FgGreen)
+	if noColor {
+		green.DisableColor()
 	}
 
 	fmt.Println()
@@ -51,7 +51,7 @@ func list(cmd *cobra.Command, _ []string) {
 
 	for k, v := range config.Emitters {
 		if all {
-			fmt.Printf("%s%s%s", Green, k, Reset)
+			green.Printf("%s", k)
 			fmt.Print(" -> (")
 			for _, e := range v {
 				fmt.Printf(" %s ", e.Name)
@@ -59,7 +59,7 @@ func list(cmd *cobra.Command, _ []string) {
 			fmt.Println(")")
 
 		} else {
-			fmt.Printf("%s%s%s\n", Green, k, Reset)
+			green.Printf("%s\n", k)
 		}
 	}
 	fmt.Println()
