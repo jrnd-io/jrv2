@@ -38,8 +38,8 @@ var ChaCha8 *rand.ChaCha8
 var Random random.Random
 */
 
-var SystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
-var UserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
+var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
 
 const (
 	DefaultEmitterName        = "cli"
@@ -79,9 +79,9 @@ func initEnvironmentVariables() {
 	random.SetRandom(seed)
 
 	if JrSystemDir == "" {
-		JrSystemDir = SystemDir
+		JrSystemDir = DefaultSystemDir
 	}
 	if JrUserDir == "" {
-		JrUserDir = UserDir
+		JrUserDir = DefaultUserDir
 	}
 }
