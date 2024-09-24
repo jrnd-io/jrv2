@@ -22,6 +22,8 @@ package emitter
 
 import (
 	"fmt"
+
+	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -39,28 +41,31 @@ func show(cmd *cobra.Command, args []string) {
 
 	noColor, _ := cmd.Flags().GetBool("nocolor")
 
-	var Green = ""
-	var Reset = ""
-	if !noColor {
-		Green = "\033[32m"
-		Reset = "\033[0m"
+	green := color.New(color.FgGreen)
+	white := color.New(color.FgWhite)
+	if noColor {
+		green.DisableColor()
+		white.DisableColor()
 	}
+
+	greenf := green.Printf
+	whitef := white.Sprintf
 
 	fmt.Println()
 	for k, v := range config.Emitters {
 		if k == args[0] {
 			for _, e := range v {
-				fmt.Printf("%sName:%s%s\n", Green, Reset, e.Name)
-				fmt.Printf("%sLocale: %s%s\n", Green, Reset, e.Locale)
-				fmt.Printf("%sNum: %s%d\n", Green, Reset, e.Tick.Num)
-				fmt.Printf("%sFrequency: %s%s\n", Green, Reset, e.Tick.Frequency)
-				fmt.Printf("%sDuration: %s%s\n", Green, Reset, e.Tick.Duration)
-				fmt.Printf("%sPreload: %s%d\n", Green, Reset, e.Preload)
-				fmt.Printf("%sOutput: %s%s\n", Green, Reset, e.Output)
-				fmt.Printf("%sOneline: %s%v\n", Green, Reset, e.Oneline)
-				fmt.Printf("%sKey Template: %s%s\n", Green, Reset, e.KeyTemplate)
-				fmt.Printf("%sValue Template: %s%s\n", Green, Reset, e.ValueTemplate)
-				fmt.Printf("%sOutput Template: %s%s\n", Green, Reset, e.OutputTemplate)
+				greenf("Name: %s\n", whitef("%s", e.Name))                //nolint
+				greenf("Locale: %s\n", whitef("%s", e.Locale))            //nolint
+				greenf("Num: %s\n", whitef("%d", e.Tick.Num))             //nolint
+				greenf("Frequency: %s\n", whitef("%d", e.Tick.Frequency)) //nolint
+				greenf("Duration: %s\n", whitef("%d", e.Tick.Duration))   //nolint
+				greenf("Preload: %s\n", whitef("%d", e.Preload))          //nolint
+				greenf("Output: %s\n", whitef(e.Output))                  //nolint
+				greenf("Oneline: %s\n", whitef("%b", e.Oneline))          //nolint
+				greenf("Key Template: %s\n", whitef(e.KeyTemplate))       //nolint
+				greenf("Value Template: %s\n", whitef(e.ValueTemplate))   //nolint
+				greenf("Output Template: %s\n", whitef(e.OutputTemplate)) //nolint
 			}
 		}
 	}
