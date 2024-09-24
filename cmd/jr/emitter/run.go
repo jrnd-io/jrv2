@@ -42,13 +42,17 @@ func run(cmd *cobra.Command, args []string) {
 
 	emitters := orderedmap.New[string, []*types.Emitter](len(args))
 	for _, name := range args {
-		emitters.Set(name, config.Emitters[name])
+		e := config.Emitters[name]
+		if dryrun {
+			// set output to stdout
+		}
+		emitters.Set(name, e)
 	}
-	RunEmitters(cmd.Context(), emitters, dryrun)
+	RunEmitters(cmd.Context(), emitters)
 
 }
 
-func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []*types.Emitter], dryrun bool) {
+func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []*types.Emitter]) {
 	// defer emitter.WriteStats()
 	// defer emitter.CloseProducers(ctx, ems)
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
