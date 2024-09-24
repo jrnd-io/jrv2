@@ -45,6 +45,8 @@ func init() {
 		Title: "Resources",
 	})
 
+	rootCmd.PersistentFlags().StringVar(&config.JrSystemDir, "jr_system_dir", config.JrSystemDir, "JR system dir")
+	rootCmd.PersistentFlags().StringVar(&config.JrUserDir, "jr_user_dir", config.JrUserDir, "JR user dir")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log_level", config.DefaultLogLevel, "JR Log Level")
 
 	rootCmd.AddCommand(emitter.NewCmd())
