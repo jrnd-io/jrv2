@@ -98,6 +98,7 @@ vet:
 
 .PHONY: lint
 lint: golangci-lint
+	$(LOCALBIN)/golangci-lint cache clean
 	$(LOCALBIN)/golangci-lint run --config .localci/lint/golangci.yml
 
 .PHONY: vuln
