@@ -22,8 +22,9 @@ package template
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/api"
 	"time"
+
+	"github.com/jrnd-io/jrv2/pkg/api"
 
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
@@ -39,10 +40,10 @@ jr template run net_device
 jr template run --embedded "{{name}}"
 `,
 	Args: cobra.ExactArgs(1),
-	Run:  run,
+	RunE: run,
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(cmd *cobra.Command, args []string) error {
 	keyTemplate, _ := cmd.Flags().GetString("key")
 	headerTemplate, _ := cmd.Flags().GetString("header")
 
@@ -75,18 +76,18 @@ func run(cmd *cobra.Command, args []string) {
 	} else {
 		valueTemplate, err = api.GetRawTemplate(args[0])
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
 
 	if throughputString != "" {
 		result, err := api.ExecuteTemplate(valueTemplate, nil)
 		if err != nil {
-			panic(err)
+			return err
 		}
 		throughput, err := api.ParseThroughput(throughputString)
 		if err != nil {
-			panic(err)
+			return err
 		}
 		frequency = api.CalculateFrequency(len([]byte(result)), num, throughput)
 	}
@@ -106,22 +107,10 @@ func run(cmd *cobra.Command, args []string) {
 		api.WithOneline(oneline),
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	fmt.Println(e)
-	/*
-		throughput, err := emitter.ParseThroughput(throughputString)
-		if err != nil {
-			log.Panic().Err(err).Msg("Throughput format error")
-		}
-
-		if throughput > 0 {
-			// @TODO
-		}
-	*/
-
-	// create Emitter
-	// run Emitter
+	return nil
 }
 
 func init() {

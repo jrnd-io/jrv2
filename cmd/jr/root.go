@@ -68,10 +68,14 @@ func initConfig() {
 	var zlogLevel zerolog.Level
 	switch verbosity {
 	case 1:
-		zlogLevel = zerolog.InfoLevel
+		zlogLevel = zerolog.ErrorLevel
 	case 2:
-		zlogLevel = zerolog.DebugLevel
+		zlogLevel = zerolog.WarnLevel
 	case 3:
+		zlogLevel = zerolog.InfoLevel
+	case 4:
+		zlogLevel = zerolog.DebugLevel
+	case 5:
 		zlogLevel = zerolog.TraceLevel
 	default:
 		zlogLevel = zerolog.Disabled

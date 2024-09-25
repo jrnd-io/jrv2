@@ -21,13 +21,23 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
+	"fmt"
+	"os"
 )
+
+var exitCode int
 
 func main() {
 
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatal().Err(err).Msg("error executing root command")
-	}
+	defer exit()
 
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println("JR execution terminated with error: ", err)
+		exitCode = 1
+		return
+	}
+}
+
+func exit() {
+	os.Exit(exitCode)
 }
