@@ -60,8 +60,8 @@ func init() {
 func initConfig() {
 	// Get the verbosity level
 	verbosity, err := rootCmd.PersistentFlags().GetCount("verbose")
-	if err != nil {
-		verbosity = 0
+	if err != nil || verbosity == 0 {
+		verbosity = config.JrVerbosity
 	}
 
 	// setting zerolog level
