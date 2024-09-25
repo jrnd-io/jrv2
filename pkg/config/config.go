@@ -22,11 +22,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/types"
-	"github.com/rs/zerolog/log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/rs/zerolog/log"
 
 	"github.com/adrg/xdg"
 	"github.com/jrnd-io/jrv2/pkg/random"
@@ -45,9 +47,9 @@ const (
 	DefaultLocale             = "us"
 	DefaultNum                = 1
 	DefaultPreloadSize        = 0
-	DefaultFrequency          = "1s"
+	DefaultFrequency          = time.Second
 	DefaultThroughput         = -1
-	DefaultDuration           = "2190000h" // 250 years
+	DefaultDuration           = 2190000 * time.Hour
 	DefaultKeyTemplate        = "null"
 	DefaultValueTemplate      = "net_device"
 	DefaultHeaderTemplate     = "null"

@@ -75,8 +75,8 @@ func WithImmediateStart(i bool) func(*types.Emitter) {
 
 func WithNum(n int) func(*types.Emitter) {
 	if n < 1 {
-		log.Warn().Msg("Num should be at least 1, setting to 1")
-		n = 1
+		log.Warn().Msg("Num should be at least 1, setting to default")
+		n = config.DefaultNum
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Num = n
@@ -85,8 +85,8 @@ func WithNum(n int) func(*types.Emitter) {
 
 func WithFrequency(f time.Duration) func(*types.Emitter) {
 	if f <= 0 {
-		log.Warn().Msg("Frequency is <=0, setting to 100ms")
-		f = 100 * time.Millisecond
+		log.Warn().Msg("Frequency is <=0, setting to default")
+		f = config.DefaultFrequency
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Frequency = f
@@ -96,8 +96,8 @@ func WithFrequency(f time.Duration) func(*types.Emitter) {
 func WithThroughput(t string) func(*types.Emitter) {
 	throughput, err := ParseThroughput(t)
 	if err != nil {
-		log.Error().Err(err).Msg("Error in parsing throughput, setting to 1B/s")
-		throughput = 1
+		log.Error().Err(err).Msg("Error in parsing throughput, setting to default")
+		throughput = config.DefaultThroughput
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Throughput = throughput
@@ -106,8 +106,8 @@ func WithThroughput(t string) func(*types.Emitter) {
 
 func WithDuration(d time.Duration) func(*types.Emitter) {
 	if d <= 0 {
-		log.Warn().Msg("Duration is <=0, setting to 1s")
-		d = 1 * time.Second
+		log.Warn().Msg("Duration is <=0, setting to default")
+		d = config.DefaultDuration
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Duration = d
@@ -116,8 +116,8 @@ func WithDuration(d time.Duration) func(*types.Emitter) {
 
 func WithPreload(n int) func(*types.Emitter) {
 	if n < 0 {
-		log.Warn().Msg("Preload should be positive, setting to 1")
-		n = 1
+		log.Warn().Msg("Preload should be positive, setting to default")
+		n = config.DefaultPreloadSize
 	}
 	return func(e *types.Emitter) {
 		e.Preload = n
@@ -150,21 +150,12 @@ func WithOutputTemplate(o string) func(*types.Emitter) {
 
 func NewEmitter(options ...func(*types.Emitter)) (*types.Emitter, error) {
 
-	defaultDuration, err := time.ParseDuration(config.DefaultDuration)
-	if err != nil {
-		return nil, err
-	}
-	defaultFrequency, err := time.ParseDuration(config.DefaultFrequency)
-	if err != nil {
-		return nil, err
-	}
-
 	t := &types.Ticker{
 		Type:           "simple",
 		ImmediateStart: false,
 		Num:            config.DefaultNum,
-		Frequency:      defaultFrequency,
-		Duration:       defaultDuration,
+		Frequency:      config.DefaultFrequency,
+		Duration:       config.DefaultDuration,
 		Throughput:     config.DefaultThroughput,
 	}
 

@@ -2,9 +2,10 @@ package api_test
 
 import (
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/types"
 	"testing"
 	"time"
+
+	"github.com/jrnd-io/jrv2/pkg/types"
 
 	"github.com/jrnd-io/jrv2/pkg/api"
 	"github.com/jrnd-io/jrv2/pkg/config"
@@ -57,10 +58,10 @@ func TestNewEmitter(t *testing.T) {
 		assert.False(t, emitter.Tick.ImmediateStart)
 		assert.Equal(t, config.DefaultNum, emitter.Tick.Num)
 
-		defaultFrequency, _ := time.ParseDuration(config.DefaultFrequency)
+		defaultFrequency := config.DefaultFrequency
 		assert.Equal(t, defaultFrequency, emitter.Tick.Frequency)
 
-		defaultDuration, _ := time.ParseDuration(config.DefaultDuration)
+		defaultDuration := config.DefaultDuration
 		assert.Equal(t, defaultDuration, emitter.Tick.Duration)
 	})
 

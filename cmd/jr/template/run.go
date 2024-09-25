@@ -22,7 +22,6 @@ package template
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/jrnd-io/jrv2/pkg/api"
 
@@ -115,9 +114,9 @@ func run(cmd *cobra.Command, args []string) error {
 
 func init() {
 	RunCmd.Flags().IntP("num", "n", config.DefaultNum, "Number of elements to create for each pass")
-	frequency, _ := time.ParseDuration(config.DefaultFrequency)
+	frequency := config.DefaultFrequency
 	RunCmd.Flags().DurationP("frequency", "f", frequency, "how much time to wait for next generation pass")
-	duration, _ := time.ParseDuration(config.DefaultDuration)
+	duration := config.DefaultDuration
 	RunCmd.Flags().DurationP("duration", "d", duration, "If frequency is enabled, with Duration you can set a finite amount of time")
 	RunCmd.Flags().String("throughput", "", "You can set throughput, JR will calculate frequency automatically.")
 	RunCmd.Flags().Int("preload", config.DefaultPreloadSize, "Number of elements to create during the preload phase")
