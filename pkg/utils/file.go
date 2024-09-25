@@ -2,27 +2,27 @@ package utils
 
 import "os"
 
-func CountFilesInDir(dir string) int {
+func CountFilesInDir(dir string) (int, error) {
 
 	existentDir, _ := Exists(dir)
 	if !existentDir {
-		return 0
+		return 0, nil
 	}
 
 	f, err := os.Open(dir)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 	list, err := f.Readdirnames(-1)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 
 	err = f.Close()
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	return len(list)
+	return len(list), nil
 }
 
 func Exists(path string) (bool, error) {

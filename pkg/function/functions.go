@@ -23,6 +23,7 @@ package function
 import (
 	"bufio"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -74,7 +75,11 @@ func Cache(name string) (bool, error) {
 
 func CacheFromFile(fileName string, name string) (bool, error) {
 
-	data[name] = initialize(fileName)
+	var err error
+	data[name], err = initialize(fileName)
+	if err != nil {
+		return false, err
+	}
 	if len(data[name]) == 0 {
 		return false, fmt.Errorf("no words found in %s", fileName)
 	}
@@ -90,10 +95,11 @@ func fileExists(filename string) bool {
 	return false
 }
 
-func initialize(filename string) []string {
+func initialize(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to open file")
+		return nil, err
 	}
 	defer func(file *os.File) {
 		err := file.Close()
@@ -112,13 +118,13 @@ func initialize(filename string) []string {
 		}
 	}
 
-	return words
+	return words, nil
 }
 
-func InitCSV(csvpath string) {
+func InitCSV(csvpath string) error {
 	// Loads the csv file in the context
 	if len(csvpath) == 0 {
-		return
+		return errors.New("csv file path is empty")
 	}
 
 	var csvHeaders = make(map[int]string)
@@ -126,14 +132,14 @@ func InitCSV(csvpath string) {
 
 	if _, err := os.Stat(csvpath); err != nil {
 		println("File does not exist: ", csvpath)
-		os.Exit(1)
+		return err
 	}
 
 	file, err := os.Open(csvpath)
 
 	if err != nil {
 		println("Error opening file:", csvpath, "error:", err)
-		os.Exit(1)
+		return err
 	}
 
 	defer file.Close()
@@ -144,6 +150,7 @@ func InitCSV(csvpath string) {
 	if err != nil {
 		file.Close()
 		log.Fatal().Err(err).Str("file", csvpath).Msg("Error reading CSV file") //nolint do not bother
+		return err
 	}
 
 	for row := 0; row < len(lines); row++ {
@@ -165,11 +172,10 @@ func InitCSV(csvpath string) {
 					localmap[csvHeaders[col]] = strings.Trim(value, " ")
 					csvValues[row-1] = localmap
 				}
-				//	print(" V: ", value)
 			}
 		}
-		// println()
 	}
 
 	emitter.GetState().SetCSV(csvValues)
+	return nil
 }

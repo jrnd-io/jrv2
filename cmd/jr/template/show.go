@@ -21,13 +21,14 @@
 package template
 
 import (
+	"errors"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/api"
-	"github.com/rs/zerolog/log"
-	"github.com/spf13/cobra"
-	"os"
 	"runtime"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/jrnd-io/jrv2/pkg/api"
+	"github.com/spf13/cobra"
 )
 
 var ShowCmd = &cobra.Command{
@@ -35,31 +36,32 @@ var ShowCmd = &cobra.Command{
 	Short: "Show a template",
 	Long:  `Show a template. Templates must be in system or in user directory, which are '$JR_USER_DIR/templates' and '$JR_SYSTEM_DIR/templates'`,
 	Args:  cobra.ExactArgs(1),
-	Run:   show,
+	RunE:  show,
 }
 
-func show(cmd *cobra.Command, args []string) {
+func show(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		log.Error().Msg("Missing template name: try the list command to see available templates")
-		os.Exit(1)
+		return errors.New("missing template name: try the list command to see available templates")
 	}
 
+	cyan := color.New(color.FgCyan)
 	noColor, _ := cmd.Flags().GetBool("nocolor")
-	templateString, validError := api.GetRawValidatedTemplate(args[0])
 
-	var Reset = "\033[0m"
-	if runtime.GOOS != "windows" && !noColor {
-		var Cyan = "\033[36m"
-		coloredOpeningBracket := fmt.Sprintf("%s%s", Cyan, "{{")
-		coloredClosingBracket := fmt.Sprintf("%s%s", "}}", Reset)
-		templateString = strings.ReplaceAll(templateString, "{{", coloredOpeningBracket)
-		templateString = strings.ReplaceAll(templateString, "}}", coloredClosingBracket)
+	if noColor {
+		cyan.DisableColor()
+	}
+	cyanf := cyan.Sprintf
+	templateString, err := api.GetRawValidatedTemplate(args[0])
+
+	if runtime.GOOS != "windows" {
+		templateString = strings.ReplaceAll(templateString, "{{", cyanf("{{"))
+		templateString = strings.ReplaceAll(templateString, "}}", cyanf("}}"))
 	}
 	fmt.Println(templateString)
-	fmt.Print(Reset)
-	if validError != nil {
-		log.Fatal().Msg("Invalid template")
+	if err != nil {
+		return err
 	}
+	return nil
 }
 
 func init() {

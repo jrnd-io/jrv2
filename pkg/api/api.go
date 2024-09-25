@@ -24,8 +24,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/tpl"
-	"github.com/jrnd-io/jrv2/pkg/types"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -35,10 +33,14 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/jrnd-io/jrv2/pkg/tpl"
+	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/rs/zerolog/log"
+
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/jrnd-io/jrv2/pkg/utils"
-	"github.com/wk8/go-ordered-map/v2"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 func WithName(n string) func(*types.Emitter) {
@@ -73,7 +75,8 @@ func WithImmediateStart(i bool) func(*types.Emitter) {
 
 func WithNum(n int) func(*types.Emitter) {
 	if n < 1 {
-		panic("JR should generate at least 1 object per iteration")
+		log.Warn().Msg("Num should be at least 1, setting to 1")
+		n = 1
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Num = n
@@ -82,7 +85,8 @@ func WithNum(n int) func(*types.Emitter) {
 
 func WithFrequency(f time.Duration) func(*types.Emitter) {
 	if f <= 0 {
-		panic("non-positive interval for Frequency")
+		log.Warn().Msg("Frequency is <=0, setting to 100ms")
+		f = 100 * time.Millisecond
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Frequency = f
@@ -92,7 +96,8 @@ func WithFrequency(f time.Duration) func(*types.Emitter) {
 func WithThroughput(t string) func(*types.Emitter) {
 	throughput, err := ParseThroughput(t)
 	if err != nil {
-		panic("invalid throughput: " + t)
+		log.Error().Err(err).Msg("Error in parsing throughput, setting to 1B/s")
+		throughput = 1
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Throughput = throughput
@@ -101,7 +106,8 @@ func WithThroughput(t string) func(*types.Emitter) {
 
 func WithDuration(d time.Duration) func(*types.Emitter) {
 	if d <= 0 {
-		panic("non-positive interval for NewTicker")
+		log.Warn().Msg("Duration is <=0, setting to 1s")
+		d = 1 * time.Second
 	}
 	return func(e *types.Emitter) {
 		e.Tick.Duration = d
@@ -110,7 +116,8 @@ func WithDuration(d time.Duration) func(*types.Emitter) {
 
 func WithPreload(n int) func(*types.Emitter) {
 	if n < 0 {
-		panic("Preload should be positive")
+		log.Warn().Msg("Preload should be positive, setting to 1")
+		n = 1
 	}
 	return func(e *types.Emitter) {
 		e.Preload = n
