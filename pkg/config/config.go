@@ -37,12 +37,18 @@ import (
 
 var JrSystemDir string
 var JrUserDir string
+var JrVerbosity int
+
 var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
 var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
-var LogLevel = DefaultLogLevel
 var Emitters map[string][]*types.Emitter
 
 const (
+	EnvJRSystemDir = "JR_SYSTEM_DIR"
+	EnvJRUserDir   = "JR_USER_DIR"
+	EnvJRVerbosity = "JR_VERBOSITY"
+	EnvJRSeed      = "JR_SEED"
+
 	DefaultEmitterName        = "cli"
 	DefaultLocale             = "us"
 	DefaultNum                = 1
@@ -62,13 +68,14 @@ const (
 	DefaultTopic              = "test"
 	DefaultHTTPPort           = 7482 // JR :)
 	DefaultEnvPrefix          = "JR"
-	DefaultLogLevel           = "fatal"
+	DefaultVerbosity          = 0
 )
 
 func InitEnvironmentVariables() {
-	JrSystemDir = os.Getenv("JR_SYSTEM_DIR")
-	JrUserDir = os.Getenv("JR_USER_DIR")
-	JrSeedEnv := os.Getenv("JR_SEED")
+	JrSystemDir = os.Getenv(EnvJRSystemDir)
+	JrUserDir = os.Getenv(EnvJRUserDir)
+	JrSeedEnv := os.Getenv(EnvJRUserDir)
+	JrVerbosityEnv := os.Getenv(EnvJRVerbosity)
 	seed, err := strconv.ParseInt(JrSeedEnv, 10, 64)
 	if err != nil || JrSeedEnv == "" {
 		seed = -1
@@ -80,6 +87,14 @@ func InitEnvironmentVariables() {
 	}
 	if JrUserDir == "" {
 		JrUserDir = DefaultUserDir
+	}
+	if JrVerbosityEnv == "" {
+		JrVerbosity = DefaultVerbosity
+	} else {
+		JrVerbosity, err = strconv.Atoi(JrVerbosityEnv)
+		if err != nil {
+			JrVerbosity = DefaultVerbosity
+		}
 	}
 }
 
