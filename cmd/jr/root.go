@@ -45,7 +45,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&config.JrSystemDir, "jr_system_dir", config.JrSystemDir, "JR system dir")
 	rootCmd.PersistentFlags().StringVar(&config.JrUserDir, "jr_user_dir", config.JrUserDir, "JR user dir")
-	rootCmd.PersistentFlags().StringVar(&config.LogLevel, "log_level", config.DefaultLogLevel, "JR Log Level")
+	rootCmd.PersistentFlags().CountP("verbose", "v", "Set the verbosity level")
 
 	rootCmd.AddCommand(emitter.NewCmd())
 	rootCmd.AddCommand(producer.NewCmd())
@@ -58,12 +58,25 @@ func init() {
 }
 
 func initConfig() {
+	// Get the verbosity level
+	verbosity, err := rootCmd.PersistentFlags().GetCount("verbose")
+	if err != nil {
+		verbosity = 0
+	}
 
 	// setting zerolog level
-	zlogLevel, err := zerolog.ParseLevel(config.LogLevel)
-	if err != nil {
-		zlogLevel = zerolog.PanicLevel
+	var zlogLevel zerolog.Level
+	switch verbosity {
+	case 1:
+		zlogLevel = zerolog.InfoLevel
+	case 2:
+		zlogLevel = zerolog.DebugLevel
+	case 3:
+		zlogLevel = zerolog.TraceLevel
+	default:
+		zlogLevel = zerolog.Disabled
 	}
+
 	zerolog.SetGlobalLevel(zlogLevel)
 
 }
