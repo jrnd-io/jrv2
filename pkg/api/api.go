@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/utils"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -39,7 +40,6 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/function"
-	"github.com/jrnd-io/jrv2/pkg/utils"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
@@ -254,7 +254,8 @@ func getTemplate(name string) (string, error) {
 
 func templateList(templateDir string) *orderedmap.OrderedMap[string, *types.TemplateInfo] {
 
-	templateList := orderedmap.New[string, *types.TemplateInfo](utils.CountFilesInDir(templateDir))
+	howManyTemplatesInTemplateDir, _ := utils.CountFilesInDir(templateDir)
+	templateList := orderedmap.New[string, *types.TemplateInfo](howManyTemplatesInTemplateDir)
 
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		return templateList
