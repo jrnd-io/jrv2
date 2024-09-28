@@ -32,7 +32,9 @@ const (
 )
 
 func init() {
-	plugin.RegisterLocalPlugin(PluginName, &Plugin{})
+	plugin.RegisterLocalPlugin(PluginName, &plugin.Plugin{
+		Producer: &Plugin{},
+	})
 }
 
 type Plugin struct {

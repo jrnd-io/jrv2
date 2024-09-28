@@ -21,7 +21,14 @@
 package producer
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/fatih/color"
+	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
+	_ "github.com/jrnd-io/jrv2/pkg/plugin/console" //nolint
 	"github.com/spf13/cobra"
 )
 
@@ -37,23 +44,54 @@ func list(cmd *cobra.Command, _ []string) {
 	noColor, _ := cmd.Flags().GetBool("nocolor")
 
 	green := color.New(color.FgGreen)
-	cyan := color.New(color.FgCyan)
 	white := color.New(color.FgWhite)
 	if noColor {
-		cyan.DisableColor()
+		green.DisableColor()
 		white.DisableColor()
 	}
 
-	cyanf := cyan.Printf
-	whitef := white.Sprintf
+	greenf := green.Printf
 
-	if !noColor {
-		green.Println("GREEN")
-		cyanf("cyan") //nolint
-		whitef("white")
+	white.Printf("Local Producers:\n")
+	for name := range plugin.GetLocalPluginMap() {
+		greenf("%s\n", name) //nolint
 	}
+	white.Println()
+	white.Printf("Remote Producers:\n")
+	for name := range plugin.GetRemotePluginMap() {
+		greenf("%s\n", name) //nolint
+	}
+
 }
 
 func init() {
+	config.InitEnvironmentVariables()
 	ListCmd.Flags().BoolP("nocolor", "n", false, "Do not color output")
+
+	p, _ := scanForPlugins(fmt.Sprintf("%s%c%s", config.JrSystemDir, os.PathSeparator, "plugins"))
+	for _, pl := range p {
+		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: pl})
+	}
+
+	p, _ = scanForPlugins(fmt.Sprintf("%s%c%s", config.JrUserDir, os.PathSeparator, "plugins"))
+	for _, pl := range p {
+		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: pl})
+	}
+}
+
+func scanForPlugins(dir string) ([]string, error) {
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	plugins := make([]string, 0)
+	for _, f := range files {
+		if f.Type().IsRegular() && !f.IsDir() {
+			plugins = append(plugins, f.Name())
+		}
+	}
+
+	return plugins, nil
+
 }

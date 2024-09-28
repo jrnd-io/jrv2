@@ -26,16 +26,28 @@ import (
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
 )
 
-var localPluginMap map[string]Producer
+var localPluginMap map[string]*Plugin
+var remotePluginMap map[string]*Plugin
 
 type Producer interface {
 	Produce(ctx context.Context, key []byte, v []byte, headers map[string]string) (*jrpc.ProduceResponse, error)
 }
 
 func init() {
-	localPluginMap = make(map[string]Producer)
+	localPluginMap = make(map[string]*Plugin)
+	remotePluginMap = make(map[string]*Plugin)
 }
 
-func RegisterLocalPlugin(name string, plugin Producer) {
+func RegisterLocalPlugin(name string, plugin *Plugin) {
 	localPluginMap[name] = plugin
+}
+func RegisterRemotePlugin(name string, plugin *Plugin) {
+	remotePluginMap[name] = plugin
+}
+
+func GetLocalPluginMap() map[string]*Plugin {
+	return localPluginMap
+}
+func GetRemotePluginMap() map[string]*Plugin {
+	return remotePluginMap
 }

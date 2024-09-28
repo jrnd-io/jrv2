@@ -15,7 +15,9 @@ const (
 )
 
 func init() {
-	plugin.RegisterLocalPlugin(PluginName, &MockProducer{})
+	plugin.RegisterLocalPlugin(PluginName, &plugin.Plugin{
+		Producer: &MockProducer{},
+	})
 }
 
 // MockProducer is a mock implementation of the Producer interface
