@@ -22,6 +22,7 @@ package plugin
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -35,16 +36,24 @@ const (
 )
 
 type Plugin struct {
-	rpcClient plugin.ClientProtocol
-	producer  Producer
+	RPCClient plugin.ClientProtocol
+	Producer  Producer
+	Command   string
 }
 
 func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 
 	if localPluginMap[jrPlugin] != nil {
 		return &Plugin{
-			producer: localPluginMap[jrPlugin],
+			Producer: localPluginMap[jrPlugin],
 		}, nil
+	}
+
+	command := ""
+	if remotePluginMap[jrPlugin] != nil {
+		command = remotePluginMap[jrPlugin].Command
+	} else {
+		return nil, fmt.Errorf("plugin %s not found", jrPlugin)
 	}
 
 	if logLevel == 0 {
@@ -56,7 +65,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 		SyncStdout:       os.Stdout, // sync stdout from plugin
 		SyncStderr:       os.Stderr, // sync stderr from plugin
 		Stderr:           os.Stderr,
-		Cmd:              exec.Command("sh", "-c", jrPlugin), //TODO: make this portable
+		Cmd:              exec.Command("sh", "-c", command), //TODO: make this portable
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 		Managed:          false,
 		Logger: hclog.New(&hclog.LoggerOptions{
@@ -81,19 +90,19 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	}
 
 	return &Plugin{
-		producer: NewAdapter(p),
+		Producer: NewAdapter(p),
 	}, nil
 }
 
 func (c *Plugin) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string) (*jrpc.ProduceResponse, error) {
 
-	return c.producer.Produce(ctx, key, value, headers)
+	return c.Producer.Produce(ctx, key, value, headers)
 
 }
 
 func (c *Plugin) Close() error {
-	if c.rpcClient != nil {
-		return c.rpcClient.Close()
+	if c.RPCClient != nil {
+		return c.RPCClient.Close()
 	}
 	return nil
 }

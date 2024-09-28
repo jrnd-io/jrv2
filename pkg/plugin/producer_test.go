@@ -53,7 +53,9 @@ func TestLocalPlugin(t *testing.T) {
 		bytesToWrite: bytesToWrite,
 		message:      message,
 	}
-	plugin.RegisterLocalPlugin(pluginName, p)
+	plugin.RegisterLocalPlugin(pluginName, &plugin.Plugin{
+		Producer: p,
+	})
 
 	// get a client for the plugin
 	c, err := plugin.New(pluginName, hclog.Off)
