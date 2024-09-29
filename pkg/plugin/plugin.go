@@ -36,25 +36,28 @@ const (
 )
 
 type Plugin struct {
+	Name      string
 	RPCClient plugin.ClientProtocol
 	Producer  Producer
 	Command   string
+	IsRemote  bool
 }
 
 func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 
-	if localPluginMap[jrPlugin] != nil {
+	pl := pluginMap[jrPlugin]
+	if pl == nil {
+		return nil, fmt.Errorf("plugin %s not found", jrPlugin)
+	}
+
+	if !pl.IsRemote {
 		return &Plugin{
-			Producer: localPluginMap[jrPlugin],
+			Name:     jrPlugin,
+			Producer: pl.Producer,
 		}, nil
 	}
 
-	command := ""
-	if remotePluginMap[jrPlugin] != nil {
-		command = remotePluginMap[jrPlugin].Command
-	} else {
-		return nil, fmt.Errorf("plugin %s not found", jrPlugin)
-	}
+	command := pl.Command
 
 	if logLevel == 0 {
 		logLevel = hclog.Off
@@ -90,7 +93,10 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	}
 
 	return &Plugin{
+		Name:     jrPlugin,
 		Producer: NewAdapter(p),
+		IsRemote: true,
+		Command:  command,
 	}, nil
 }
 
