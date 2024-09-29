@@ -1,6 +1,8 @@
 module github.com/jrnd-io/jrv2
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
 	github.com/adrg/xdg v0.5.0
@@ -15,6 +17,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/squeeze69/generacodicefiscale v1.0.5
 	github.com/stretchr/testify v1.9.0
+	github.com/ugol/uticker v0.1.0
 	github.com/wk8/go-ordered-map/v2 v2.1.8
 	golang.org/x/text v0.18.0
 	google.golang.org/grpc v1.67.0

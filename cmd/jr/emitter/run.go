@@ -24,6 +24,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/loop"
 	"github.com/jrnd-io/jrv2/pkg/types"
 	"github.com/spf13/cobra"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
@@ -57,13 +58,9 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 	// defer emitter.CloseProducers(ctx, ems)
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
 	// emitter.DoLoop(ctx, emittersToRun)
-	fmt.Println(ctx)
-	for e := emitters.Oldest(); e != nil; e = e.Next() {
-		fmt.Println(e.Key)
-		for _, v := range e.Value {
-			fmt.Println(v)
-		}
-	}
+
+	loop.DoLoop(ctx, emitters)
+
 }
 
 func init() {
