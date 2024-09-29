@@ -54,7 +54,9 @@ func TestLocalPlugin(t *testing.T) {
 		message:      message,
 	}
 	plugin.RegisterLocalPlugin(pluginName, &plugin.Plugin{
+		Name:     pluginName,
 		Producer: p,
+		IsRemote: false,
 	})
 
 	// get a client for the plugin

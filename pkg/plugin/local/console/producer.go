@@ -1,5 +1,4 @@
 // Copyright © 2024 JR team
-//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -18,42 +17,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package plugin
+package console
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
 )
 
-var pluginMap map[string]*Plugin
+const (
+	PluginName = "jr-console"
+)
 
-type Producer interface {
-	Produce(ctx context.Context, key []byte, v []byte, headers map[string]string) (*jrpc.ProduceResponse, error)
+func init() {
+	plugin.RegisterLocalPlugin(PluginName, &plugin.Plugin{
+		Name:     PluginName,
+		Producer: &Producer{},
+		IsRemote: false,
+	})
 }
 
-func RegisterLocalPlugin(name string, plugin *Plugin) {
-	if pluginMap == nil {
-		pluginMap = make(map[string]*Plugin)
-	}
-	plugin.IsRemote = false
-	pluginMap[name] = plugin
-}
-func RegisterRemotePlugin(name string, plugin *Plugin) {
-	if pluginMap == nil {
-		pluginMap = make(map[string]*Plugin)
-	}
-	plugin.IsRemote = true
-	pluginMap[name] = plugin
+type Producer struct {
 }
 
-func GetPluginMap() map[string]*Plugin {
-	return pluginMap
+func (p *Producer) Produce(_ context.Context, _ []byte, v []byte, _ map[string]string) (*jrpc.ProduceResponse, error) {
+
+	writtenBytes := len(v)
+	fmt.Println(string(v))
+	return &jrpc.ProduceResponse{
+		Bytes:   uint64(writtenBytes),
+		Message: "",
+	}, nil
+
 }
 
-func GetPlugin(name string) *Plugin {
-	if pluginMap[name] != nil {
-		return pluginMap[name]
-	}
+func (p *Producer) Close(_ context.Context) error {
 	return nil
 }

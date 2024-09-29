@@ -28,7 +28,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/plugin"
-	_ "github.com/jrnd-io/jrv2/pkg/plugin/console" //nolint
+	_ "github.com/jrnd-io/jrv2/pkg/plugin/local" //nolint
 	"github.com/spf13/cobra"
 )
 
@@ -51,15 +51,15 @@ func list(cmd *cobra.Command, _ []string) {
 	}
 
 	greenf := green.Printf
+	whitesf := white.Sprintf
 
-	white.Printf("Local Producers:\n")
-	for name := range plugin.GetLocalPluginMap() {
-		greenf("%s\n", name) //nolint
-	}
-	white.Println()
-	white.Printf("Remote Producers:\n")
-	for name := range plugin.GetRemotePluginMap() {
-		greenf("%s\n", name) //nolint
+	for _, p := range plugin.GetPluginMap() {
+		isRemote := "(local)"
+		if p.IsRemote {
+			isRemote = "(remote)"
+		}
+
+		greenf("%s %s\n", p.Name, whitesf(isRemote)) //nolint
 	}
 
 }
