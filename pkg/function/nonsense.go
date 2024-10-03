@@ -149,7 +149,7 @@ func RandomStringVocabulary(min, max int, source string) string {
 	if len(source) == 0 {
 		return ""
 	}
-	textb := make([]byte, min+random.Random.IntN(max-min))
+	textb := make([]byte, min+random.Random.IntN(max-min+1))
 	for i := range textb {
 		textb[i] = source[random.Random.IntN(len(source))]
 	}
