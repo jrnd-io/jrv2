@@ -1,8 +1,8 @@
 module jrclient
 
-go 1.23
+go 1.23.0
 
-toolchain go1.23.0
+toolchain go1.23.1
 
 replace github.com/jrnd-io/jrv2 => ../..
 

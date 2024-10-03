@@ -26,6 +26,7 @@ import (
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/loop"
 	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
@@ -59,6 +60,7 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
 	// emitter.DoLoop(ctx, emittersToRun)
 
+	log.Debug().Msg("Running main loop")
 	loop.DoLoop(ctx, emitters)
 
 }
