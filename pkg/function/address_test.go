@@ -22,11 +22,11 @@ package function_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"math"
 	"strconv"
 	"testing"
 
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/stretchr/testify/assert"
 )
@@ -87,7 +87,7 @@ func TestFun(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			emitter.GetState().Locale = TestLocale
+			state.GetState().Locale = TestLocale
 			function.ClearCache(tc.funcMap)
 			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
 			if err != nil {
@@ -158,7 +158,7 @@ func TestFunAt(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			emitter.GetState().Locale = TestLocale
+			state.GetState().Locale = TestLocale
 			function.ClearCache(tc.funcMap)
 			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
 			if err != nil {

@@ -21,10 +21,10 @@
 package function
 
 import (
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"text/template"
 
 	"github.com/biter777/countries"
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
@@ -47,7 +47,7 @@ const (
 
 // CountryCode returns a random Country Code prefix
 func CountryCode() string {
-	countryIndex := emitter.GetState().CountryIndex
+	countryIndex := state.GetState().CountryIndex
 	if countryIndex == -1 {
 		index := random.Random.IntN(len(countries.All()))
 		return countries.ByNumeric(index).Info().CallCodes[0].String()
@@ -73,7 +73,7 @@ func Imei() string {
 
 // Phone returns a random land prefix
 func Phone() string {
-	cityIndex := emitter.GetState().CityIndex
+	cityIndex := state.GetState().CityIndex
 	if cityIndex == -1 {
 		l := Word(PhoneMap)
 		lp, _ := Regex(l)
@@ -92,7 +92,7 @@ func PhoneAt(index int) string {
 
 // MobilePhone returns a random mobile phone
 func MobilePhone() string {
-	countryIndex := emitter.GetState().CountryIndex
+	countryIndex := state.GetState().CountryIndex
 	if countryIndex == -1 {
 		m := Word(MobilePhoneMap)
 		mp, _ := Regex(m)

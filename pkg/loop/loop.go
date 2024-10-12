@@ -3,6 +3,7 @@ package loop
 import (
 	"context"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"os/signal"
 	"sync"
@@ -45,8 +46,8 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 						Dur("frequency", frequency).
 						Str("emitter", e.Config.Name).
 						Msg("Starting ticker")
-						//					ticker := time.NewTicker(frequency)
-						//					defer ticker.Stop()
+					//					ticker := time.NewTicker(frequency)
+					//					defer ticker.Stop()
 					e.StartTicker()
 
 					for {
@@ -81,7 +82,7 @@ func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
 
 	fmt.Printf("HERE: %s\n", em.Config.Name)
 	for i := 0; i < em.Config.Tick.Num; i++ {
-		emitter.GetState().Execution.CurrentIterationLoopIndex++
+		state.GetState().Execution.CurrentIterationLoopIndex++
 
 		// k := emitter.KTpl.Execute()
 		// v := emitter.VTpl.Execute()

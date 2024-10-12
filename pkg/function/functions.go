@@ -25,11 +25,11 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"strings"
 
 	"github.com/jrnd-io/jrv2/pkg/config"
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/rs/zerolog/log"
 )
 
@@ -51,7 +51,7 @@ func Cache(name string) (bool, error) {
 	}
 	templateDir := fmt.Sprintf("%s/%s", config.JrSystemDir, "templates")
 
-	locale := emitter.GetState().Locale
+	locale := state.GetState().Locale
 	fileName := fmt.Sprintf("%s%cdata%c%s%c%s",
 		os.ExpandEnv(templateDir),
 		os.PathSeparator,
@@ -128,7 +128,7 @@ func InitCSV(csvpath string) error {
 	}
 
 	var csvHeaders = make(map[int]string)
-	csvValues := make(emitter.CSVMap)
+	csvValues := make(state.CSVMap)
 
 	if _, err := os.Stat(csvpath); err != nil {
 		println("File does not exist: ", csvpath)
@@ -176,6 +176,6 @@ func InitCSV(csvpath string) error {
 		}
 	}
 
-	emitter.GetState().SetCSV(csvValues)
+	state.GetState().SetCSV(csvValues)
 	return nil
 }

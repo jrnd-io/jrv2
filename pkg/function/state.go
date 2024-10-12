@@ -21,9 +21,8 @@
 package function
 
 import (
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"text/template"
-
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
 func init() {
@@ -42,18 +41,18 @@ func init() {
 
 // AddValueToList adds value v to Context list l
 func AddValueToList(l string, v string) string {
-	emitter.GetState().AddValueToList(l, v)
+	state.GetState().AddValueToList(l, v)
 	return ""
 }
 
 // RandomValueFromList returns a random value from Context list l
 func RandomValueFromList(s string) any {
-	return emitter.GetState().RandomValueFromList(s)
+	return state.GetState().RandomValueFromList(s)
 }
 
 // RandomNValuesFromList returns a random value from Context list l
 func RandomNValuesFromList(s string, n int) []string {
-	l := emitter.GetState().RandomNValuesFromList(s, n)
+	l := state.GetState().RandomNValuesFromList(s, n)
 	r := make([]string, 0)
 	for i := range l {
 		r = append(r, l[i].(string))
@@ -64,22 +63,22 @@ func RandomNValuesFromList(s string, n int) []string {
 // GetValueFromListAtIndex returns a value from Context list l at index
 func GetValueFromListAtIndex(s string, index int) string {
 
-	return emitter.GetState().GetValueFromListAtIndex(s, index).(string)
+	return state.GetState().GetValueFromListAtIndex(s, index).(string)
 }
 
 // GetV gets value s from Context
 func GetV(s string) string {
-	v, _ := emitter.GetState().Ctx.Load(s)
+	v, _ := state.GetState().Ctx.Load(s)
 	return v.(string)
 }
 
 // SetV adds value v to Context
 func SetV(s string, v string) string {
-	emitter.GetState().Ctx.Store(s, v)
+	state.GetState().Ctx.Store(s, v)
 	return ""
 }
 
 // FromCSV gets the label value from csv file
 func FromCSV(c string) string {
-	return emitter.GetState().FromCSV(c)
+	return state.GetState().FromCSV(c)
 }
