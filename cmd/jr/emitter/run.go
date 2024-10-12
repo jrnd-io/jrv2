@@ -61,7 +61,9 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 	// emitter.DoLoop(ctx, emittersToRun)
 
 	log.Debug().Msg("Running main loop")
-	loop.DoLoop(ctx, emitters)
+	if err := loop.DoLoop(ctx, emitters); err != nil {
+		fmt.Printf("%v\n", err)
+	}
 
 }
 

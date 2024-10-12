@@ -3,17 +3,18 @@ package loop
 import (
 	"context"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"os/signal"
 	"sync"
+
+	"github.com/jrnd-io/jrv2/pkg/state"
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/rs/zerolog/log"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
+func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
 
 	es := make([]*emitter.Emitter, 0)
 
@@ -34,7 +35,11 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 				Int("emitter", i).
 				Interface("config", cfg).
 				Msg("Running emitter")
-			es = append(es, emitter.NewFromConfig(cfg)) //nolint
+			em, err := emitter.NewFromConfig(cfg)
+			if err != nil {
+				return err
+			}
+			es = append(es, em) //nolint
 
 			wg.Add(1)
 			go func(e *emitter.Emitter) {
@@ -74,16 +79,18 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 	}
 
 	wg.Wait()
+	return nil
 }
 
 func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
 	// jrctx.JrContext.Locale = emitter.Locale
 	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
-	fmt.Printf("HERE: %s\n", em.Config.Name)
 	for i := 0; i < em.Config.Tick.Num; i++ {
 		state.GetState().Execution.CurrentIterationLoopIndex++
 
+		v := em.ValueTemplate.Execute()
+		fmt.Printf("%s\n", v)
 		// k := emitter.KTpl.Execute()
 		// v := emitter.VTpl.Execute()
 		if em.Config.Oneline { //nolint

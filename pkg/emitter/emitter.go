@@ -29,12 +29,14 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/ugol/uticker/t"
 
+	"github.com/jrnd-io/jrv2/pkg/function"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"github.com/jrnd-io/jrv2/pkg/tpl"
 )
 
 var Emitters map[string][]Config
 
-func NewFromConfig(cfg Config) *Emitter {
+func NewFromConfig(cfg Config) (*Emitter, error) {
 
 	log.Debug().Msg("new emitter from config")
 	e := &Emitter{
@@ -42,7 +44,11 @@ func NewFromConfig(cfg Config) *Emitter {
 		StopChannel: make(chan struct{}),
 	}
 	log.Debug().Interface("config", cfg).Msg("Creating new emitter from config")
-	return e
+
+	if err := e.SetTemplates(); err != nil {
+		return nil, err
+	}
+	return e, nil
 }
 func New(options ...func(*Emitter)) (*Emitter, error) {
 
@@ -78,6 +84,57 @@ func New(options ...func(*Emitter)) (*Emitter, error) {
 	return e, nil
 }
 
+func (e *Emitter) SetTemplates() error {
+	ctx := state.GetState()
+
+	/*
+		kTplText, err := tpl.GetRawTemplate(e.Config.KeyTemplate)
+		if err != nil {
+			return err
+		}
+		keyTpl, err := tpl.New("key", kTplText, function.Map(), &ctx)
+		if err != nil {
+			return err
+		}
+	*/
+
+	vTplText, err := tpl.GetRawTemplate(e.Config.ValueTemplate)
+	if err != nil {
+		return err
+	}
+	valueTpl, err := tpl.New("value", vTplText, function.Map(), &ctx)
+	if err != nil {
+		return err
+	}
+	/*
+
+		hTplText, err := tpl.GetRawTemplate(e.Config.HeaderTemplate)
+		if err != nil {
+			return err
+		}
+		headerTpl, err := tpl.New("header", hTplText, function.Map(), &ctx)
+		if err != nil {
+			return err
+		}
+
+		oTplText, err := tpl.GetRawTemplate(e.Config.OutputTemplate)
+		if err != nil {
+			return err
+		}
+		outputTpl, err := tpl.New("output", oTplText, function.Map(), &ctx)
+		if err != nil {
+			return err
+		}
+	*/
+
+	//	e.KeyTemplate = keyTpl
+	e.ValueTemplate = valueTpl
+	//	e.HeaderTemplate = headerTpl
+	//	e.OutputTemplate = outputTpl
+	return nil
+
+}
+
 type Throughput float64
 
 type Ticker struct {
@@ -98,6 +155,7 @@ type Emitter struct {
 	KeyTemplate    *tpl.Tpl
 	ValueTemplate  *tpl.Tpl
 	HeaderTemplate *tpl.Tpl
+	OutputTemplate *tpl.Tpl
 }
 
 func (e *Emitter) StartTicker() {

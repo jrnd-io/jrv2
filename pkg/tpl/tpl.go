@@ -42,15 +42,24 @@ type Tpl struct {
 	Template *template.Template
 }
 
-func New(name string, t string, fmap map[string]interface{}, ctx any) (Tpl, error) {
+func New(name string, t string, fmap map[string]interface{}, ctx any) (*Tpl, error) {
 
+	/*
+		tt, err := GetRawTemplate(t)
+		if err != nil {
+			return nil, err
+		}
+	*/
 	tp, err := template.New(name).Funcs(fmap).Parse(t)
+	if err != nil {
+		return nil, err
+	}
 
-	tpl := Tpl{
+	tpl := &Tpl{
 		Context:  ctx,
 		Template: tp,
 	}
-	return tpl, err
+	return tpl, nil
 }
 
 func (t *Tpl) Execute() string {
