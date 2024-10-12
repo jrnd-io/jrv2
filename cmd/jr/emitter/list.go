@@ -24,8 +24,9 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
+
+	emitterapi "github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
 var ListCmd = &cobra.Command{
@@ -49,7 +50,7 @@ func list(cmd *cobra.Command, _ []string) {
 	fmt.Println("List of JR emitters:")
 	fmt.Println()
 
-	for k, v := range config.Emitters {
+	for k, v := range emitterapi.Emitters {
 		if all {
 			green.Printf("%s", k)
 			fmt.Print(" -> (")

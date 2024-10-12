@@ -24,7 +24,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/spf13/cobra"
 )
 
@@ -52,7 +52,7 @@ func show(cmd *cobra.Command, args []string) {
 	whitef := white.Sprintf
 
 	fmt.Println()
-	for k, v := range config.Emitters {
+	for k, v := range emitter.Emitters {
 		if k == args[0] {
 			for _, e := range v {
 				greenf("Name: %s\n", whitef("%s", e.Name))                //nolint

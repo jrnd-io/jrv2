@@ -18,31 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package config
+package emitter
 
-import (
-	"fmt"
-	"os"
-	"strconv"
-	"time"
-
-	"github.com/adrg/xdg"
-	"github.com/jrnd-io/jrv2/pkg/random"
-)
-
-var JrSystemDir string
-var JrUserDir string
-var JrVerbosity int
-
-var DefaultSystemDir = fmt.Sprintf("%s%c%s", xdg.DataDirs[0], os.PathSeparator, "jr")
-var DefaultUserDir = fmt.Sprintf("%s%c%s", xdg.DataHome, os.PathSeparator, "jr")
+import "time"
 
 const (
-	EnvJRSystemDir = "JR_SYSTEM_DIR"
-	EnvJRUserDir   = "JR_USER_DIR"
-	EnvJRVerbosity = "JR_VERBOSITY"
-	EnvJRSeed      = "JR_SEED"
-
 	DefaultEmitterName        = "cli"
 	DefaultLocale             = "us"
 	DefaultNum                = 1
@@ -65,29 +45,15 @@ const (
 	DefaultVerbosity          = 0
 )
 
-func InitEnvironmentVariables() {
-	JrSystemDir = os.Getenv(EnvJRSystemDir)
-	JrUserDir = os.Getenv(EnvJRUserDir)
-	JrSeedEnv := os.Getenv(EnvJRUserDir)
-	JrVerbosityEnv := os.Getenv(EnvJRVerbosity)
-	seed, err := strconv.ParseInt(JrSeedEnv, 10, 64)
-	if err != nil || JrSeedEnv == "" {
-		seed = -1
-	}
-	random.SetRandom(seed)
-
-	if JrSystemDir == "" {
-		JrSystemDir = DefaultSystemDir
-	}
-	if JrUserDir == "" {
-		JrUserDir = DefaultUserDir
-	}
-	if JrVerbosityEnv == "" {
-		JrVerbosity = DefaultVerbosity
-	} else {
-		JrVerbosity, err = strconv.Atoi(JrVerbosityEnv)
-		if err != nil {
-			JrVerbosity = DefaultVerbosity
-		}
-	}
+type Config struct {
+	Tick           Ticker `mapstructure:",squash"`
+	Preload        int
+	Name           string
+	Locale         string
+	KeyTemplate    string
+	ValueTemplate  string
+	HeaderTemplate string
+	OutputTemplate string
+	Output         string
+	Oneline        bool
 }

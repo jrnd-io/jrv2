@@ -3,90 +3,89 @@ package loop
 import (
 	"context"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/types"
-	"github.com/rs/zerolog/log"
-	"github.com/ugol/uticker/t"
-	orderedmap "github.com/wk8/go-ordered-map/v2"
 	"os"
 	"os/signal"
 	"sync"
-	"time"
+
+	"github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/rs/zerolog/log"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []*types.Emitter]) {
+func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
 
-	numEmitters := emitters.Len()
-	log.Debug().Msgf("Entering main loop with %d emitters", numEmitters)
-
-	es := make([]*types.Emitter, numEmitters)
-	timers := make([]*t.UTicker, numEmitters)
-	stopChannels := make([]chan struct{}, numEmitters)
-
-	for e := emitters.Oldest(); e != nil; e = e.Next() {
-		log.Debug().Msgf("Emitter: %v", e)
-		for i, v := range e.Value {
-			log.Debug().Msgf("%d %v", i, v)
-			es[i] = v
-			stopChannels[i] = make(chan struct{})
-			f := v.Tick.Frequency
-			if f > 0 {
-				timers[i] = t.NewUTicker(t.WithFrequency(f))
-			}
-		}
-	}
-
-	log.Debug().Msgf("Emitters to run: %v", es[0])
-
-	var wg sync.WaitGroup
-	wg.Add(numEmitters)
+	es := make([]*emitter.Emitter, 0)
 
 	controlC, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	for i := 0; i < numEmitters; i++ {
+	var wg sync.WaitGroup
 
-		index := i
+	for e := emitters.Oldest(); e != nil; e = e.Next() {
+		log.Debug().
+			Str("emitter", e.Key).
+			Int("len", len(e.Value)).
+			Msg("Starting loop for emitters")
 
-		go func(timerIndex int) {
-			defer wg.Done()
+		for i, cfg := range e.Value {
 
-			frequency := es[timerIndex].Tick.Frequency
-			if frequency > 0 {
-				ticker := time.NewTicker(frequency)
-				defer ticker.Stop()
-				for {
-					select {
-					case <-controlC.Done():
-						stop()
-						return
-					case <-ticker.C:
-						doTemplate(ctx, es[index])
-					case <-stopChannels[timerIndex]:
-						return
+			log.Debug().
+				Int("emitter", i).
+				Interface("config", cfg).
+				Msg("Running emitter")
+			es = append(es, emitter.NewFromConfig(cfg)) //nolint
+
+			wg.Add(1)
+			go func(e *emitter.Emitter) {
+				defer wg.Done()
+
+				frequency := e.Config.Tick.Frequency
+				if frequency > 0 {
+					log.Debug().
+						Dur("frequency", frequency).
+						Str("emitter", e.Config.Name).
+						Msg("Starting ticker")
+						//					ticker := time.NewTicker(frequency)
+						//					defer ticker.Stop()
+					e.StartTicker()
+
+					for {
+						select {
+						case <-controlC.Done():
+							stop()
+							return
+						case <-e.Ticker.C:
+							doTemplate(ctx, e)
+						case <-e.StopChannel:
+							return
+						}
+
 					}
-
+				} else {
+					log.Debug().
+						Str("Emitter: %e", e.Config.Name).
+						Msg("Exec do Template")
+					doTemplate(ctx, e)
 				}
-			} else {
-				doTemplate(ctx, es[index])
-			}
-		}(index)
+			}(es[i])
 
+		}
 	}
 
 	wg.Wait()
 }
 
-func doTemplate(ctx context.Context, emitter *types.Emitter) { //nolint
+func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
 	// jrctx.JrContext.Locale = emitter.Locale
 	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
-	fmt.Println("HERE")
-	for i := 0; i < emitter.Tick.Num; i++ {
-		// jrctx.JrContext.CurrentIterationLoopIndex++
+	fmt.Printf("HERE: %s\n", em.Config.Name)
+	for i := 0; i < em.Config.Tick.Num; i++ {
+		emitter.GetState().Execution.CurrentIterationLoopIndex++
 
 		// k := emitter.KTpl.Execute()
 		// v := emitter.VTpl.Execute()
-		if emitter.Oneline { //nolint
+		if em.Config.Oneline { //nolint
 			// v = strings.ReplaceAll(v, "\n", "")
 		}
 		// kInValue := functions.GetV("KEY")

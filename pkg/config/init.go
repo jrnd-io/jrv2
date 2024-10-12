@@ -6,5 +6,6 @@ package config
 // this is needed because JR will call Init* directly from the CLI because of init ordering
 func init() {
 	InitEnvironmentVariables()
-	InitEmitters()
+	//
+	// InitEmitters()
 }

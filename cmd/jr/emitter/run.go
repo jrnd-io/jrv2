@@ -23,9 +23,9 @@ package emitter
 import (
 	"context"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
+
+	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/loop"
-	"github.com/jrnd-io/jrv2/pkg/types"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
@@ -42,9 +42,9 @@ var RunCmd = &cobra.Command{
 func run(cmd *cobra.Command, args []string) {
 	dryrun, _ := cmd.Flags().GetBool("dryrun")
 
-	emitters := orderedmap.New[string, []*types.Emitter](len(args))
+	emitters := orderedmap.New[string, []emitter.Config](len(args))
 	for _, name := range args {
-		e := config.Emitters[name]
+		e := emitter.Emitters[name]
 		if dryrun {
 			fmt.Println("should set output to stdout")
 		}
@@ -54,7 +54,7 @@ func run(cmd *cobra.Command, args []string) {
 
 }
 
-func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []*types.Emitter]) {
+func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
 	// defer emitter.WriteStats()
 	// defer emitter.CloseProducers(ctx, ems)
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)

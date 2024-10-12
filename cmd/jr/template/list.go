@@ -22,11 +22,12 @@ package template
 
 import (
 	"fmt"
+
+	"github.com/jrnd-io/jrv2/pkg/tpl"
 	"github.com/jrnd-io/jrv2/pkg/types"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 
 	"github.com/fatih/color"
-	"github.com/jrnd-io/jrv2/pkg/api"
 	"github.com/spf13/cobra"
 )
 
@@ -46,11 +47,11 @@ func list(cmd *cobra.Command, _ []string) {
 	fmt.Println()
 	fmt.Println("System JR templates:")
 	fmt.Println()
-	printTemplateList(api.SystemTemplateList(), noColor, fullPath, showError)
+	printTemplateList(tpl.SystemTemplateList(), noColor, fullPath, showError)
 	fmt.Println()
 	fmt.Println("User JR templates:")
 	fmt.Println()
-	printTemplateList(api.UserTemplateList(), noColor, fullPath, showError)
+	printTemplateList(tpl.UserTemplateList(), noColor, fullPath, showError)
 
 }
 
