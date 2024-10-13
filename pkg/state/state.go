@@ -43,7 +43,7 @@ type Execution struct {
 	CurrentIterationLoopIndex int
 }
 
-// Context is the object passed on the templates which contains all the needed details.
+// State is the object passed on the templates which contains all the needed details.
 type State struct {
 	Execution    Execution
 	Locale       string
