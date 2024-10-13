@@ -42,7 +42,7 @@ var RunCmd = &cobra.Command{
 
 func run(cmd *cobra.Command, args []string) {
 	dryrun, _ := cmd.Flags().GetBool("dryrun")
-	pluginName, err := cmd.Flags().GetString("producer")
+	pluginName, err := cmd.Flags().GetString("output")
 	if err != nil {
 		log.Warn().Err(err).Msgf("error in getting producer flag, defaulting to %s", console.PluginName)
 		pluginName = console.PluginName
@@ -84,6 +84,6 @@ func RunEmitters(ctx context.Context,
 
 func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
-	RunCmd.Flags().StringP("producer", "p", "", "name of output producer")
-	RunCmd.Flags().StringP("producer-config", "c", "", "configuration file of output producer")
+	RunCmd.Flags().StringP("output", "o", "", "name of output producer")
+	RunCmd.Flags().StringP("config", "c", "", "configuration file of output producer")
 }
