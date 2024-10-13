@@ -22,9 +22,10 @@ package function
 
 import (
 	"bytes"
-	"github.com/jrnd-io/jrv2/pkg/state"
 	"regexp"
 	"text/template"
+
+	"github.com/jrnd-io/jrv2/pkg/state"
 
 	"github.com/rs/zerolog/log"
 )
@@ -49,8 +50,9 @@ func ExecuteTemplate(key *template.Template, value *template.Template, oneline b
 		v = re.ReplaceAllString(v, "")
 	}
 
+	// TODO: maybe this does not go here since the actual produced bytes are in the plugin response
 	state.GetState().Execution.GeneratedObjects++
-	state.GetState().Execution.GeneratedBytes += int64(len(v))
+	state.GetState().Execution.GeneratedBytes += uint64(len(v))
 
 	return k, v, err
 }

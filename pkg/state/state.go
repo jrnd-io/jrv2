@@ -37,8 +37,8 @@ type CSVMap map[int]CSV
 
 type Execution struct {
 	Start                     time.Time
-	GeneratedObjects          int64
-	GeneratedBytes            int64
+	GeneratedObjects          uint64
+	GeneratedBytes            uint64
 	ExpectedObjects           int64
 	CurrentIterationLoopIndex int
 }

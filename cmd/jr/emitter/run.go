@@ -26,6 +26,7 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/loop"
+	"github.com/jrnd-io/jrv2/pkg/plugin/local/console"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
@@ -41,27 +42,41 @@ var RunCmd = &cobra.Command{
 
 func run(cmd *cobra.Command, args []string) {
 	dryrun, _ := cmd.Flags().GetBool("dryrun")
+	pluginName, err := cmd.Flags().GetString("producer")
+	if err != nil {
+		log.Warn().Err(err).Msgf("error in getting producer flag, defaulting to %s", console.PluginName)
+		pluginName = console.PluginName
+	}
 
+	pluginConfig, err := cmd.Flags().GetString("producer-config")
+	if err != nil {
+		log.Warn().Err(err).Msg("error in getting producer-config flag, defaulting to blank")
+		pluginConfig = ""
+	}
 	emitters := orderedmap.New[string, []emitter.Config](len(args))
 	for _, name := range args {
 		e := emitter.Emitters[name]
 		if dryrun {
+			pluginName = console.PluginName
 			fmt.Println("should set output to stdout")
 		}
 		emitters.Set(name, e)
 	}
-	RunEmitters(cmd.Context(), emitters)
+	RunEmitters(cmd.Context(), pluginName, pluginConfig, emitters)
 
 }
 
-func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
+func RunEmitters(ctx context.Context,
+	pluginName string,
+	pluginConfigFile string,
+	emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
 	// defer emitter.WriteStats()
 	// defer emitter.CloseProducers(ctx, ems)
 	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
 	// emitter.DoLoop(ctx, emittersToRun)
 
 	log.Debug().Msg("Running main loop")
-	if err := loop.DoLoop(ctx, emitters); err != nil {
+	if err := loop.DoLoop(ctx, pluginName, pluginConfigFile, emitters); err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
@@ -69,4 +84,6 @@ func RunEmitters(ctx context.Context, emitters *orderedmap.OrderedMap[string, []
 
 func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
+	RunCmd.Flags().StringP("producer", "p", "", "name of output producer")
+	RunCmd.Flags().StringP("producer-config", "c", "", "configuration file of output producer")
 }

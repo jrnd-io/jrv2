@@ -2,11 +2,12 @@ package loop
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"sync"
 
+	"github.com/hashicorp/go-hclog"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
 	"github.com/jrnd-io/jrv2/pkg/state"
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
@@ -14,15 +15,28 @@ import (
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
-func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
+func DoLoop(ctx context.Context,
+	pluginName string,
+	pluginConfigFile string,
+	emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
 
+	// emitter slice
 	es := make([]*emitter.Emitter, 0)
 
+	//  ctrl-c signal
 	controlC, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
+	// wait group to synchronize tickers end
 	var wg sync.WaitGroup
 
+	// creating plugin
+	p, err := plugin.New(pluginName, pluginConfigFile, hclog.Off)
+	if err != nil {
+		return err
+	}
+
+	// starting loop
 	for e := emitters.Oldest(); e != nil; e = e.Next() {
 		log.Debug().
 			Str("emitter", e.Key).
@@ -61,7 +75,7 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 							stop()
 							return
 						case <-e.Ticker.C:
-							doTemplate(ctx, e)
+							doTemplate(ctx, p, e)
 						case <-e.StopChannel:
 							return
 						}
@@ -71,7 +85,7 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 					log.Debug().
 						Str("Emitter: %e", e.Config.Name).
 						Msg("Exec do Template")
-					doTemplate(ctx, e)
+					doTemplate(ctx, p, e)
 				}
 			}(es[i])
 
@@ -82,7 +96,9 @@ func DoLoop(ctx context.Context, emitters *orderedmap.OrderedMap[string, []emitt
 	return nil
 }
 
-func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
+func doTemplate(ctx context.Context,
+	p *plugin.Plugin,
+	em *emitter.Emitter) { //nolint
 	// jrctx.JrContext.Locale = emitter.Locale
 	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
@@ -90,7 +106,16 @@ func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
 		state.GetState().Execution.CurrentIterationLoopIndex++
 
 		v := em.ValueTemplate.Execute()
-		fmt.Printf("%s\n", v)
+
+		log.Debug().Str("plugin", p.Name).Msg("producing message")
+		resp, err := p.Produce(ctx, nil, []byte(v), nil)
+		if err != nil {
+			log.Warn().
+				Err(err).
+				Str("plugin", p.Name).
+				Msg("error in emission")
+
+		}
 		// k := emitter.KTpl.Execute()
 		// v := emitter.VTpl.Execute()
 		if em.Config.Oneline { //nolint
@@ -104,8 +129,8 @@ func doTemplate(ctx context.Context, em *emitter.Emitter) { //nolint
 		//	emitter.Producer.Produce(ctx, []byte(k), []byte(v), nil)
 		// }
 
-		// jrctx.JrContext.GeneratedObjects++
-		// jrctx.JrContext.GeneratedBytes += int64(len(v))
+		state.GetState().Execution.GeneratedObjects++
+		state.GetState().Execution.GeneratedBytes += uint64(resp.Bytes)
 	}
 
 }
