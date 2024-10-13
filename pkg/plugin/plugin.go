@@ -25,10 +25,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -43,12 +45,18 @@ type Plugin struct {
 	IsRemote  bool
 }
 
-func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
+func New(jrPlugin string, configFile string, logLevel hclog.Level) (*Plugin, error) {
 
 	pl := pluginMap[jrPlugin]
 	if pl == nil {
+		log.Error().Str("plugin", jrPlugin).Msg("plugin not found")
 		return nil, fmt.Errorf("plugin %s not found", jrPlugin)
 	}
+	log.Debug().
+		Str("plugin", jrPlugin).
+		Interface("pluginmap", pluginMap).
+		Bool("remote", pl.IsRemote).
+		Msg("initialize plugin")
 
 	if !pl.IsRemote {
 		return &Plugin{
@@ -62,13 +70,35 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	if logLevel == 0 {
 		logLevel = hclog.Off
 	}
+
+	cmd := "sh"
+	args := []string{
+		"-c",
+	}
+
+	//
+	pCmd := sanitize(command)
+	pArgs := ""
+	if configFile != "" {
+		pArgs = fmt.Sprintf("--config %s", configFile)
+	}
+	pCmd = fmt.Sprintf("%s %s", pCmd, pArgs)
+
+	args = append(args, pCmd)
+
+	log.Debug().
+		Str("cmd", cmd).
+		Strs("args", args).
+		Str("plugin", jrPlugin).
+		Msg("creating client")
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig:  jrpc.Handshake,
-		Plugins:          jrpc.PluginMap,
-		SyncStdout:       os.Stdout, // sync stdout from plugin
-		SyncStderr:       os.Stderr, // sync stderr from plugin
-		Stderr:           os.Stderr,
-		Cmd:              exec.Command("sh", "-c", command), //TODO: make this portable
+		HandshakeConfig: jrpc.Handshake,
+		Plugins:         jrpc.PluginMap,
+		SyncStdout:      os.Stdout, // sync stdout from plugin
+		SyncStderr:      os.Stderr, // sync stderr from plugin
+		Stderr:          os.Stderr,
+		//TODO: make this portable
+		Cmd:              exec.Command(cmd, args...), //nolint
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 		Managed:          false,
 		Logger: hclog.New(&hclog.LoggerOptions{
@@ -111,4 +141,9 @@ func (c *Plugin) Close() error {
 		return c.RPCClient.Close()
 	}
 	return nil
+}
+
+func sanitize(c string) string {
+	return strings.ReplaceAll(c, " ", "\\ ")
+
 }

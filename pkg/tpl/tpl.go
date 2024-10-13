@@ -21,9 +21,20 @@ package tpl
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"strings"
 	"text/template"
 
+	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/function"
+	"github.com/jrnd-io/jrv2/pkg/types"
+	"github.com/jrnd-io/jrv2/pkg/utils"
 	"github.com/rs/zerolog/log"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 type Tpl struct {
@@ -31,15 +42,24 @@ type Tpl struct {
 	Template *template.Template
 }
 
-func New(name string, t string, fmap map[string]interface{}, ctx any) (Tpl, error) {
+func New(name string, t string, fmap map[string]interface{}, ctx any) (*Tpl, error) {
 
+	/*
+		tt, err := GetRawTemplate(t)
+		if err != nil {
+			return nil, err
+		}
+	*/
 	tp, err := template.New(name).Funcs(fmap).Parse(t)
+	if err != nil {
+		return nil, err
+	}
 
-	tpl := Tpl{
+	tpl := &Tpl{
 		Context:  ctx,
 		Template: tp,
 	}
-	return tpl, err
+	return tpl, nil
 }
 
 func (t *Tpl) Execute() string {
@@ -53,4 +73,106 @@ func (t *Tpl) ExecuteWith(data any) string {
 		log.Fatal().Err(err).Msg("Error executing template")
 	}
 	return buffer.String()
+}
+
+func GetRawTemplate(name string) (string, error) {
+	return getTemplate(name)
+}
+
+func GetRawValidatedTemplate(name string) (string, error) {
+
+	t, err := getTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	valid, _, err := IsValidTemplate(t)
+
+	if !valid || err != nil {
+		return "", errors.New("invalid template")
+	}
+	return t, nil
+}
+
+func IsValidTemplate(t string) (bool, *template.Template, error) {
+
+	tt, err := template.New("test").Funcs(function.Map()).Parse(t)
+	if err != nil {
+		return false, nil, err
+	}
+
+	var buf bytes.Buffer
+	if err = tt.Execute(&buf, nil); err != nil {
+		return false, nil, err
+	}
+
+	return true, tt, err
+
+}
+
+func ExecuteTemplate(stringTemplate string, ctx any) (string, error) {
+	tt, err := New("test", stringTemplate, function.Map(), ctx)
+	if err != nil {
+		return "", err
+	}
+	return tt.Execute(), nil
+}
+
+func ExecuteTemplateByName(name string, ctx any) (string, error) {
+	t, err := getTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	return ExecuteTemplate(t, ctx)
+}
+
+func SystemTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
+	return templateList(templateDir)
+}
+
+func UserTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
+	return templateList(templateDir)
+}
+
+func getTemplate(name string) (string, error) {
+	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
+	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
+	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
+	if err != nil {
+		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
+		if err != nil {
+			return "", err
+		}
+	}
+	return string(templateScript), nil
+}
+
+func templateList(templateDir string) *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+
+	howManyTemplatesInTemplateDir, _ := utils.CountFilesInDir(templateDir)
+	templateList := orderedmap.New[string, *types.TemplateInfo](howManyTemplatesInTemplateDir)
+
+	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
+		return templateList
+	}
+
+	_ = filepath.WalkDir(templateDir, func(path string, f fs.DirEntry, _ error) error {
+		if strings.HasSuffix(path, "tpl") {
+
+			t, _ := os.ReadFile(path)
+			valid, tt, err := IsValidTemplate(string(t))
+			name, _ := strings.CutSuffix(f.Name(), ".tpl")
+			templateInfo := types.TemplateInfo{
+				Name:     name,
+				IsValid:  valid,
+				FullPath: path,
+				Template: tt,
+				Error:    err,
+			}
+			templateList.Set(name, &templateInfo)
+		}
+		return nil
+	})
+	return templateList
 }

@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/jrnd-io/jrv2/pkg/api"
+	"github.com/jrnd-io/jrv2/pkg/tpl"
 	"github.com/spf13/cobra"
 )
 
@@ -51,7 +51,7 @@ func show(cmd *cobra.Command, args []string) error {
 		cyan.DisableColor()
 	}
 	cyanf := cyan.Sprintf
-	templateString, err := api.GetRawValidatedTemplate(args[0])
+	templateString, err := tpl.GetRawValidatedTemplate(args[0])
 
 	if runtime.GOOS != "windows" {
 		templateString = strings.ReplaceAll(templateString, "{{", cyanf("{{"))

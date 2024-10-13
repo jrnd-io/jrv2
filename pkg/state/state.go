@@ -18,16 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package emitter
+package state
 
 import (
 	"math"
-	"math/rand"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/biter777/countries"
+	"github.com/jrnd-io/jrv2/pkg/random"
 )
 
 var _state *State
@@ -37,13 +37,13 @@ type CSVMap map[int]CSV
 
 type Execution struct {
 	Start                     time.Time
-	GeneratedObjects          int64
-	GeneratedBytes            int64
+	GeneratedObjects          uint64
+	GeneratedBytes            uint64
 	ExpectedObjects           int64
 	CurrentIterationLoopIndex int
 }
 
-// Context is the object passed on the templates which contains all the needed details.
+// State is the object passed on the templates which contains all the needed details.
 type State struct {
 	Execution    Execution
 	Locale       string
@@ -60,7 +60,6 @@ type State struct {
 	LastIndex    int
 	CountryIndex int
 	CityIndex    int
-	Random       *rand.Rand
 }
 
 func GetState() *State {
@@ -87,7 +86,6 @@ func GetState() *State {
 			LastIndex:    -1,
 			CountryIndex: cIndex, // int(countries.UnitedStatesOfAmerica),
 			CityIndex:    -1,
-			Random:       rand.New(rand.NewSource(0)), //nolint no need for a secure random number generator
 		}
 	}
 	return _state
@@ -113,7 +111,7 @@ func (st *State) RandomValueFromList(s string) any {
 	}
 	l := len(list.([]any))
 	if l != 0 {
-		return list.([]any)[st.Random.Intn(l)]
+		return list.([]any)[random.Random.IntN(l)]
 	}
 	return ""
 }
@@ -187,7 +185,7 @@ func (st *State) findNDifferentInts(n, max int) []int {
 
 	// Generate n different random indices of maximum length
 	for i := 0; i < n; {
-		index := st.Random.Intn(max)
+		index := random.Random.IntN(max)
 		if !contains(ints, index) {
 			ints[i] = index
 			i++

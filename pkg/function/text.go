@@ -22,12 +22,12 @@ package function
 
 import (
 	"errors"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"math/rand"
 	"strconv"
 	"strings"
 	"text/template"
 
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/random"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -108,7 +108,7 @@ func Atoi(s string) int {
 
 // Counter creates a counter named c, starting from start and incrementing by step
 func Counter(c string, start, step int) int {
-	return emitter.GetState().Counter(c, start, step)
+	return state.GetState().Counter(c, start, step)
 }
 
 // Word returns a random string from a list of strings in a file.
@@ -118,8 +118,8 @@ func Word(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = random.Random.IntN(len(words))
-	return words[emitter.GetState().LastIndex]
+	state.GetState().LastIndex = random.Random.IntN(len(words))
+	return words[state.GetState().LastIndex]
 }
 
 // WordAt returns a string at a given position in a list of strings in a file.
@@ -173,8 +173,8 @@ func RandomIndex(name string) string {
 		return ""
 	}
 	words := data[name]
-	emitter.GetState().LastIndex = random.Random.IntN(len(words))
-	return strconv.Itoa(emitter.GetState().LastIndex)
+	state.GetState().LastIndex = random.Random.IntN(len(words))
+	return strconv.Itoa(state.GetState().LastIndex)
 }
 
 // RandomString returns a random string long between min and max characters

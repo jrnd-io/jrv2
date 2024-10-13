@@ -60,7 +60,7 @@ func TestLocalPlugin(t *testing.T) {
 	})
 
 	// get a client for the plugin
-	c, err := plugin.New(pluginName, hclog.Off)
+	c, err := plugin.New(pluginName, "", hclog.Off)
 	if err != nil {
 		t.Fatal(err)
 	}

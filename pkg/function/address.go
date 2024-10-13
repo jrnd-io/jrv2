@@ -22,13 +22,13 @@ package function
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"math"
 	"text/template"
 
 	"github.com/jrnd-io/jrv2/pkg/random"
 
 	"github.com/biter777/countries"
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 )
 
 func init() {
@@ -103,8 +103,8 @@ func Cardinal(short bool) string {
 // City returns a random City
 func City() string {
 	c := Word(CityMap)
-	emitter.GetState().Ctx.Store(fmt.Sprintf("_%s", CityMap), c)
-	emitter.GetState().CityIndex = emitter.GetState().LastIndex
+	state.GetState().Ctx.Store(fmt.Sprintf("_%s", CityMap), c)
+	state.GetState().CityIndex = state.GetState().LastIndex
 	return c
 }
 
@@ -115,20 +115,20 @@ func CityAt(index int) string {
 
 // Country returns the ISO 3166 Country selected with locale
 func Country() string {
-	countryIndex := emitter.GetState().CountryIndex
+	countryIndex := state.GetState().CountryIndex
 	if countryIndex == -1 || countryIndex == 0 {
-		emitter.GetState().LastIndex = random.Random.IntN(len(countries.All()))
-		c := countries.All()[emitter.GetState().LastIndex].Alpha2()
+		state.GetState().LastIndex = random.Random.IntN(len(countries.All()))
+		c := countries.All()[state.GetState().LastIndex].Alpha2()
 		return c
 	}
 
-	return countries.All()[emitter.GetState().CountryIndex].Alpha2()
+	return countries.All()[state.GetState().CountryIndex].Alpha2()
 }
 
 // CountryRandom returns a random ISO 3166 Country
 func CountryRandom() string {
-	emitter.GetState().LastIndex = random.Random.IntN(len(countries.All()))
-	return countries.ByNumeric(emitter.GetState().LastIndex).Alpha2()
+	state.GetState().LastIndex = random.Random.IntN(len(countries.All()))
+	return countries.ByNumeric(state.GetState().LastIndex).Alpha2()
 }
 
 // CountryAt returns an ISO 3166 Country at a given index
@@ -172,8 +172,8 @@ func NearbyGPS(latitude float64, longitude float64, radius int) string {
 // State returns a random State
 func State() string {
 	s := Word(StateMap)
-	emitter.GetState().Ctx.Store(fmt.Sprintf("_%s", StateMap), s)
-	emitter.GetState().CountryIndex = emitter.GetState().LastIndex
+	state.GetState().Ctx.Store(fmt.Sprintf("_%s", StateMap), s)
+	state.GetState().CountryIndex = state.GetState().LastIndex
 	return s
 }
 
@@ -204,7 +204,7 @@ func StreetAt(index int) string {
 
 // Zip returns a random Zip code
 func Zip() string {
-	cityIndex := emitter.GetState().CityIndex
+	cityIndex := state.GetState().CityIndex
 
 	if cityIndex == -1 {
 		z := Word(ZipMap)

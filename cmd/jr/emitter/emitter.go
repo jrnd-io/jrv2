@@ -21,7 +21,14 @@
 package emitter
 
 import (
+	"os"
+	"strings"
+
+	"github.com/jrnd-io/jrv2/pkg/config"
+	emitterapi "github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var emitterCmd = &cobra.Command{
@@ -36,4 +43,27 @@ func NewCmd() *cobra.Command {
 	emitterCmd.AddCommand(RunCmd)
 	emitterCmd.AddCommand(ShowCmd)
 	return emitterCmd
+}
+
+func initEmitters() {
+	viper.SetConfigName("jrconfig")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(".")
+	for _, path := range strings.Split(os.ExpandEnv("$PATH"), ":") {
+		viper.AddConfigPath(path)
+	}
+	viper.AddConfigPath(config.JrSystemDir)
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Error().Err(err).Msg("JR configuration not found")
+	}
+	err := viper.UnmarshalKey("Emitters", &emitterapi.Emitters)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to unmarshal emitter configuration")
+	}
+}
+
+func init() {
+	config.InitEnvironmentVariables()
+	initEmitters()
 }

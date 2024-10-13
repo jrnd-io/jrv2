@@ -88,7 +88,7 @@ test:
 	go test --tags=testing ./...
 
 test_coverage:
-	go test ./... -coverprofile=coverage.out
+	go test --tags=testing ./... -coverprofile=coverage.out
 
 dep:
 	go mod download

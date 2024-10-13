@@ -23,7 +23,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/jrnd-io/jrv2/pkg/api"
+	"github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/jrnd-io/jrv2/pkg/tpl"
 
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/spf13/cobra"
@@ -73,37 +74,37 @@ func run(cmd *cobra.Command, args []string) error {
 	if embedded {
 		valueTemplate = args[0]
 	} else {
-		valueTemplate, err = api.GetRawTemplate(args[0])
+		valueTemplate, err = tpl.GetRawTemplate(args[0])
 		if err != nil {
 			return err
 		}
 	}
 
 	if throughputString != "" {
-		result, err := api.ExecuteTemplate(valueTemplate, nil)
+		result, err := tpl.ExecuteTemplate(valueTemplate, nil)
 		if err != nil {
 			return err
 		}
-		throughput, err := api.ParseThroughput(throughputString)
+		throughput, err := emitter.ParseThroughput(throughputString)
 		if err != nil {
 			return err
 		}
-		frequency = api.CalculateFrequency(len([]byte(result)), num, throughput)
+		frequency = emitter.CalculateFrequency(len([]byte(result)), num, throughput)
 	}
 
-	e, err := api.NewEmitter(
-		api.WithDuration(duration),
-		api.WithFrequency(frequency),
-		api.WithNum(num),
-		api.WithPreload(preload),
-		api.WithKeyTemplate(keyTemplate),
-		api.WithValueTemplate(valueTemplate),
-		api.WithHeaderTemplate(headerTemplate),
-		api.WithOutputTemplate(outputTemplate),
-		api.WithImmediateStart(immediateStart),
-		api.WithOutput(output),
-		api.WithLocale(locale),
-		api.WithOneline(oneline),
+	e, err := emitter.New(
+		emitter.WithDuration(duration),
+		emitter.WithFrequency(frequency),
+		emitter.WithNum(num),
+		emitter.WithPreload(preload),
+		emitter.WithKeyTemplate(keyTemplate),
+		emitter.WithValueTemplate(valueTemplate),
+		emitter.WithHeaderTemplate(headerTemplate),
+		emitter.WithOutputTemplate(outputTemplate),
+		emitter.WithImmediateStart(immediateStart),
+		emitter.WithOutput(output),
+		emitter.WithLocale(locale),
+		emitter.WithOneline(oneline),
 	)
 	if err != nil {
 		return err

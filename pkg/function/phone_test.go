@@ -22,12 +22,12 @@ package function_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"strconv"
 	"testing"
 	"unicode"
 
 	"github.com/biter777/countries"
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/stretchr/testify/assert"
 )
@@ -68,16 +68,16 @@ func isValidLuhn(s string) bool {
 func TestCountryCode(t *testing.T) {
 	// Backup the original state
 	// Test case when countryIndex is -1
-	originalIndex := emitter.GetState().CountryIndex
-	defer func() { emitter.GetState().CountryIndex = originalIndex }()
+	originalIndex := state.GetState().CountryIndex
+	defer func() { state.GetState().CountryIndex = originalIndex }()
 
-	emitter.GetState().CountryIndex = -1
+	state.GetState().CountryIndex = -1
 	countryCode := function.CountryCode()
 	assert.NotEmpty(t, countryCode, "Country code should not be empty when countryIndex is -1")
 
 	index, err := strconv.Atoi(fmt.Sprintf("%d", countries.USA))
 	assert.NoError(t, err, "Error should be nil when converting country code to integer")
-	emitter.GetState().CountryIndex = index
+	state.GetState().CountryIndex = index
 
 	expectedCountryCode := countries.USA.Info().CallCodes[0].String()
 	countryCode = function.CountryCode()
@@ -85,41 +85,41 @@ func TestCountryCode(t *testing.T) {
 }
 
 func TestPhone(t *testing.T) {
-	origCityIndex := emitter.GetState().CityIndex
-	defer func() { emitter.GetState().CityIndex = origCityIndex }()
+	origCityIndex := state.GetState().CityIndex
+	defer func() { state.GetState().CityIndex = origCityIndex }()
 
-	emitter.GetState().Locale = TestLocale
+	state.GetState().Locale = TestLocale
 	function.ClearCache(function.PhoneMap)
 	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", function.PhoneMap), function.PhoneMap)
 	assert.NoError(t, err, "Error should be nil when caching phone numbers")
 
 	// Test case when cityIndex is -1
-	emitter.GetState().CityIndex = -1
+	state.GetState().CityIndex = -1
 	phone := function.Phone()
 	assert.NotEmpty(t, phone, "Phone number should not be empty when cityIndex is -1")
 
 	// Test case when cityIndex is a valid index
-	emitter.GetState().CityIndex = -1
+	state.GetState().CityIndex = -1
 	phone = function.PhoneAt(1)
 	assert.NotEmpty(t, phone, "Phone number should not be empty when cityIndex is -1")
 }
 
 func TestMobilePhone(t *testing.T) {
-	origIndex := emitter.GetState().CountryIndex
-	defer func() { emitter.GetState().CountryIndex = origIndex }()
+	origIndex := state.GetState().CountryIndex
+	defer func() { state.GetState().CountryIndex = origIndex }()
 
-	emitter.GetState().Locale = TestLocale
+	state.GetState().Locale = TestLocale
 	function.ClearCache(function.MobilePhoneMap)
 	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", function.MobilePhoneMap), function.MobilePhoneMap)
 	assert.NoError(t, err, "Error should be nil when caching phone numbers")
 
 	// Test case when cityIndex is -1
-	emitter.GetState().CountryIndex = -1
+	state.GetState().CountryIndex = -1
 	phone := function.MobilePhone()
 	assert.NotEmpty(t, phone, "Mobile Phone number should not be empty when countryIndex is -1")
 
 	// Test case when cityIndex is a valid index
-	emitter.GetState().CountryIndex = -1
+	state.GetState().CountryIndex = -1
 	phone = function.MobilePhoneAt(1)
 	assert.NotEmpty(t, phone, "Phone number should not be empty when countryIndex is -1")
 

@@ -22,11 +22,12 @@ package function_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/random"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"math"
 	"strconv"
 	"testing"
 
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/stretchr/testify/assert"
 )
@@ -87,7 +88,7 @@ func TestFun(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			emitter.GetState().Locale = TestLocale
+			state.GetState().Locale = TestLocale
 			function.ClearCache(tc.funcMap)
 			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
 			if err != nil {
@@ -158,7 +159,7 @@ func TestFunAt(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			emitter.GetState().Locale = TestLocale
+			state.GetState().Locale = TestLocale
 			function.ClearCache(tc.funcMap)
 			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
 			if err != nil {
@@ -248,4 +249,8 @@ func haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 
 	return R * c
+}
+
+func init() {
+	random.SetRandom(0)
 }

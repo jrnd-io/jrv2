@@ -70,13 +70,22 @@ func init() {
 
 	p, _ := scanForPlugins(fmt.Sprintf("%s%c%s", config.JrSystemDir, os.PathSeparator, "plugins"))
 	for _, pl := range p {
-		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: pl})
+		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: getCommand(pl)})
 	}
 
 	p, _ = scanForPlugins(fmt.Sprintf("%s%c%s", config.JrUserDir, os.PathSeparator, "plugins"))
 	for _, pl := range p {
-		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: pl})
+		plugin.RegisterRemotePlugin(filepath.Base(pl), &plugin.Plugin{Command: getCommand(pl)})
 	}
+}
+
+func getCommand(p string) string {
+	return fmt.Sprintf("%s%c%s%c%s", config.JrSystemDir,
+		os.PathSeparator,
+		"plugins",
+		os.PathSeparator,
+		p)
+
 }
 
 func scanForPlugins(dir string) ([]string, error) {

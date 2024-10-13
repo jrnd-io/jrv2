@@ -21,13 +21,13 @@ package function_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"regexp"
 	"strconv"
 	"strings"
 	"testing"
 	"unicode"
 
-	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/function"
 	"github.com/stretchr/testify/assert"
 )
@@ -272,7 +272,7 @@ func TestSedol(t *testing.T) {
 }
 
 func TestStockSymbol(t *testing.T) {
-	emitter.GetState().Locale = TestLocale
+	state.GetState().Locale = TestLocale
 	function.ClearCache(function.StockSymbolMap)
 	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", function.StockSymbolMap), function.StockSymbolMap)
 	if err != nil {

@@ -21,12 +21,16 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/jrnd-io/jrv2/cmd/jr/emitter"
 	"github.com/jrnd-io/jrv2/cmd/jr/function"
 	"github.com/jrnd-io/jrv2/cmd/jr/producer"
 	"github.com/jrnd-io/jrv2/cmd/jr/template"
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -54,7 +58,6 @@ func init() {
 	rootCmd.AddCommand(template.NewCmd())
 
 	config.InitEnvironmentVariables()
-	config.InitEmitters()
 }
 
 func initConfig() {
@@ -83,4 +86,10 @@ func initConfig() {
 
 	zerolog.SetGlobalLevel(zlogLevel)
 
+	zerolog.TimeFieldFormat = "2006-01-02T15:04:05.999Z07:00"
+	output := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "2006-01-02T15:04:05.999Z07:00"}
+	output.FormatFieldName = func(i interface{}) string {
+		return fmt.Sprintf("%s:", i)
+	}
+	log.Logger = zerolog.New(output).With().Timestamp().Logger()
 }
