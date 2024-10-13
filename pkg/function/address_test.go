@@ -22,6 +22,7 @@ package function_test
 
 import (
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/random"
 	"github.com/jrnd-io/jrv2/pkg/state"
 	"math"
 	"strconv"
@@ -248,4 +249,8 @@ func haversine(lat1, lon1, lat2, lon2 float64) float64 {
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 
 	return R * c
+}
+
+func init() {
+	random.SetRandom(0)
 }

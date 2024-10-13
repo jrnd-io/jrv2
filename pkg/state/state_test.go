@@ -1,6 +1,7 @@
 package state_test
 
 import (
+	"github.com/jrnd-io/jrv2/pkg/random"
 	"github.com/jrnd-io/jrv2/pkg/state"
 	"testing"
 
@@ -62,4 +63,8 @@ func TestValue(t *testing.T) {
 	state.Ctx.Store("testKey", "testValue")
 
 	assert.Equal(t, "testValue", state.Value("testKey"))
+}
+
+func init() {
+	random.SetRandom(0)
 }
