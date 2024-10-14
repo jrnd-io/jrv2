@@ -2,8 +2,10 @@ package loop
 
 import (
 	"context"
+	"github.com/jrnd-io/jrv2/pkg/jrpc"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-hclog"
@@ -31,7 +33,10 @@ func DoLoop(ctx context.Context,
 	var wg sync.WaitGroup
 
 	// creating plugin
-	p, err := plugin.New(pluginName, pluginConfigFile, hclog.Off)
+	p, err := plugin.New(pluginName, pluginConfigFile, hclog.Debug)
+	defer func() {
+		_ = p.Close()
+	}()
 	if err != nil {
 		return err
 	}
@@ -102,32 +107,40 @@ func doTemplate(ctx context.Context,
 	// jrctx.JrContext.Locale = emitter.Locale
 	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
+	var err error
+
 	for i := 0; i < em.Config.Tick.Num; i++ {
 		state.GetState().Execution.CurrentIterationLoopIndex++
 
-		v := em.ValueTemplate.Execute()
+		keyText := ""
+		valueText := ""
+
+		if em.KeyTemplate != nil {
+			keyText = em.KeyTemplate.Execute()
+		}
+		if em.ValueTemplate != nil {
+			valueText = em.ValueTemplate.Execute()
+			//		headerValue := em.HeaderTemplate.Execute()
+			if em.Config.Oneline {
+				valueText = strings.ReplaceAll(valueText, "\n", "")
+			}
+		}
+		//		kInValue := function.GetV("KEY")
+		kInValue := ""
 
 		log.Debug().Str("plugin", p.Name).Msg("producing message")
-		resp, err := p.Produce(ctx, nil, []byte(v), nil)
+		var resp *jrpc.ProduceResponse
+		if kInValue != "" {
+			resp, err = p.Produce(ctx, []byte(kInValue), []byte(valueText), nil)
+		} else {
+			resp, err = p.Produce(ctx, []byte(keyText), []byte(valueText), nil)
+		}
 		if err != nil {
 			log.Warn().
 				Err(err).
 				Str("plugin", p.Name).
 				Msg("error in emission")
-
 		}
-		// k := emitter.KTpl.Execute()
-		// v := emitter.VTpl.Execute()
-		if em.Config.Oneline { //nolint
-			// v = strings.ReplaceAll(v, "\n", "")
-		}
-		// kInValue := functions.GetV("KEY")
-
-		// if (kInValue) != "" {
-		//	emitter.Producer.Produce(ctx, []byte(kInValue), []byte(v), nil)
-		// } else {
-		//	emitter.Producer.Produce(ctx, []byte(k), []byte(v), nil)
-		// }
 
 		state.GetState().Execution.GeneratedObjects++
 		state.GetState().Execution.GeneratedBytes += uint64(resp.Bytes)

@@ -80,6 +80,7 @@ func New(jrPlugin string, configFile string, logLevel hclog.Level) (*Plugin, err
 	pCmd := sanitize(command)
 	pArgs := ""
 	if configFile != "" {
+		log.Debug().Str("configFile", configFile).Msg("adding configuration file to args")
 		pArgs = fmt.Sprintf("--config %s", configFile)
 	}
 	pCmd = fmt.Sprintf("%s %s", pCmd, pArgs)
