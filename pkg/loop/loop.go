@@ -3,16 +3,15 @@ package loop
 import (
 	"context"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-hclog"
-	"github.com/jrnd-io/jrv2/pkg/plugin"
-	"github.com/jrnd-io/jrv2/pkg/state"
-
 	"github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
 	"github.com/rs/zerolog/log"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
@@ -104,37 +103,34 @@ func DoLoop(ctx context.Context,
 func doTemplate(ctx context.Context,
 	p *plugin.Plugin,
 	em *emitter.Emitter) { //nolint
-	// jrctx.JrContext.Locale = emitter.Locale
-	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
 	var err error
 
+	localState := state.NewState()
 	for i := 0; i < em.Config.Tick.Num; i++ {
-		state.GetState().Execution.CurrentIterationLoopIndex++
+		state.GetSharedState().Execution.CurrentIterationLoopIndex++
 
 		keyText := ""
 		valueText := ""
 
-		if em.KeyTemplate != nil {
-			keyText = em.KeyTemplate.Execute()
-		}
 		if em.ValueTemplate != nil {
-			valueText = em.ValueTemplate.Execute()
-			//		headerValue := em.HeaderTemplate.Execute()
+			valueText = em.ValueTemplate.ExecuteWith(localState)
 			if em.Config.Oneline {
 				valueText = strings.ReplaceAll(valueText, "\n", "")
 			}
 		}
-		//		kInValue := function.GetV("KEY")
-		kInValue := ""
+
+		if em.KeyTemplate != nil {
+			keyText = em.KeyTemplate.Execute()
+			log.Debug().Str("key", keyText).Msg("key generated with template")
+		} else {
+			keyText = localState.Key
+			log.Debug().Str("key", keyText).Msg("key generated within localState")
+		}
 
 		log.Debug().Str("plugin", p.Name).Msg("producing message")
 		var resp *jrpc.ProduceResponse
-		if kInValue != "" {
-			resp, err = p.Produce(ctx, []byte(kInValue), []byte(valueText), nil)
-		} else {
-			resp, err = p.Produce(ctx, []byte(keyText), []byte(valueText), nil)
-		}
+		resp, err = p.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header)
 		if err != nil {
 			log.Warn().
 				Err(err).
@@ -142,8 +138,8 @@ func doTemplate(ctx context.Context,
 				Msg("error in emission")
 		}
 
-		state.GetState().Execution.GeneratedObjects++
-		state.GetState().Execution.GeneratedBytes += uint64(resp.Bytes)
+		state.GetSharedState().Execution.GeneratedObjects++
+		state.GetSharedState().Execution.GeneratedBytes += resp.Bytes
 	}
 
 }

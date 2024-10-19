@@ -68,7 +68,7 @@ func TestPeopleFun(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			state.GetState().Locale = TestLocale
+			state.GetSharedState().Locale = TestLocale
 			function.ClearCache(tc.funcMap)
 			_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", tc.funcMap), tc.funcMap)
 			if err != nil {
@@ -188,7 +188,7 @@ func TestCodiceFiscale(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			for k, v := range tc.v {
-				state.GetState().Ctx.Store(k, v)
+				state.GetSharedState().Ctx.Store(k, v)
 			}
 			cf := function.CodiceFiscale()
 

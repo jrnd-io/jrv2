@@ -30,7 +30,6 @@ import (
 	"github.com/ugol/uticker/t"
 
 	"github.com/jrnd-io/jrv2/pkg/function"
-	"github.com/jrnd-io/jrv2/pkg/state"
 	"github.com/jrnd-io/jrv2/pkg/tpl"
 )
 
@@ -85,52 +84,16 @@ func New(options ...func(*Emitter)) (*Emitter, error) {
 }
 
 func (e *Emitter) SetTemplates() error {
-	ctx := state.GetState()
-
-	/*
-		kTplText, err := tpl.GetRawTemplate(e.Config.KeyTemplate)
-		if err != nil {
-			return err
-		}
-		keyTpl, err := tpl.New("key", kTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-	*/
 
 	vTplText, err := tpl.GetRawTemplate(e.Config.ValueTemplate)
 	if err != nil {
 		return err
 	}
-	valueTpl, err := tpl.New("value", vTplText, function.Map(), &ctx)
+	valueTpl, err := tpl.New("value", vTplText, function.Map())
 	if err != nil {
 		return err
 	}
-	/*
-
-		hTplText, err := tpl.GetRawTemplate(e.Config.HeaderTemplate)
-		if err != nil {
-			return err
-		}
-		headerTpl, err := tpl.New("header", hTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-
-		oTplText, err := tpl.GetRawTemplate(e.Config.OutputTemplate)
-		if err != nil {
-			return err
-		}
-		outputTpl, err := tpl.New("output", oTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-	*/
-
-	//	e.KeyTemplate = keyTpl
 	e.ValueTemplate = valueTpl
-	//	e.HeaderTemplate = headerTpl
-	//	e.OutputTemplate = outputTpl
 	return nil
 
 }

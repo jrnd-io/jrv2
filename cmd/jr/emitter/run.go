@@ -70,10 +70,6 @@ func RunEmitters(ctx context.Context,
 	pluginName string,
 	pluginConfigFile string,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
-	// defer emitter.WriteStats()
-	// defer emitter.CloseProducers(ctx, ems)
-	// emittersToRun := emitter.Initialize(ctx, emitterNames, ems, dryrun)
-	// emitter.DoLoop(ctx, emittersToRun)
 
 	log.Debug().Msg("Running main loop")
 	if err := loop.DoLoop(ctx, pluginName, pluginConfigFile, emitters); err != nil {
@@ -84,6 +80,6 @@ func RunEmitters(ctx context.Context,
 
 func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
-	RunCmd.Flags().StringP("output", "o", "", "name of output producer")
+	RunCmd.Flags().StringP("output", "o", console.PluginName, "name of output producer")
 	RunCmd.Flags().StringP("output-config", "c", "", "configuration file of output producer")
 }

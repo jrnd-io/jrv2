@@ -22,10 +22,9 @@ package function
 
 import (
 	"bytes"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"regexp"
 	"text/template"
-
-	"github.com/jrnd-io/jrv2/pkg/state"
 
 	"github.com/rs/zerolog/log"
 )
@@ -35,12 +34,12 @@ func ExecuteTemplate(key *template.Template, value *template.Template, oneline b
 	var kBuffer, vBuffer bytes.Buffer
 	var err error
 
-	if err = key.Execute(&kBuffer, state.GetState()); err != nil {
+	if err = key.Execute(&kBuffer, state.GetSharedState()); err != nil {
 		log.Error().Err(err).Msg("Error executing key template")
 	}
 	k := kBuffer.String()
 
-	if err = value.Execute(&vBuffer, state.GetState()); err != nil {
+	if err = value.Execute(&vBuffer, state.GetSharedState()); err != nil {
 		log.Error().Err(err).Msg("Error executing value template")
 	}
 	v := vBuffer.String()
@@ -51,8 +50,8 @@ func ExecuteTemplate(key *template.Template, value *template.Template, oneline b
 	}
 
 	// TODO: maybe this does not go here since the actual produced bytes are in the plugin response
-	state.GetState().Execution.GeneratedObjects++
-	state.GetState().Execution.GeneratedBytes += uint64(len(v))
+	state.GetSharedState().Execution.GeneratedObjects++
+	state.GetSharedState().Execution.GeneratedBytes += uint64(len(v))
 
 	return k, v, err
 }

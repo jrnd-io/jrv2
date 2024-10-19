@@ -51,7 +51,7 @@ func Cache(name string) (bool, error) {
 	}
 	templateDir := fmt.Sprintf("%s/%s", config.JrSystemDir, "templates")
 
-	locale := state.GetState().Locale
+	locale := state.GetSharedState().Locale
 	fileName := fmt.Sprintf("%s%cdata%c%s%c%s",
 		os.ExpandEnv(templateDir),
 		os.PathSeparator,
@@ -176,6 +176,6 @@ func InitCSV(csvpath string) error {
 		}
 	}
 
-	state.GetState().SetCSV(csvValues)
+	state.GetSharedState().SetCSV(csvValues)
 	return nil
 }

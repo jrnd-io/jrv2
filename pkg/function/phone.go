@@ -47,7 +47,7 @@ const (
 
 // CountryCode returns a random Country Code prefix
 func CountryCode() string {
-	countryIndex := state.GetState().CountryIndex
+	countryIndex := state.GetSharedState().CountryIndex
 	if countryIndex == -1 {
 		index := random.Random.IntN(len(countries.All()))
 		return countries.ByNumeric(index).Info().CallCodes[0].String()
@@ -73,7 +73,7 @@ func Imei() string {
 
 // Phone returns a random land prefix
 func Phone() string {
-	cityIndex := state.GetState().CityIndex
+	cityIndex := state.GetSharedState().CityIndex
 	if cityIndex == -1 {
 		l := Word(PhoneMap)
 		lp, _ := Regex(l)
@@ -92,7 +92,7 @@ func PhoneAt(index int) string {
 
 // MobilePhone returns a random mobile phone
 func MobilePhone() string {
-	countryIndex := state.GetState().CountryIndex
+	countryIndex := state.GetSharedState().CountryIndex
 	if countryIndex == -1 {
 		m := Word(MobilePhoneMap)
 		mp, _ := Regex(m)
