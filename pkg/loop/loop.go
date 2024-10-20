@@ -31,6 +31,14 @@ func DoLoop(ctx context.Context,
 	var wg sync.WaitGroup
 
 	pluginMap := make(map[string]*plugin.Plugin)
+	defer func() {
+		for _, _p := range pluginMap {
+			err := _p.Close()
+			if err != nil {
+				log.Warn().Err(err).Str("plugin", _p.Name).Msg("error in closing plugin")
+			}
+		}
+	}()
 
 	// starting loop
 	for e := emitters.Oldest(); e != nil; e = e.Next() {
@@ -58,27 +66,27 @@ func DoLoop(ctx context.Context,
 			}
 
 			// setting plugin or get it from map
-			var p *plugin.Plugin
+			var _plugin *plugin.Plugin
 			if pluginMap[output] == nil {
 				log.Debug().
 					Str("output", output).
 					Msg("creating emitter output")
-				p, err := plugin.New(output, hclog.Debug)
-				defer func() {
-					_ = p.Close()
-				}()
+				_plugin, err = plugin.New(output, hclog.Debug)
 				if err != nil {
 					return err
 				}
 
-				pluginMap[output] = p
+				pluginMap[output] = _plugin
 			} else {
 				log.Debug().
 					Str("output", output).
 					Msg("reusing emitter output")
-				p = pluginMap[output]
+				_plugin = pluginMap[output]
 			}
-			em.SetPlugin(p)
+			log.Debug().
+				Str("emitter", em.Config.Name).
+				Str("plugin", _plugin.Name).Msg("setting emitter plugin")
+			em.SetPlugin(_plugin)
 
 			wg.Add(1)
 			go func(e *emitter.Emitter) {

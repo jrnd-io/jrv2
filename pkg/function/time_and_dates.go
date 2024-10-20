@@ -37,8 +37,13 @@ func init() {
 		"past":            Past,
 		"recent":          Recent,
 		"soon":            Soon,
+		"now":             Now,
 		"unix_time_stamp": UnixTimeStamp,
 	})
+}
+
+func Now(format string) string {
+	return time.Now().Format(format)
 }
 
 // UnixTimeStamp returns a random unix timestamp not older than the given number of days
