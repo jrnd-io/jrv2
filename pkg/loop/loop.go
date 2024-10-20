@@ -2,6 +2,7 @@ package loop
 
 import (
 	"context"
+	"github.com/hashicorp/go-hclog"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
 	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
@@ -9,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hashicorp/go-hclog"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/plugin"
 	"github.com/rs/zerolog/log"
@@ -18,7 +18,6 @@ import (
 
 func DoLoop(ctx context.Context,
 	pluginName string,
-	pluginConfigFile string,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
 
 	// emitter slice
@@ -31,14 +30,7 @@ func DoLoop(ctx context.Context,
 	// wait group to synchronize tickers end
 	var wg sync.WaitGroup
 
-	// creating plugin
-	p, err := plugin.New(pluginName, pluginConfigFile, hclog.Debug)
-	defer func() {
-		_ = p.Close()
-	}()
-	if err != nil {
-		return err
-	}
+	pluginMap := make(map[string]*plugin.Plugin)
 
 	// starting loop
 	for e := emitters.Oldest(); e != nil; e = e.Next() {
@@ -57,7 +49,36 @@ func DoLoop(ctx context.Context,
 			if err != nil {
 				return err
 			}
+
 			es = append(es, em) //nolint
+			// choosing output either from emitter or from passed value
+			output := em.Config.Output
+			if pluginName != "" {
+				output = pluginName
+			}
+
+			// setting plugin or get it from map
+			var p *plugin.Plugin
+			if pluginMap[output] == nil {
+				log.Debug().
+					Str("output", output).
+					Msg("creating emitter output")
+				p, err := plugin.New(output, hclog.Debug)
+				defer func() {
+					_ = p.Close()
+				}()
+				if err != nil {
+					return err
+				}
+
+				pluginMap[output] = p
+			} else {
+				log.Debug().
+					Str("output", output).
+					Msg("reusing emitter output")
+				p = pluginMap[output]
+			}
+			em.SetPlugin(p)
 
 			wg.Add(1)
 			go func(e *emitter.Emitter) {
@@ -79,7 +100,7 @@ func DoLoop(ctx context.Context,
 							stop()
 							return
 						case <-e.Ticker.C:
-							doTemplate(ctx, p, e)
+							doTemplate(ctx, e)
 						case <-e.StopChannel:
 							return
 						}
@@ -89,7 +110,7 @@ func DoLoop(ctx context.Context,
 					log.Debug().
 						Str("Emitter: %e", e.Config.Name).
 						Msg("Exec do Template")
-					doTemplate(ctx, p, e)
+					doTemplate(ctx, e)
 				}
 			}(es[i])
 
@@ -101,7 +122,6 @@ func DoLoop(ctx context.Context,
 }
 
 func doTemplate(ctx context.Context,
-	p *plugin.Plugin,
 	em *emitter.Emitter) { //nolint
 
 	var err error
@@ -128,13 +148,11 @@ func doTemplate(ctx context.Context,
 			log.Debug().Str("key", keyText).Msg("key generated within localState")
 		}
 
-		log.Debug().Str("plugin", p.Name).Msg("producing message")
 		var resp *jrpc.ProduceResponse
-		resp, err = p.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header)
+		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header)
 		if err != nil {
 			log.Warn().
 				Err(err).
-				Str("plugin", p.Name).
 				Msg("error in emission")
 		}
 

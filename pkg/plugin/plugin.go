@@ -23,6 +23,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/config"
 	"os"
 	"os/exec"
 	"strings"
@@ -45,7 +46,7 @@ type Plugin struct {
 	IsRemote  bool
 }
 
-func New(jrPlugin string, configFile string, logLevel hclog.Level) (*Plugin, error) {
+func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 
 	pl := pluginMap[jrPlugin]
 	if pl == nil {
@@ -79,6 +80,8 @@ func New(jrPlugin string, configFile string, logLevel hclog.Level) (*Plugin, err
 	//
 	pCmd := sanitize(command)
 	pArgs := ""
+
+	configFile := getConfigFileFor(jrPlugin)
 	if configFile != "" {
 		log.Debug().Str("configFile", configFile).Msg("adding configuration file to args")
 		pArgs = fmt.Sprintf("--config %s", configFile)
@@ -146,5 +149,16 @@ func (c *Plugin) Close() error {
 
 func sanitize(c string) string {
 	return strings.ReplaceAll(c, " ", "\\ ")
+}
 
+func getConfigFileFor(jrPlugin string) string {
+	systemConfig := fmt.Sprintf("%s%cplugins%c%s.conf.json", config.JrSystemDir, os.PathSeparator, os.PathSeparator, jrPlugin)
+	userConfig := fmt.Sprintf("%s%cplugins%c%s.conf.json", config.JrUserDir, os.PathSeparator, os.PathSeparator, jrPlugin)
+	if _, err := os.Stat(userConfig); err == nil {
+		return systemConfig
+	}
+	if _, err := os.Stat(systemConfig); err == nil {
+		return systemConfig
+	}
+	return ""
 }

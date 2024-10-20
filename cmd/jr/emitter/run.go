@@ -48,11 +48,6 @@ func run(cmd *cobra.Command, args []string) {
 		pluginName = console.PluginName
 	}
 
-	pluginConfig, err := cmd.Flags().GetString("output-config")
-	if err != nil {
-		log.Warn().Err(err).Msg("error in getting producer-config flag, defaulting to blank")
-		pluginConfig = ""
-	}
 	emitters := orderedmap.New[string, []emitter.Config](len(args))
 	for _, name := range args {
 		e := emitter.Emitters[name]
@@ -62,17 +57,16 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		emitters.Set(name, e)
 	}
-	RunEmitters(cmd.Context(), pluginName, pluginConfig, emitters)
+	RunEmitters(cmd.Context(), pluginName, emitters)
 
 }
 
 func RunEmitters(ctx context.Context,
 	pluginName string,
-	pluginConfigFile string,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
 
 	log.Debug().Msg("Running main loop")
-	if err := loop.DoLoop(ctx, pluginName, pluginConfigFile, emitters); err != nil {
+	if err := loop.DoLoop(ctx, pluginName, emitters); err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
@@ -80,6 +74,5 @@ func RunEmitters(ctx context.Context,
 
 func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
-	RunCmd.Flags().StringP("output", "o", console.PluginName, "name of output producer")
-	RunCmd.Flags().StringP("output-config", "c", "", "configuration file of output producer")
+	RunCmd.Flags().StringP("output", "o", "", "name of output producer")
 }

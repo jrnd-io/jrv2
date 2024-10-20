@@ -35,7 +35,7 @@ func (m *MockProducer) Close() error {
 func TestPlugin(t *testing.T) {
 
 	// Test New function
-	p, err := plugin.New(PluginName, "", hclog.Debug)
+	p, err := plugin.New(PluginName, hclog.Debug)
 	assert.NoError(t, err)
 	assert.NotNil(t, p)
 
