@@ -1,3 +1,4 @@
+// Copyright © 2024 JR team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,32 +39,24 @@ import (
 )
 
 type Tpl struct {
-	Context  any
 	Template *template.Template
 }
 
-func New(name string, t string, fmap map[string]interface{}, ctx any) (*Tpl, error) {
+func New(name string, t string, fmap map[string]interface{}) (*Tpl, error) {
 
-	/*
-		tt, err := GetRawTemplate(t)
-		if err != nil {
-			return nil, err
-		}
-	*/
 	tp, err := template.New(name).Funcs(fmap).Parse(t)
 	if err != nil {
 		return nil, err
 	}
 
 	tpl := &Tpl{
-		Context:  ctx,
 		Template: tp,
 	}
 	return tpl, nil
 }
 
 func (t *Tpl) Execute() string {
-	return t.ExecuteWith(t.Context)
+	return t.ExecuteWith(nil)
 }
 
 func (t *Tpl) ExecuteWith(data any) string {
@@ -109,12 +102,12 @@ func IsValidTemplate(t string) (bool, *template.Template, error) {
 
 }
 
-func ExecuteTemplate(stringTemplate string, ctx any) (string, error) {
-	tt, err := New("test", stringTemplate, function.Map(), ctx)
+func ExecuteTemplate(stringTemplate string, data any) (string, error) {
+	tt, err := New("test", stringTemplate, function.Map())
 	if err != nil {
 		return "", err
 	}
-	return tt.Execute(), nil
+	return tt.ExecuteWith(data), nil
 }
 
 func ExecuteTemplateByName(name string, ctx any) (string, error) {

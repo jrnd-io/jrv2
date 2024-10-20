@@ -21,6 +21,8 @@
 package emitter
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -30,110 +32,12 @@ import (
 	"github.com/ugol/uticker/t"
 
 	"github.com/jrnd-io/jrv2/pkg/function"
-	"github.com/jrnd-io/jrv2/pkg/state"
+	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
 	"github.com/jrnd-io/jrv2/pkg/tpl"
 )
 
 var Emitters map[string][]Config
-
-func NewFromConfig(cfg Config) (*Emitter, error) {
-
-	log.Debug().Msg("new emitter from config")
-	e := &Emitter{
-		Config:      &cfg,
-		StopChannel: make(chan struct{}),
-	}
-	log.Debug().Interface("config", cfg).Msg("Creating new emitter from config")
-
-	if err := e.SetTemplates(); err != nil {
-		return nil, err
-	}
-	return e, nil
-}
-func New(options ...func(*Emitter)) (*Emitter, error) {
-
-	t := &Ticker{
-		Type:           "simple",
-		ImmediateStart: false,
-		Num:            DefaultNum,
-		Frequency:      DefaultFrequency,
-		Duration:       DefaultDuration,
-		Throughput:     DefaultThroughput,
-	}
-
-	e := &Emitter{
-		Config: &Config{
-			Tick:           *t,
-			Preload:        DefaultPreloadSize,
-			Name:           DefaultEmitterName,
-			Locale:         DefaultLocale,
-			Output:         DefaultOutput,
-			KeyTemplate:    DefaultKeyTemplate,
-			ValueTemplate:  DefaultValueTemplate,
-			HeaderTemplate: DefaultHeaderTemplate,
-			OutputTemplate: DefaultOutputTemplate,
-			Oneline:        false,
-		},
-		StopChannel: make(chan struct{}),
-	}
-
-	for _, option := range options {
-		option(e)
-	}
-
-	return e, nil
-}
-
-func (e *Emitter) SetTemplates() error {
-	ctx := state.GetState()
-
-	/*
-		kTplText, err := tpl.GetRawTemplate(e.Config.KeyTemplate)
-		if err != nil {
-			return err
-		}
-		keyTpl, err := tpl.New("key", kTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-	*/
-
-	vTplText, err := tpl.GetRawTemplate(e.Config.ValueTemplate)
-	if err != nil {
-		return err
-	}
-	valueTpl, err := tpl.New("value", vTplText, function.Map(), &ctx)
-	if err != nil {
-		return err
-	}
-	/*
-
-		hTplText, err := tpl.GetRawTemplate(e.Config.HeaderTemplate)
-		if err != nil {
-			return err
-		}
-		headerTpl, err := tpl.New("header", hTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-
-		oTplText, err := tpl.GetRawTemplate(e.Config.OutputTemplate)
-		if err != nil {
-			return err
-		}
-		outputTpl, err := tpl.New("output", oTplText, function.Map(), &ctx)
-		if err != nil {
-			return err
-		}
-	*/
-
-	//	e.KeyTemplate = keyTpl
-	e.ValueTemplate = valueTpl
-	//	e.HeaderTemplate = headerTpl
-	//	e.OutputTemplate = outputTpl
-	return nil
-
-}
 
 type Throughput float64
 
@@ -156,6 +60,82 @@ type Emitter struct {
 	ValueTemplate  *tpl.Tpl
 	HeaderTemplate *tpl.Tpl
 	OutputTemplate *tpl.Tpl
+
+	plugin *plugin.Plugin
+}
+
+func NewFromConfig(cfg Config) (*Emitter, error) {
+
+	log.Debug().Msg("new emitter from config")
+	e := &Emitter{
+		Config:      &cfg,
+		StopChannel: make(chan struct{}),
+	}
+	log.Debug().Interface("config", cfg).Msg("Creating new emitter from config")
+
+	if err := e.SetTemplates(); err != nil {
+		return nil, err
+	}
+	return e, nil
+}
+func New(options ...func(*Emitter)) (*Emitter, error) {
+
+	tc := &Ticker{
+		Type:           "simple",
+		ImmediateStart: false,
+		Num:            DefaultNum,
+		Frequency:      DefaultFrequency,
+		Duration:       DefaultDuration,
+		Throughput:     DefaultThroughput,
+	}
+
+	e := &Emitter{
+		Config: &Config{
+			Tick:           *tc,
+			Preload:        DefaultPreloadSize,
+			Name:           DefaultEmitterName,
+			Locale:         DefaultLocale,
+			Output:         DefaultOutput,
+			KeyTemplate:    DefaultKeyTemplate,
+			ValueTemplate:  DefaultValueTemplate,
+			HeaderTemplate: DefaultHeaderTemplate,
+			OutputTemplate: DefaultOutputTemplate,
+			Oneline:        false,
+		},
+		StopChannel: make(chan struct{}),
+	}
+
+	for _, option := range options {
+		option(e)
+	}
+
+	return e, nil
+}
+
+func (e *Emitter) SetPlugin(plugin *plugin.Plugin) {
+	e.plugin = plugin
+}
+
+func (e *Emitter) SetTemplates() error {
+
+	vTplText, err := tpl.GetRawTemplate(e.Config.ValueTemplate)
+	if err != nil {
+		return err
+	}
+	valueTpl, err := tpl.New("value", vTplText, function.Map())
+	if err != nil {
+		return err
+	}
+	e.ValueTemplate = valueTpl
+	return nil
+
+}
+
+func (e *Emitter) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string) (*jrpc.ProduceResponse, error) {
+	if e.plugin == nil {
+		return nil, errors.New("emitter plugin not initialized")
+	}
+	return e.plugin.Produce(ctx, key, value, headers)
 }
 
 func (e *Emitter) StartTicker() {

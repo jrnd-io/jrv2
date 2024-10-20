@@ -2,22 +2,22 @@ package loop
 
 import (
 	"context"
+	"github.com/hashicorp/go-hclog"
+	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 
-	"github.com/hashicorp/go-hclog"
-	"github.com/jrnd-io/jrv2/pkg/plugin"
-	"github.com/jrnd-io/jrv2/pkg/state"
-
 	"github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/jrnd-io/jrv2/pkg/plugin"
 	"github.com/rs/zerolog/log"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 func DoLoop(ctx context.Context,
 	pluginName string,
-	pluginConfigFile string,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
 
 	// emitter slice
@@ -30,11 +30,15 @@ func DoLoop(ctx context.Context,
 	// wait group to synchronize tickers end
 	var wg sync.WaitGroup
 
-	// creating plugin
-	p, err := plugin.New(pluginName, pluginConfigFile, hclog.Off)
-	if err != nil {
-		return err
-	}
+	pluginMap := make(map[string]*plugin.Plugin)
+	defer func() {
+		for _, _p := range pluginMap {
+			err := _p.Close()
+			if err != nil {
+				log.Warn().Err(err).Str("plugin", _p.Name).Msg("error in closing plugin")
+			}
+		}
+	}()
 
 	// starting loop
 	for e := emitters.Oldest(); e != nil; e = e.Next() {
@@ -53,7 +57,36 @@ func DoLoop(ctx context.Context,
 			if err != nil {
 				return err
 			}
+
 			es = append(es, em) //nolint
+			// choosing output either from emitter or from passed value
+			output := em.Config.Output
+			if pluginName != "" {
+				output = pluginName
+			}
+
+			// setting plugin or get it from map
+			var _plugin *plugin.Plugin
+			if pluginMap[output] == nil {
+				log.Debug().
+					Str("output", output).
+					Msg("creating emitter output")
+				_plugin, err = plugin.New(output, hclog.Debug)
+				if err != nil {
+					return err
+				}
+
+				pluginMap[output] = _plugin
+			} else {
+				log.Debug().
+					Str("output", output).
+					Msg("reusing emitter output")
+				_plugin = pluginMap[output]
+			}
+			log.Debug().
+				Str("emitter", em.Config.Name).
+				Str("plugin", _plugin.Name).Msg("setting emitter plugin")
+			em.SetPlugin(_plugin)
 
 			wg.Add(1)
 			go func(e *emitter.Emitter) {
@@ -75,7 +108,7 @@ func DoLoop(ctx context.Context,
 							stop()
 							return
 						case <-e.Ticker.C:
-							doTemplate(ctx, p, e)
+							doTemplate(ctx, e)
 						case <-e.StopChannel:
 							return
 						}
@@ -85,7 +118,7 @@ func DoLoop(ctx context.Context,
 					log.Debug().
 						Str("Emitter: %e", e.Config.Name).
 						Msg("Exec do Template")
-					doTemplate(ctx, p, e)
+					doTemplate(ctx, e)
 				}
 			}(es[i])
 
@@ -97,40 +130,42 @@ func DoLoop(ctx context.Context,
 }
 
 func doTemplate(ctx context.Context,
-	p *plugin.Plugin,
 	em *emitter.Emitter) { //nolint
-	// jrctx.JrContext.Locale = emitter.Locale
-	// jrctx.JrContext.CountryIndex = functions.IndexOf(strings.ToUpper(emitter.Locale), "country")
 
+	var err error
+
+	localState := state.NewState()
 	for i := 0; i < em.Config.Tick.Num; i++ {
-		state.GetState().Execution.CurrentIterationLoopIndex++
+		state.GetSharedState().Execution.CurrentIterationLoopIndex++
 
-		v := em.ValueTemplate.Execute()
+		keyText := ""
+		valueText := ""
 
-		log.Debug().Str("plugin", p.Name).Msg("producing message")
-		resp, err := p.Produce(ctx, nil, []byte(v), nil)
+		if em.ValueTemplate != nil {
+			valueText = em.ValueTemplate.ExecuteWith(localState)
+			if em.Config.Oneline {
+				valueText = strings.ReplaceAll(valueText, "\n", "")
+			}
+		}
+
+		if em.KeyTemplate != nil {
+			keyText = em.KeyTemplate.Execute()
+			log.Debug().Str("key", keyText).Msg("key generated with template")
+		} else {
+			keyText = localState.Key
+			log.Debug().Str("key", keyText).Msg("key generated within localState")
+		}
+
+		var resp *jrpc.ProduceResponse
+		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header)
 		if err != nil {
 			log.Warn().
 				Err(err).
-				Str("plugin", p.Name).
 				Msg("error in emission")
-
 		}
-		// k := emitter.KTpl.Execute()
-		// v := emitter.VTpl.Execute()
-		if em.Config.Oneline { //nolint
-			// v = strings.ReplaceAll(v, "\n", "")
-		}
-		// kInValue := functions.GetV("KEY")
 
-		// if (kInValue) != "" {
-		//	emitter.Producer.Produce(ctx, []byte(kInValue), []byte(v), nil)
-		// } else {
-		//	emitter.Producer.Produce(ctx, []byte(k), []byte(v), nil)
-		// }
-
-		state.GetState().Execution.GeneratedObjects++
-		state.GetState().Execution.GeneratedBytes += uint64(resp.Bytes)
+		state.GetSharedState().Execution.GeneratedObjects++
+		state.GetSharedState().Execution.GeneratedBytes += resp.Bytes
 	}
 
 }

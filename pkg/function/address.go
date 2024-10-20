@@ -103,8 +103,8 @@ func Cardinal(short bool) string {
 // City returns a random City
 func City() string {
 	c := Word(CityMap)
-	state.GetState().Ctx.Store(fmt.Sprintf("_%s", CityMap), c)
-	state.GetState().CityIndex = state.GetState().LastIndex
+	state.GetSharedState().Ctx.Store(fmt.Sprintf("_%s", CityMap), c)
+	state.GetSharedState().CityIndex = state.GetSharedState().LastIndex
 	return c
 }
 
@@ -115,20 +115,20 @@ func CityAt(index int) string {
 
 // Country returns the ISO 3166 Country selected with locale
 func Country() string {
-	countryIndex := state.GetState().CountryIndex
+	countryIndex := state.GetSharedState().CountryIndex
 	if countryIndex == -1 || countryIndex == 0 {
-		state.GetState().LastIndex = random.Random.IntN(len(countries.All()))
-		c := countries.All()[state.GetState().LastIndex].Alpha2()
+		state.GetSharedState().LastIndex = random.Random.IntN(len(countries.All()))
+		c := countries.All()[state.GetSharedState().LastIndex].Alpha2()
 		return c
 	}
 
-	return countries.All()[state.GetState().CountryIndex].Alpha2()
+	return countries.All()[state.GetSharedState().CountryIndex].Alpha2()
 }
 
 // CountryRandom returns a random ISO 3166 Country
 func CountryRandom() string {
-	state.GetState().LastIndex = random.Random.IntN(len(countries.All()))
-	return countries.ByNumeric(state.GetState().LastIndex).Alpha2()
+	state.GetSharedState().LastIndex = random.Random.IntN(len(countries.All()))
+	return countries.ByNumeric(state.GetSharedState().LastIndex).Alpha2()
 }
 
 // CountryAt returns an ISO 3166 Country at a given index
@@ -172,8 +172,8 @@ func NearbyGPS(latitude float64, longitude float64, radius int) string {
 // State returns a random State
 func State() string {
 	s := Word(StateMap)
-	state.GetState().Ctx.Store(fmt.Sprintf("_%s", StateMap), s)
-	state.GetState().CountryIndex = state.GetState().LastIndex
+	state.GetSharedState().Ctx.Store(fmt.Sprintf("_%s", StateMap), s)
+	state.GetSharedState().CountryIndex = state.GetSharedState().LastIndex
 	return s
 }
 
@@ -204,7 +204,7 @@ func StreetAt(index int) string {
 
 // Zip returns a random Zip code
 func Zip() string {
-	cityIndex := state.GetState().CityIndex
+	cityIndex := state.GetSharedState().CityIndex
 
 	if cityIndex == -1 {
 		z := Word(ZipMap)

@@ -64,11 +64,11 @@ const (
 // CodiceFiscale return a valid Italian Codice Fiscale
 func CodiceFiscale() string {
 
-	name := state.GetState().Value("_name").(string)
-	surname := state.GetState().Value("_surname").(string)
-	gender := state.GetState().Value("_gender").(string)
-	birthdate := state.GetState().Value("_birthdate").(string)
-	city := state.GetState().Value("_city").(string)
+	name := state.GetSharedState().Value("_name").(string)
+	surname := state.GetSharedState().Value("_surname").(string)
+	gender := state.GetSharedState().Value("_gender").(string)
+	birthdate := state.GetSharedState().Value("_birthdate").(string)
+	city := state.GetSharedState().Value("_city").(string)
 
 	if name == "" {
 		name = Name()
@@ -110,15 +110,15 @@ func CodiceFiscale() string {
 // Company returns a random Company Name
 func Company() string {
 	c := Word(CompanyMap)
-	state.GetState().Ctx.Store("_company", c)
+	state.GetSharedState().Ctx.Store("_company", c)
 	return c
 }
 
 // WorkEmail returns a random work email.
 func WorkEmail() string {
-	name := state.GetState().Value("_name").(string)
-	surname := state.GetState().Value("_surname").(string)
-	company := state.GetState().Value("_company").(string)
+	name := state.GetSharedState().Value("_name").(string)
+	surname := state.GetSharedState().Value("_surname").(string)
+	company := state.GetSharedState().Value("_company").(string)
 
 	if name == "" {
 		name = Name()
@@ -135,8 +135,8 @@ func WorkEmail() string {
 
 // Email returns a random email.
 func Email() string {
-	name := state.GetState().Value("_name").(string)
-	surname := state.GetState().Value("_surname").(string)
+	name := state.GetSharedState().Value("_name").(string)
+	surname := state.GetSharedState().Value("_surname").(string)
 	provider := Word(MailProviderMap)
 
 	if name == "" {
@@ -156,11 +156,11 @@ func EmailProvider() string {
 
 // Gender returns a random gender. Note: it gets the gender context automatically setup by previous name calls
 func Gender() string {
-	g := state.GetState().Value("_gender").(string)
+	g := state.GetSharedState().Value("_gender").(string)
 	if g == "" {
 		gender := []string{"M", "F"}
 		g = gender[random.Random.IntN(len(gender))]
-		state.GetState().Ctx.Store("_gender", g)
+		state.GetSharedState().Ctx.Store("_gender", g)
 	}
 	return g
 }
@@ -184,16 +184,16 @@ func Name() string {
 // NameM returns a random male Name
 func NameM() string {
 	name := Word(NameMMap)
-	state.GetState().Ctx.Store("_name", name)
-	state.GetState().Ctx.Store("_gender", "M")
+	state.GetSharedState().Ctx.Store("_name", name)
+	state.GetSharedState().Ctx.Store("_gender", "M")
 	return name
 }
 
 // NameF returns a random female Name
 func NameF() string {
 	name := Word(NameFMap)
-	state.GetState().Ctx.Store("_name", name)
-	state.GetState().Ctx.Store("_gender", "F")
+	state.GetSharedState().Ctx.Store("_name", name)
+	state.GetSharedState().Ctx.Store("_gender", "F")
 	return name
 }
 
@@ -208,7 +208,7 @@ func Ssn() string {
 // Surname returns a random Surname
 func Surname() string {
 	s := Word(SurnameMap)
-	state.GetState().Ctx.Store("_surname", "F")
+	state.GetSharedState().Ctx.Store("_surname", "F")
 	return s
 }
 

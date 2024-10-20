@@ -1,5 +1,15 @@
 {
   "emitters": {
+    "showcase": [
+      {
+        "name": "internal_key",
+        "num": 1,
+        "frequency": "0s",
+        "output": "stdout",
+        "keyTemplate": "null",
+        "valueTemplate": "showcase_internal_key"
+      }
+    ],
     "shoe": [
       {
         "name": "shoe",
@@ -612,4 +622,5 @@
     "serializer": "json-schema",
     "autoCreate": true
   }
+
 }

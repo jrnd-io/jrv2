@@ -16,18 +16,14 @@ func TestNew(t *testing.T) {
 		name := "test_success"
 		tmpl := templateString
 		fmap := map[string]interface{}{}
-		ctx := struct{ Name string }{"World"}
 
-		tpl, err := tpl.New(name, tmpl, fmap, ctx)
+		templ, err := tpl.New(name, tmpl, fmap)
 
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
 		}
-		if tpl.Template == nil {
+		if templ.Template == nil {
 			t.Fatal("Expected Template to be non-nil")
-		}
-		if tpl.Context != ctx {
-			t.Fatalf("Expected Context to be %v, got %v", ctx, tpl.Context)
 		}
 	})
 
@@ -36,9 +32,8 @@ func TestNew(t *testing.T) {
 		name := "test_invalid_template"
 		tmpl := "Hello, {{.Name}!" // Missing closing brace
 		fmap := map[string]interface{}{}
-		ctx := struct{ Name string }{"World"}
 
-		_, err := tpl.New(name, tmpl, fmap, ctx)
+		_, err := tpl.New(name, tmpl, fmap)
 
 		if err == nil {
 			t.Fatal("Expected an error, got nil")
@@ -52,12 +47,12 @@ func TestExecute(t *testing.T) {
 	fmap := map[string]interface{}{}
 	ctx := struct{ Name string }{"World"}
 
-	tpl, err := tpl.New(name, tmpl, fmap, ctx)
+	templ, err := tpl.New(name, tmpl, fmap)
 	if err != nil {
 		t.Fatalf("Failed to create template: %v", err)
 	}
 
-	result := tpl.Execute()
+	result := templ.ExecuteWith(ctx)
 	expected := "Hello, World!"
 
 	if result != expected {
@@ -69,15 +64,14 @@ func TestExecuteWith(t *testing.T) {
 	name := "test_executewith"
 	tmpl := templateString
 	fmap := map[string]interface{}{}
-	ctx := struct{ Name string }{"World"}
 
-	tpl, err := tpl.New(name, tmpl, fmap, ctx)
+	templ, err := tpl.New(name, tmpl, fmap)
 	if err != nil {
 		t.Fatalf("Failed to create template: %v", err)
 	}
 
 	newCtx := struct{ Name string }{"Go"}
-	result := tpl.ExecuteWith(newCtx)
+	result := templ.ExecuteWith(newCtx)
 	expected := "Hello, Go!"
 
 	if result != expected {

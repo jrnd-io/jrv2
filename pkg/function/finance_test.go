@@ -272,7 +272,7 @@ func TestSedol(t *testing.T) {
 }
 
 func TestStockSymbol(t *testing.T) {
-	state.GetState().Locale = TestLocale
+	state.GetSharedState().Locale = TestLocale
 	function.ClearCache(function.StockSymbolMap)
 	_, err := function.CacheFromFile(fmt.Sprintf("./testdata/%s.txt", function.StockSymbolMap), function.StockSymbolMap)
 	if err != nil {

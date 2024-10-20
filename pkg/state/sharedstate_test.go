@@ -9,13 +9,13 @@ import (
 )
 
 func TestGetState(t *testing.T) {
-	s := state.GetState()
+	s := state.GetSharedState()
 	assert.NotNil(t, s)
 	assert.Equal(t, "us", s.Locale)
 }
 
 func TestAddValueToList(t *testing.T) {
-	s := state.GetState()
+	s := state.GetSharedState()
 	s.AddValueToList("testList", "value1")
 	s.AddValueToList("testList", "value2")
 
@@ -24,7 +24,7 @@ func TestAddValueToList(t *testing.T) {
 }
 
 func TestCounter(t *testing.T) {
-	s := state.GetState()
+	s := state.GetSharedState()
 
 	// Test initial counter value
 	assert.Equal(t, 10, s.Counter("testCounter", 10, 1))
@@ -35,7 +35,7 @@ func TestCounter(t *testing.T) {
 }
 
 func TestRandomNValuesFromList(t *testing.T) {
-	s := state.GetState()
+	s := state.GetSharedState()
 	s.AddValueToList("testList", "value1")
 	s.AddValueToList("testList", "value2")
 	s.AddValueToList("testList", "value3")
@@ -46,7 +46,7 @@ func TestRandomNValuesFromList(t *testing.T) {
 }
 
 func TestFromCSV(t *testing.T) {
-	s := state.GetState()
+	s := state.GetSharedState()
 	csvMap := state.CSVMap{
 		0: {"column1": "value1", "column2": "value2"},
 		1: {"column1": "value3", "column2": "value4"},
@@ -59,7 +59,7 @@ func TestFromCSV(t *testing.T) {
 }
 
 func TestValue(t *testing.T) {
-	state := state.GetState()
+	state := state.GetSharedState()
 	state.Ctx.Store("testKey", "testValue")
 
 	assert.Equal(t, "testValue", state.Value("testKey"))
