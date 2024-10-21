@@ -23,7 +23,7 @@ package emitter
 import (
 	"context"
 	"fmt"
-
+	"github.com/hashicorp/go-hclog"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/loop"
 	"github.com/jrnd-io/jrv2/pkg/plugin/local/console"
@@ -48,6 +48,25 @@ func run(cmd *cobra.Command, args []string) {
 		pluginName = console.PluginName
 	}
 
+	var logLevel hclog.Level
+	verbosity, err := cmd.PersistentFlags().GetCount("output-log-level")
+	if err != nil {
+		verbosity = 0
+	}
+
+	switch verbosity {
+	case 1:
+		logLevel = hclog.Debug
+	case 2:
+		logLevel = hclog.Info
+	case 3:
+		logLevel = hclog.Warn
+	case 4:
+		logLevel = hclog.Error
+	default:
+		logLevel = hclog.Off
+	}
+
 	emitters := orderedmap.New[string, []emitter.Config](len(args))
 	for _, name := range args {
 		e := emitter.Emitters[name]
@@ -57,16 +76,17 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		emitters.Set(name, e)
 	}
-	RunEmitters(cmd.Context(), pluginName, emitters)
+	RunEmitters(cmd.Context(), pluginName, emitters, logLevel)
 
 }
 
 func RunEmitters(ctx context.Context,
 	pluginName string,
-	emitters *orderedmap.OrderedMap[string, []emitter.Config]) {
+	emitters *orderedmap.OrderedMap[string, []emitter.Config],
+	pluginLogLevel hclog.Level) {
 
 	log.Debug().Msg("Running main loop")
-	if err := loop.DoLoop(ctx, pluginName, emitters); err != nil {
+	if err := loop.DoLoop(ctx, emitters, pluginName, pluginLogLevel); err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
@@ -75,4 +95,5 @@ func RunEmitters(ctx context.Context,
 func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
 	RunCmd.Flags().StringP("output", "o", "", "name of output producer")
+	RunCmd.Flags().CountP("output-log-level", "l", "name of output producer")
 }

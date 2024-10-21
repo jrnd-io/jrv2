@@ -2,10 +2,18 @@
   "emitters": {
     "showcase": [
       {
-        "name": "internal_key",
+        "name": "internal_key_stdout",
         "num": 1,
         "frequency": "0s",
         "output": "stdout",
+        "keyTemplate": "null",
+        "valueTemplate": "showcase_internal_key"
+      },
+      {
+        "name": "internal_key_jr-console",
+        "num": 1,
+        "frequency": "0s",
+        "output": "jr-console",
         "keyTemplate": "null",
         "valueTemplate": "showcase_internal_key"
       }

@@ -17,8 +17,9 @@ import (
 )
 
 func DoLoop(ctx context.Context,
+	emitters *orderedmap.OrderedMap[string, []emitter.Config],
 	pluginName string,
-	emitters *orderedmap.OrderedMap[string, []emitter.Config]) error {
+	pluginLogLevel hclog.Level) error {
 
 	// emitter slice
 	es := make([]*emitter.Emitter, 0)
@@ -71,7 +72,7 @@ func DoLoop(ctx context.Context,
 				log.Debug().
 					Str("output", output).
 					Msg("creating emitter output")
-				_plugin, err = plugin.New(output, hclog.Debug)
+				_plugin, err = plugin.New(output, pluginLogLevel)
 				if err != nil {
 					return err
 				}
