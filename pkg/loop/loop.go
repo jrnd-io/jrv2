@@ -163,10 +163,10 @@ func doTemplate(ctx context.Context,
 			log.Warn().
 				Err(err).
 				Msg("error in emission")
+		} else {
+			state.GetSharedState().Execution.GeneratedObjects++
+			state.GetSharedState().Execution.GeneratedBytes += resp.Bytes
 		}
-
-		state.GetSharedState().Execution.GeneratedObjects++
-		state.GetSharedState().Execution.GeneratedBytes += resp.Bytes
 	}
 
 }

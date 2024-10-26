@@ -22,7 +22,6 @@ package jrpc
 
 import (
 	"context"
-
 	"github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
 )

@@ -84,7 +84,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	configFile := getConfigFileFor(jrPlugin)
 	if configFile != "" {
 		log.Debug().Str("configFile", configFile).Msg("adding configuration file to args")
-		pArgs = fmt.Sprintf("--config %s", configFile)
+		pArgs = fmt.Sprintf("--config '%s'", configFile)
 	}
 	pCmd = fmt.Sprintf("%s %s", pCmd, pArgs)
 
@@ -154,11 +154,19 @@ func sanitize(c string) string {
 func getConfigFileFor(jrPlugin string) string {
 	systemConfig := fmt.Sprintf("%s%cplugins%c%s.conf.json", config.JrSystemDir, os.PathSeparator, os.PathSeparator, jrPlugin)
 	userConfig := fmt.Sprintf("%s%cplugins%c%s.conf.json", config.JrUserDir, os.PathSeparator, os.PathSeparator, jrPlugin)
+	log.Debug().
+		Str("systemConfig", systemConfig).
+		Str("userConfig", userConfig).
+		Str("plugin", jrPlugin).
+		Msg("searching config")
 	if _, err := os.Stat(userConfig); err == nil {
-		return systemConfig
+		log.Debug().Str("plugin", jrPlugin).Str("config", userConfig).Msg("found config")
+		return userConfig
 	}
 	if _, err := os.Stat(systemConfig); err == nil {
+		log.Debug().Str("plugin", jrPlugin).Str("config", systemConfig).Msg("found config")
 		return systemConfig
 	}
+	log.Debug().Str("plugin", jrPlugin).Msg("config not found, proceeding without")
 	return ""
 }

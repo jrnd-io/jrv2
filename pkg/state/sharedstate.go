@@ -45,7 +45,7 @@ type Execution struct {
 
 // SharedState is the object passed on the templates which contains all the needed details.
 type SharedState struct {
-	Execution    Execution
+	Execution    *Execution
 	Locale       string
 	Counters     sync.Map
 	countersLock sync.RWMutex
@@ -72,7 +72,7 @@ func GetSharedState() *SharedState {
 	}
 	if _state == nil {
 		_state = &SharedState{
-			Execution: Execution{
+			Execution: &Execution{
 				Start: time.Now(),
 			},
 			Locale:       strings.ToLower(countries.UnitedStatesOfAmerica.Alpha2()),
