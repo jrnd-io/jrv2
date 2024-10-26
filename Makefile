@@ -1,4 +1,4 @@
-VERSION=0.9.0
+VERSION=2.0.0
 GOVERSION=$(shell go version)
 USER=$(shell id -u -n)
 TIME=$(shell date)
@@ -75,6 +75,14 @@ compile: hello lint test
 	-X 'main.BuildUser=$(USER)' \
 	-X 'main.BuildTime=$(TIME)'" \
 	-o build/jr github.com/jrnd-io/jrv2/cmd/jr
+
+image:
+	docker build -t jrv2:$(VERSION) \
+     --build-arg VERSION="$(VERSION)" \
+     --build-arg GOVERSION="$(GOVERSION)" \
+     --build-arg USER="$(USER)" \
+     --build-arg TIME="$(TIME)" \
+     .
 
 run: compile
 	./build/jr

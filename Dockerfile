@@ -1,10 +1,10 @@
 FROM golang:1.23-alpine AS builder
 MAINTAINER Ugo Landini <ugo@confluent.io>
 
-ARG VERSION=2.0.0
-ARG GOVERSION=$(go version)
-ARG USER=$(id -u -n)
-ARG TIME=$(date)
+ARG VERSION
+ARG GOVERSION
+ARG USER
+ARG TIME
 
 RUN apk update \
     && apk add --no-cache git ca-certificates \
@@ -30,7 +30,7 @@ COPY go.sum go.sum
 RUN go mod tidy
 RUN CGO_ENABLED=1 GOOS=linux go build \
      -tags musl -v \
-     -ldflags="-X 'github.com/jrnd-io/jrv2/cmd.Version=${VERSION}' -X 'github.com/jrnd-io/jrv2/pkg/cmd.GoVersion=${GOVERSION}' -X 'github.com/jrnd-io/jrv2/cmd.BuildUser=${USER}' -X 'github.com/jrnd-io/jrv2/cmd.BuildTime=${TIME}' -linkmode external -w -s -extldflags '-static'" \
+     -ldflags="-X 'main.GoVersion=${GOVERSION}' -X 'main.BuildUser=${USER}' -X 'main.BuildTime=${TIME}' -X 'main.Version=${VERSION}' -linkmode external -w -s -extldflags '-static'" \
      -a -o build/jr github.com/jrnd-io/jrv2/cmd/jr
 
 FROM scratch
