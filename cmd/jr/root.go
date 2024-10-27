@@ -56,6 +56,7 @@ func init() {
 	rootCmd.AddCommand(function.NewListCmd())
 	rootCmd.AddCommand(function.NewManCmd())
 	rootCmd.AddCommand(template.NewCmd())
+	rootCmd.AddCommand(template.RunCmd)
 
 	config.InitEnvironmentVariables()
 }
