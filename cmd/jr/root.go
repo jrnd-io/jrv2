@@ -56,6 +56,8 @@ func init() {
 	rootCmd.AddCommand(function.NewListCmd())
 	rootCmd.AddCommand(function.NewManCmd())
 	rootCmd.AddCommand(template.NewCmd())
+
+	// jr run is equivalent to jr template run
 	rootCmd.AddCommand(template.RunCmd)
 
 	config.InitEnvironmentVariables()
