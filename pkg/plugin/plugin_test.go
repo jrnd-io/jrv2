@@ -24,7 +24,11 @@ func init() {
 type MockProducer struct {
 }
 
-func (m *MockProducer) Produce(_ context.Context, _ []byte, value []byte, _ map[string]string) (*jrpc.ProduceResponse, error) {
+func (m *MockProducer) Produce(_ context.Context,
+	_ []byte,
+	value []byte,
+	_ map[string]string,
+	_ map[string]string) (*jrpc.ProduceResponse, error) {
 	return &jrpc.ProduceResponse{Bytes: uint64(len(value)), Message: "success"}, nil
 }
 
@@ -44,10 +48,11 @@ func TestPlugin(t *testing.T) {
 	key := []byte("test_key")
 	value := []byte("test_value")
 	headers := map[string]string{"header1": "value1"}
+	conf := map[string]string{"conf1": "conf1value"}
 
 	expectedResponse := &jrpc.ProduceResponse{Bytes: uint64(len(value)), Message: "success"}
 
-	response, err := p.Produce(ctx, key, value, headers)
+	response, err := p.Produce(ctx, key, value, headers, conf)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResponse, response)
 

@@ -36,7 +36,11 @@ type testProducer struct {
 	message      string
 }
 
-func (t *testProducer) Produce(_ context.Context, _ []byte, _ []byte, _ map[string]string) (*jrpc.ProduceResponse, error) {
+func (t *testProducer) Produce(_ context.Context,
+	_ []byte,
+	_ []byte,
+	_ map[string]string,
+	_ map[string]string) (*jrpc.ProduceResponse, error) {
 	return &jrpc.ProduceResponse{
 		Bytes:   t.bytesToWrite,
 		Message: t.message,
@@ -66,7 +70,7 @@ func TestLocalPlugin(t *testing.T) {
 	}
 	defer c.Close()
 
-	resp, err := c.Produce(context.Background(), []byte("key"), []byte("value"), nil)
+	resp, err := c.Produce(context.Background(), []byte("key"), []byte("value"), nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

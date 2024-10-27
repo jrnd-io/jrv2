@@ -2,13 +2,14 @@ package loop
 
 import (
 	"context"
-	"github.com/hashicorp/go-hclog"
-	"github.com/jrnd-io/jrv2/pkg/jrpc"
-	"github.com/jrnd-io/jrv2/pkg/state"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
+
+	"github.com/hashicorp/go-hclog"
+	"github.com/jrnd-io/jrv2/pkg/jrpc"
+	"github.com/jrnd-io/jrv2/pkg/state"
 
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/plugin"
@@ -158,7 +159,7 @@ func doTemplate(ctx context.Context,
 		}
 
 		var resp *jrpc.ProduceResponse
-		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header)
+		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header, em.Config.ConfigParameters)
 		if err != nil {
 			log.Warn().
 				Err(err).

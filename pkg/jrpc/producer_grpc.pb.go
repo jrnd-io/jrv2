@@ -52,7 +52,6 @@ func (c *producerClient) Produce(ctx context.Context, in *ProduceRequest, opts .
 // for forward compatibility.
 type ProducerServer interface {
 	Produce(context.Context, *ProduceRequest) (*ProduceResponse, error)
-//	mustEmbedUnimplementedProducerServer()
 }
 
 // UnimplementedProducerServer must be embedded to have
@@ -65,15 +64,7 @@ type UnimplementedProducerServer struct{}
 func (UnimplementedProducerServer) Produce(context.Context, *ProduceRequest) (*ProduceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Produce not implemented")
 }
-func (UnimplementedProducerServer) mustEmbedUnimplementedProducerServer() {}
-func (UnimplementedProducerServer) testEmbeddedByValue()                  {}
 
-// UnsafeProducerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProducerServer will
-// result in compilation errors.
-type UnsafeProducerServer interface {
-	mustEmbedUnimplementedProducerServer()
-}
 
 func RegisterProducerServer(s grpc.ServiceRegistrar, srv ProducerServer) {
 	// If the following call pancis, it indicates UnimplementedProducerServer was
@@ -114,108 +105,6 @@ var Producer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Produce",
 			Handler:    _Producer_Produce_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "producer.proto",
-}
-
-const (
-	GRPCController_Shutdown_FullMethodName = "/jrpc.GRPCController/Shutdown"
-)
-
-// GRPCControllerClient is the client API for GRPCController service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GRPCControllerClient interface {
-	Shutdown(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
-}
-
-type gRPCControllerClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewGRPCControllerClient(cc grpc.ClientConnInterface) GRPCControllerClient {
-	return &gRPCControllerClient{cc}
-}
-
-func (c *gRPCControllerClient) Shutdown(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, GRPCController_Shutdown_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// GRPCControllerServer is the server API for GRPCController service.
-// All implementations must embed UnimplementedGRPCControllerServer
-// for forward compatibility.
-type GRPCControllerServer interface {
-	Shutdown(context.Context, *Empty) (*Empty, error)
-//	mustEmbedUnimplementedGRPCControllerServer()
-}
-
-// UnimplementedGRPCControllerServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedGRPCControllerServer struct{}
-
-func (UnimplementedGRPCControllerServer) Shutdown(context.Context, *Empty) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Shutdown not implemented")
-}
-func (UnimplementedGRPCControllerServer) mustEmbedUnimplementedGRPCControllerServer() {}
-func (UnimplementedGRPCControllerServer) testEmbeddedByValue()                        {}
-
-// UnsafeGRPCControllerServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GRPCControllerServer will
-// result in compilation errors.
-type UnsafeGRPCControllerServer interface {
-	mustEmbedUnimplementedGRPCControllerServer()
-}
-
-func RegisterGRPCControllerServer(s grpc.ServiceRegistrar, srv GRPCControllerServer) {
-	// If the following call pancis, it indicates UnimplementedGRPCControllerServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&GRPCController_ServiceDesc, srv)
-}
-
-func _GRPCController_Shutdown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GRPCControllerServer).Shutdown(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GRPCController_Shutdown_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GRPCControllerServer).Shutdown(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// GRPCController_ServiceDesc is the grpc.ServiceDesc for GRPCController service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var GRPCController_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "jrpc.GRPCController",
-	HandlerType: (*GRPCControllerServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Shutdown",
-			Handler:    _GRPCController_Shutdown_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

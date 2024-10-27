@@ -42,7 +42,7 @@ func init() {
 type Producer struct {
 }
 
-func (p *Producer) Produce(_ context.Context, _ []byte, v []byte, _ map[string]string) (*jrpc.ProduceResponse, error) {
+func (p *Producer) Produce(_ context.Context, _ []byte, v []byte, _ map[string]string, _ map[string]string) (*jrpc.ProduceResponse, error) {
 
 	writtenBytes := len(v)
 	fmt.Println(string(v))

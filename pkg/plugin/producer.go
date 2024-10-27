@@ -29,7 +29,7 @@ import (
 var pluginMap map[string]*Plugin
 
 type Producer interface {
-	Produce(ctx context.Context, key []byte, v []byte, headers map[string]string) (*jrpc.ProduceResponse, error)
+	Produce(ctx context.Context, key []byte, v []byte, headers map[string]string, configParams map[string]string) (*jrpc.ProduceResponse, error)
 }
 
 func RegisterLocalPlugin(name string, plugin *Plugin) {
