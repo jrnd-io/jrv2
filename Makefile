@@ -1,4 +1,4 @@
-VERSION=2.0.0
+VERSION=0.9.0
 GOVERSION=$(shell go version)
 USER=$(shell id -u -n)
 TIME=$(shell date)
