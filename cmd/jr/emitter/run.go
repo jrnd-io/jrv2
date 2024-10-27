@@ -23,6 +23,7 @@ package emitter
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/go-hclog"
 	"github.com/jrnd-io/jrv2/pkg/emitter"
 	"github.com/jrnd-io/jrv2/pkg/loop"
@@ -75,7 +76,10 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		emitters.Set(name, e)
 	}
-	RunEmitters(cmd.Context(), pluginName, emitters, logLevel)
+	RunEmitters(cmd.Context(),
+		pluginName,
+		emitters,
+		logLevel)
 
 }
 
@@ -85,7 +89,10 @@ func RunEmitters(ctx context.Context,
 	pluginLogLevel hclog.Level) {
 
 	log.Debug().Msg("Running main loop")
-	if err := loop.DoLoop(ctx, emitters, pluginName, pluginLogLevel); err != nil {
+	if err := loop.DoLoop(ctx,
+		emitters,
+		pluginName,
+		pluginLogLevel); err != nil {
 		fmt.Printf("%v\n", err)
 	}
 

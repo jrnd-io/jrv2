@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import grpc_controller_pb2 as grpc__controller__pb2
+from . import grpc_controller_pb2 as grpc__controller__pb2
 
 GRPC_GENERATED_VERSION = '1.67.0'
 GRPC_VERSION = grpc.__version__
