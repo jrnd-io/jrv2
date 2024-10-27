@@ -23,10 +23,11 @@ package plugin
 import (
 	"context"
 	"fmt"
-	"github.com/jrnd-io/jrv2/pkg/config"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/jrnd-io/jrv2/pkg/config"
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
@@ -36,6 +37,9 @@ import (
 
 const (
 	EnvJRPlugin = "JR_PLUGIN"
+
+	PythonPlugin       = "python"
+	PythonPluginScript = "plugin.py"
 )
 
 type Plugin struct {
@@ -48,25 +52,31 @@ type Plugin struct {
 
 func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 
-	pl := pluginMap[jrPlugin]
-	if pl == nil {
-		log.Error().Str("plugin", jrPlugin).Msg("plugin not found")
-		return nil, fmt.Errorf("plugin %s not found", jrPlugin)
-	}
-	log.Debug().
-		Str("plugin", jrPlugin).
-		Interface("pluginmap", pluginMap).
-		Bool("remote", pl.IsRemote).
-		Msg("initialize plugin")
+	var pl *Plugin
+	var command string
 
-	if !pl.IsRemote {
-		return &Plugin{
-			Name:     jrPlugin,
-			Producer: pl.Producer,
-		}, nil
-	}
+	if jrPlugin != PythonPlugin {
+		pl = pluginMap[jrPlugin]
+		if pl == nil {
+			log.Error().Str("plugin", jrPlugin).Msg("plugin not found")
+			return nil, fmt.Errorf("plugin %s not found", jrPlugin)
+		}
+		log.Debug().
+			Str("plugin", jrPlugin).
+			Interface("pluginmap", pluginMap).
+			Bool("remote", pl.IsRemote).
+			Msg("initialize plugin")
 
-	command := pl.Command
+		if !pl.IsRemote {
+			return &Plugin{
+				Name:     jrPlugin,
+				Producer: pl.Producer,
+			}, nil
+		}
+		command = pl.Command
+	} else {
+		command = "python"
+	}
 
 	if logLevel == 0 {
 		logLevel = hclog.Off
@@ -77,7 +87,6 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 		"-c",
 	}
 
-	//
 	pCmd := sanitize(command)
 	pArgs := ""
 
@@ -85,6 +94,10 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	if configFile != "" {
 		log.Debug().Str("configFile", configFile).Msg("adding configuration file to args")
 		pArgs = fmt.Sprintf("--config '%s'", configFile)
+	}
+
+	if jrPlugin == PythonPlugin {
+		pArgs = PythonPluginScript
 	}
 	pCmd = fmt.Sprintf("%s %s", pCmd, pArgs)
 
