@@ -22,6 +22,7 @@ package console
 import (
 	"context"
 	"fmt"
+	"github.com/jrnd-io/jrv2/pkg/tpl"
 
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
 	"github.com/jrnd-io/jrv2/pkg/plugin"
@@ -40,12 +41,21 @@ func init() {
 }
 
 type Producer struct {
+	OutputTpl *tpl.Tpl
 }
 
-func (p *Producer) Produce(_ context.Context, _ []byte, v []byte, _ map[string]string) (*jrpc.ProduceResponse, error) {
+func (p *Producer) Produce(_ context.Context, k []byte, v []byte, h map[string]string) (*jrpc.ProduceResponse, error) {
 
 	writtenBytes := len(v)
-	fmt.Println(string(v))
+
+	data := struct {
+		K string
+		V string
+		// H string
+	}{string(k), string(v)}
+
+	out := p.OutputTpl.ExecuteWith(data)
+	fmt.Println(out)
 	return &jrpc.ProduceResponse{
 		Bytes:   uint64(writtenBytes),
 		Message: "",
