@@ -72,7 +72,6 @@ func run(cmd *cobra.Command, args []string) {
 		e := emitter.Emitters[name]
 		if dryrun {
 			pluginName = console.PluginName
-			fmt.Println("should set output to stdout")
 		}
 		emitters.Set(name, e)
 	}
