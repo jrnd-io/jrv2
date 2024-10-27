@@ -137,11 +137,11 @@ func (e *Emitter) SetTemplates() error {
 
 }
 
-func (e *Emitter) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string) (*jrpc.ProduceResponse, error) {
+func (e *Emitter) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string, configParams map[string]string) (*jrpc.ProduceResponse, error) {
 	if e.plugin == nil {
 		return nil, errors.New("emitter plugin not initialized")
 	}
-	return e.plugin.Produce(ctx, key, value, headers)
+	return e.plugin.Produce(ctx, key, value, headers, configParams)
 }
 
 func (e *Emitter) StartTicker() {

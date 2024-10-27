@@ -46,15 +46,16 @@ const (
 )
 
 type Config struct {
-	Tick           Ticker `mapstructure:",squash"`
-	Preload        int
-	Name           string
-	Locale         string
-	KeyTemplate    string
-	ValueTemplate  string
-	Embedded       bool
-	HeaderTemplate string
-	OutputTemplate string
-	Output         string
-	Oneline        bool
+	Tick             Ticker `mapstructure:",squash"`
+	Preload          int
+	Name             string
+	Locale           string
+	KeyTemplate      string
+	ValueTemplate    string
+	Embedded         bool
+	HeaderTemplate   string
+	OutputTemplate   string
+	Output           string
+	Oneline          bool
+	ConfigParameters map[string]string
 }

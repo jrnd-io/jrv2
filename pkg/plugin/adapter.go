@@ -37,6 +37,10 @@ func NewAdapter(jrpcProducer jrpc.Producer) *Adapter {
 	}
 }
 
-func (a *Adapter) Produce(_ context.Context, key []byte, v []byte, headers map[string]string) (*jrpc.ProduceResponse, error) {
-	return a.plugin.Produce(key, v, headers)
+func (a *Adapter) Produce(_ context.Context,
+	key []byte,
+	v []byte,
+	headers map[string]string,
+	configParams map[string]string) (*jrpc.ProduceResponse, error) {
+	return a.plugin.Produce(key, v, headers, configParams)
 }

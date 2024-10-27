@@ -134,9 +134,9 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	}, nil
 }
 
-func (c *Plugin) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string) (*jrpc.ProduceResponse, error) {
+func (c *Plugin) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string, configParams map[string]string) (*jrpc.ProduceResponse, error) {
 
-	return c.Producer.Produce(ctx, key, value, headers)
+	return c.Producer.Produce(ctx, key, value, headers, configParams)
 
 }
 
