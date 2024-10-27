@@ -118,9 +118,15 @@ func (e *Emitter) SetPlugin(plugin *plugin.Plugin) {
 
 func (e *Emitter) SetTemplates() error {
 
-	vTplText, err := tpl.GetRawTemplate(e.Config.ValueTemplate)
-	if err != nil {
-		return err
+	var vTplText string
+	var err error
+	if e.Config.Embedded {
+		vTplText = e.Config.ValueTemplate
+	} else {
+		vTplText, err = tpl.GetRawTemplate(e.Config.ValueTemplate)
+		if err != nil {
+			return err
+		}
 	}
 	valueTpl, err := tpl.New("value", vTplText, function.Map())
 	if err != nil {

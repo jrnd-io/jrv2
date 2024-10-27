@@ -21,13 +21,14 @@
 package template
 
 import (
-	"fmt"
-
-	"github.com/jrnd-io/jrv2/pkg/emitter"
-	"github.com/jrnd-io/jrv2/pkg/tpl"
-
 	"github.com/jrnd-io/jrv2/pkg/config"
+	"github.com/jrnd-io/jrv2/pkg/emitter"
+	"github.com/jrnd-io/jrv2/pkg/loop"
+	"github.com/jrnd-io/jrv2/pkg/tpl"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
+	"time"
 )
 
 var RunCmd = &cobra.Command{
@@ -61,6 +62,21 @@ func run(cmd *cobra.Command, args []string) error {
 	throughputString, _ := cmd.Flags().GetString("throughput")
 	preload, _ := cmd.Flags().GetInt("preload")
 
+	log.Debug().Str("keyTemplate", keyTemplate).
+		Str("headerTemplate", headerTemplate).
+		Str("outputTemplate", outputTemplate).
+		Bool("embedded", embedded).
+		Bool("kcat", kcat).
+		Str("output", output).
+		Bool("oneline", oneline).
+		Str("locale", locale).
+		Int("num", num).
+		Dur("frequency", frequency).
+		Bool("immediate", immediateStart).
+		Str("throughput", throughputString).
+		Int("preload", preload).
+		Msg("executing run template")
+
 	// csv, _ := cmd.Flags().GetString("csv")
 
 	if kcat {
@@ -69,48 +85,65 @@ func run(cmd *cobra.Command, args []string) error {
 		outputTemplate = config.DefaultOutputKcatTemplate
 	}
 
-	var valueTemplate string
 	var err error
-	if embedded {
-		valueTemplate = args[0]
-	} else {
-		valueTemplate, err = tpl.GetRawTemplate(args[0])
-		if err != nil {
-			return err
-		}
-	}
-
-	if throughputString != "" {
-		result, err := tpl.ExecuteTemplate(valueTemplate, nil)
-		if err != nil {
-			return err
-		}
-		throughput, err := emitter.ParseThroughput(throughputString)
-		if err != nil {
-			return err
-		}
-		frequency = emitter.CalculateFrequency(len([]byte(result)), num, throughput)
-	}
-
-	e, err := emitter.New(
-		emitter.WithDuration(duration),
-		emitter.WithFrequency(frequency),
-		emitter.WithNum(num),
-		emitter.WithPreload(preload),
-		emitter.WithKeyTemplate(keyTemplate),
-		emitter.WithValueTemplate(valueTemplate),
-		emitter.WithHeaderTemplate(headerTemplate),
-		emitter.WithOutputTemplate(outputTemplate),
-		emitter.WithImmediateStart(immediateStart),
-		emitter.WithOutput(output),
-		emitter.WithLocale(locale),
-		emitter.WithOneline(oneline),
-	)
+	valueTemplate := args[0]
+	frequency, err = evaluateFrequencyFor(valueTemplate, throughputString, num, embedded)
 	if err != nil {
+		log.Error().Err(err).Str("valueTemplate", valueTemplate).Msg("cannot evaluate frequency")
 		return err
 	}
-	fmt.Println(e)
+
+	emitterConfig := emitter.Config{
+		Tick: emitter.Ticker{
+			Duration:       duration,
+			Frequency:      frequency,
+			Num:            num,
+			ImmediateStart: immediateStart,
+		},
+		Preload:        preload,
+		KeyTemplate:    keyTemplate,
+		ValueTemplate:  args[0],
+		Embedded:       embedded,
+		HeaderTemplate: headerTemplate,
+		OutputTemplate: outputTemplate,
+		Output:         output,
+		Locale:         locale,
+		Oneline:        oneline,
+	}
+
+	emitters := orderedmap.New[string, []emitter.Config](1)
+	emitters.Set(emitter.DefaultEmitterName, []emitter.Config{emitterConfig})
+	if err := loop.DoLoop(cmd.Context(), emitters, output, -1); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func evaluateFrequencyFor(valueTemplate string, throughputString string, num int, embedded bool) (time.Duration, error) {
+	var err error
+	if !embedded {
+		valueTemplate, err = tpl.GetRawTemplate(valueTemplate)
+		log.Debug().Bool("embedded", embedded).Str("valueTemplate", valueTemplate).Msg("raw template")
+		if err != nil {
+			log.Error().Err(err).Str("valueTemplate", valueTemplate).Msg("error in getting raw template")
+			return config.DefaultFrequency, err
+		}
+	}
+
+	result, err := tpl.ExecuteTemplate(valueTemplate, nil)
+	if err != nil {
+		log.Error().Err(err).Str("valueTemplate", valueTemplate).Msg("error executing template")
+		return config.DefaultFrequency, err
+	}
+	throughput, err := emitter.ParseThroughput(throughputString)
+	if err != nil {
+		log.Error().Err(err).Str("valueTemplate", valueTemplate).Msg("error parsing throughput")
+		return config.DefaultFrequency, err
+	}
+	frequency := emitter.CalculateFrequency(len([]byte(result)), num, throughput)
+	return frequency, nil
+
 }
 
 func init() {

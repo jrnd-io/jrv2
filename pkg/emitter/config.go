@@ -52,6 +52,7 @@ type Config struct {
 	Locale         string
 	KeyTemplate    string
 	ValueTemplate  string
+	Embedded       bool
 	HeaderTemplate string
 	OutputTemplate string
 	Output         string

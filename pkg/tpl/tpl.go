@@ -44,6 +44,10 @@ type Tpl struct {
 
 func New(name string, t string, fmap map[string]interface{}) (*Tpl, error) {
 
+	log.Debug().
+		Str("name", name).
+		Str("template", t).
+		Msg("creating new template wrapper")
 	tp, err := template.New(name).Funcs(fmap).Parse(t)
 	if err != nil {
 		return nil, err
@@ -60,6 +64,10 @@ func (t *Tpl) Execute() string {
 }
 
 func (t *Tpl) ExecuteWith(data any) string {
+	log.Debug().
+		Str("name", t.Template.Name()).
+		Interface("data", data).
+		Msg("execute template")
 	var buffer bytes.Buffer
 	err := t.Template.Execute(&buffer, data)
 	if err != nil {
@@ -131,10 +139,15 @@ func UserTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
 func getTemplate(name string) (string, error) {
 	systemTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
 	userTemplateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
-	templateScript, err := os.ReadFile(fmt.Sprintf("%s/%s.tpl", userTemplateDir, name))
+
+	userTemplate := fmt.Sprintf("%s/%s.tpl", userTemplateDir, name)
+	templateScript, err := os.ReadFile(userTemplate)
 	if err != nil {
-		templateScript, err = os.ReadFile(fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name))
+		log.Debug().Err(err).Str("template", userTemplate).Msg("Error reading template")
+		systemTemplate := fmt.Sprintf("%s/%s.tpl", systemTemplateDir, name)
+		templateScript, err = os.ReadFile(systemTemplate)
 		if err != nil {
+			log.Error().Err(err).Str("name", name).Msg("Error reading template")
 			return "", err
 		}
 	}
