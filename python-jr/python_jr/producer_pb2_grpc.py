@@ -3,9 +3,9 @@
 import grpc
 import warnings
 
-from . import producer_pb2 as producer__pb2
+import producer_pb2 as producer__pb2
 
-GRPC_GENERATED_VERSION = '1.66.0'
+GRPC_GENERATED_VERSION = '1.67.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
