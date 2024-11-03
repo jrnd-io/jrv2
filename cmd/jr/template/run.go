@@ -94,6 +94,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	emitterConfig := emitter.Config{
+		Name: "cli",
 		Tick: emitter.Ticker{
 			Duration:       duration,
 			Frequency:      frequency,

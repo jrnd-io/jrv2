@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -133,15 +134,45 @@ func (e *Emitter) SetTemplates() error {
 		return err
 	}
 	e.ValueTemplate = valueTpl
+
+	if e.Config.OutputTemplate != "" {
+
+		log.Debug().Str("name", e.Config.Name).Str("outputTemplate", e.Config.OutputTemplate).Msg("parsing output template")
+		outputTpl, err := tpl.New("output", e.Config.OutputTemplate, function.Map())
+		if err != nil {
+			return err
+		}
+		e.OutputTemplate = outputTpl
+	}
+
 	return nil
 
 }
 
 func (e *Emitter) Produce(ctx context.Context, key []byte, value []byte, headers map[string]string, configParams map[string]string) (*jrpc.ProduceResponse, error) {
+
+	sValue := string(value)
+	kValue := string(key)
+	log.Debug().Str("name", e.Config.Name).Msg("produce")
+
+	if e.OutputTemplate != nil {
+		log.Debug().Str("name", e.Config.Name).Msg("using output template")
+		data := struct {
+			K string
+			V string
+			H map[string]string
+		}{kValue, string(value), headers}
+		sValue = e.OutputTemplate.ExecuteWith(data)
+	}
+
+	if e.Config.Oneline {
+		sValue = strings.ReplaceAll(sValue, "\n", "")
+		sValue = strings.ReplaceAll(sValue, "\r", "")
+	}
 	if e.plugin == nil {
 		return nil, errors.New("emitter plugin not initialized")
 	}
-	return e.plugin.Produce(ctx, key, value, headers, configParams)
+	return e.plugin.Produce(ctx, key, []byte(sValue), headers, configParams)
 }
 
 func (e *Emitter) StartTicker() {
