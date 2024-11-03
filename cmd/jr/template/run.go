@@ -113,7 +113,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	emitters := orderedmap.New[string, []emitter.Config](1)
 	emitters.Set(emitter.DefaultEmitterName, []emitter.Config{emitterConfig})
-	if err := loop.DoLoop(cmd.Context(), emitters, output, -1); err != nil {
+	if err := loop.DoLoop(cmd.Context(), emitters, nil, output, -1); err != nil {
 		return err
 	}
 
