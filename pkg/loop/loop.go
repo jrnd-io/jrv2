@@ -165,6 +165,8 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 			cfgParams[k] = v
 		}
 
+		cfgParams["emitter.name"] = em.Config.Name
+
 		for k, v := range configParams {
 			ks := strings.Split(k, ".")
 			if len(ks) == 1 {
