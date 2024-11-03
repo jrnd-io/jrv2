@@ -149,7 +149,6 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 				valueText = strings.ReplaceAll(valueText, "\n", "")
 			}
 		}
-
 		if em.KeyTemplate != nil {
 			keyText = em.KeyTemplate.Execute()
 			log.Debug().Str("key", keyText).Msg("key generated with template")
@@ -159,14 +158,11 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 		}
 
 		// building emitter configuration map
-
 		cfgParams := make(map[string]string)
 		for k, v := range em.Config.ConfigParameters {
 			cfgParams[k] = v
 		}
-
 		cfgParams["emitter.name"] = em.Config.Name
-
 		for k, v := range configParams {
 			ks := strings.Split(k, ".")
 			if len(ks) == 1 {
