@@ -45,6 +45,7 @@ const (
 type Plugin struct {
 	Name      string
 	RPCClient plugin.ClientProtocol
+	client    *plugin.Client
 	Producer  Producer
 	Command   string
 	IsRemote  bool
@@ -144,6 +145,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 		Producer: NewAdapter(p),
 		IsRemote: true,
 		Command:  command,
+		client:   client,
 	}, nil
 }
 
@@ -155,7 +157,12 @@ func (c *Plugin) Produce(ctx context.Context, key []byte, value []byte, headers 
 
 func (c *Plugin) Close() error {
 	if c.RPCClient != nil {
+		log.Debug().Str("plugin", c.Name).Msg("executing rpcclient close")
 		return c.RPCClient.Close()
+	}
+	if c.client != nil {
+		log.Debug().Str("plugin", c.Name).Msg("executing client kill")
+		c.client.Kill()
 	}
 	return nil
 }

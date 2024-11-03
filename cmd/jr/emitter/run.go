@@ -49,6 +49,8 @@ func run(cmd *cobra.Command, args []string) {
 		pluginName = console.PluginName
 	}
 
+	configParams, _ := cmd.Flags().GetStringToString("param")
+
 	var logLevel hclog.Level
 	verbosity, err := cmd.PersistentFlags().GetCount("output-log-level")
 	if err != nil {
@@ -79,6 +81,7 @@ func run(cmd *cobra.Command, args []string) {
 	RunEmitters(cmd.Context(),
 		pluginName,
 		emitters,
+		configParams,
 		logLevel)
 
 }
@@ -86,11 +89,13 @@ func run(cmd *cobra.Command, args []string) {
 func RunEmitters(ctx context.Context,
 	pluginName string,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config],
+	configParams map[string]string,
 	pluginLogLevel hclog.Level) {
 
 	log.Debug().Msg("Running main loop")
 	if err := loop.DoLoop(ctx,
 		emitters,
+		configParams,
 		pluginName,
 		pluginLogLevel); err != nil {
 		fmt.Printf("%v\n", err)
@@ -102,4 +107,5 @@ func init() {
 	RunCmd.Flags().BoolP("dryrun", "d", false, "dryrun: output of the emitters to stdout")
 	RunCmd.Flags().StringP("output", "o", "", "name of output producer")
 	RunCmd.Flags().CountP("output-log-level", "l", "name of output producer")
+	RunCmd.Flags().StringToStringP("param", "p", make(map[string]string), "configuration parameters in the form <emittername>.<param name>=<value>")
 }

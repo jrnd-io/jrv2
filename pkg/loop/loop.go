@@ -19,6 +19,7 @@ import (
 
 func DoLoop(ctx context.Context,
 	emitters *orderedmap.OrderedMap[string, []emitter.Config],
+	configParams map[string]string,
 	pluginName string,
 	pluginLogLevel hclog.Level) error {
 
@@ -110,7 +111,7 @@ func DoLoop(ctx context.Context,
 							stop()
 							return
 						case <-e.Ticker.C:
-							doTemplate(ctx, e)
+							doTemplate(ctx, e, configParams)
 						case <-e.StopChannel:
 							return
 						}
@@ -120,7 +121,7 @@ func DoLoop(ctx context.Context,
 					log.Debug().
 						Str("Emitter: %e", e.Config.Name).
 						Msg("Exec do Template")
-					doTemplate(ctx, e)
+					doTemplate(ctx, e, configParams)
 				}
 			}(es[i])
 
@@ -131,8 +132,7 @@ func DoLoop(ctx context.Context,
 	return nil
 }
 
-func doTemplate(ctx context.Context,
-	em *emitter.Emitter) { //nolint
+func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[string]string) { //nolint
 
 	var err error
 
@@ -158,8 +158,29 @@ func doTemplate(ctx context.Context,
 			log.Debug().Str("key", keyText).Msg("key generated within localState")
 		}
 
+		// building emitter configuration map
+
+		cfgParams := make(map[string]string)
+		for k, v := range em.Config.ConfigParameters {
+			cfgParams[k] = v
+		}
+
+		for k, v := range configParams {
+			ks := strings.Split(k, ".")
+			if len(ks) == 1 {
+				cfgParams[k] = v
+			} else if ks[0] == em.Config.Name {
+				log.Debug().
+					Str("key", ks[1]).
+					Str("value", v).
+					Str("name", em.Config.Name).
+					Msg("adding configuration parameter")
+				cfgParams[ks[1]] = v
+			}
+		}
+
 		var resp *jrpc.ProduceResponse
-		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header, em.Config.ConfigParameters)
+		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header, cfgParams)
 		if err != nil {
 			log.Warn().
 				Err(err).
