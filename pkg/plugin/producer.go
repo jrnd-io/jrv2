@@ -22,6 +22,8 @@ package plugin
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
 )
@@ -33,6 +35,9 @@ type Producer interface {
 }
 
 func RegisterLocalPlugin(name string, plugin *Plugin) {
+	if !strings.HasPrefix(name, "jr-") {
+		name = fmt.Sprintf("jr-%s", name)
+	}
 	if pluginMap == nil {
 		pluginMap = make(map[string]*Plugin)
 	}

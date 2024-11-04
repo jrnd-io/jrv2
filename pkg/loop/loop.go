@@ -178,6 +178,10 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 			}
 		}
 
+		log.Debug().
+			Str("name", em.Config.Name).
+			Interface("cfgParams", cfgParams).Msg("configuration parameters")
+
 		var resp *jrpc.ProduceResponse
 		resp, err = em.Produce(ctx, []byte(keyText), []byte(valueText), localState.Header, cfgParams)
 		if err != nil {

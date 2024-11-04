@@ -56,21 +56,23 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	var pl *Plugin
 	var command string
 
-	if jrPlugin != PythonPlugin {
-		pl = pluginMap[jrPlugin]
+	pluginName := jrPlugin
+	if pluginName != PythonPlugin {
+		pluginName = fmt.Sprintf("jr-%s", jrPlugin)
+		pl = pluginMap[pluginName]
 		if pl == nil {
-			log.Error().Str("plugin", jrPlugin).Msg("plugin not found")
-			return nil, fmt.Errorf("plugin %s not found", jrPlugin)
+			log.Error().Str("plugin", pluginName).Msg("plugin not found")
+			return nil, fmt.Errorf("plugin %s not found", pluginName)
 		}
 		log.Debug().
-			Str("plugin", jrPlugin).
+			Str("plugin", pluginName).
 			Interface("pluginmap", pluginMap).
 			Bool("remote", pl.IsRemote).
 			Msg("initialize plugin")
 
 		if !pl.IsRemote {
 			return &Plugin{
-				Name:     jrPlugin,
+				Name:     pluginName,
 				Producer: pl.Producer,
 			}, nil
 		}
@@ -91,13 +93,13 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	pCmd := sanitize(command)
 	pArgs := ""
 
-	configFile := getConfigFileFor(jrPlugin)
+	configFile := getConfigFileFor(pluginName)
 	if configFile != "" {
 		log.Debug().Str("configFile", configFile).Msg("adding configuration file to args")
 		pArgs = fmt.Sprintf("--config '%s'", configFile)
 	}
 
-	if jrPlugin == PythonPlugin {
+	if pluginName == PythonPlugin {
 		pArgs = PythonPluginScript
 	}
 	pCmd = fmt.Sprintf("%s %s", pCmd, pArgs)
@@ -107,7 +109,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	log.Debug().
 		Str("cmd", cmd).
 		Strs("args", args).
-		Str("plugin", jrPlugin).
+		Str("plugin", pluginName).
 		Msg("creating client")
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: jrpc.Handshake,
@@ -120,7 +122,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 		Managed:          false,
 		Logger: hclog.New(&hclog.LoggerOptions{
-			Name:  "jrplugin",
+			Name:  pluginName,
 			Level: logLevel,
 		}),
 	})
@@ -141,7 +143,7 @@ func New(jrPlugin string, logLevel hclog.Level) (*Plugin, error) {
 	}
 
 	return &Plugin{
-		Name:     jrPlugin,
+		Name:     pluginName,
 		Producer: NewAdapter(p),
 		IsRemote: true,
 		Command:  command,
