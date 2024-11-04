@@ -173,7 +173,8 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 					Str("value", v).
 					Str("name", em.Config.Name).
 					Msg("adding configuration parameter")
-				cfgParams[ks[1]] = v
+				wholeKey := strings.Join(ks[1:], ".")
+				cfgParams[wholeKey] = v
 			}
 		}
 
@@ -182,6 +183,7 @@ func doTemplate(ctx context.Context, em *emitter.Emitter, configParams map[strin
 		if err != nil {
 			log.Warn().
 				Err(err).
+				Str("name", em.Config.Name).
 				Msg("error in emission")
 		} else {
 			state.GetSharedState().Execution.GeneratedObjects++
