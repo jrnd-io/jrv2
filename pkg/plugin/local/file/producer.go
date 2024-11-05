@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	PluginName = "jr-file"
+	PluginName = "file"
 	OutputDir  = "outputDir"
 	FileName   = "fileName"
 )

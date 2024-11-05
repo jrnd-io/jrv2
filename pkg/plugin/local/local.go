@@ -23,4 +23,5 @@ package local
 import (
 	_ "github.com/jrnd-io/jrv2/pkg/plugin/local/console" //nolint
 	_ "github.com/jrnd-io/jrv2/pkg/plugin/local/file"    //nolint
+	_ "github.com/jrnd-io/jrv2/pkg/plugin/local/kafka"   //nolint
 )

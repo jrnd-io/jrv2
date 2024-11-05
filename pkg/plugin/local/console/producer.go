@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	PluginName = "jr-stdout"
+	PluginName = "stdout"
 )
 
 func init() {
