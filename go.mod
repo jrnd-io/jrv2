@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.23.1
 
 require (
+	github.com/actgardner/gogen-avro/v10 v10.2.1
 	github.com/adrg/xdg v0.5.0
 	github.com/biter777/countries v1.7.5
 	github.com/fatih/color v1.17.0

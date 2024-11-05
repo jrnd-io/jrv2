@@ -66,7 +66,7 @@ install-gogen:
 	#go install github.com/hamba/avro/v2/cmd/avrogen@latest
 
 generate:
-	#go generate pkg/generator/generate.go
+	go generate pkg/generator/generate.go
 
 compile: hello lint test
 	@echo "Compiling"
