@@ -70,7 +70,8 @@ generate:
 
 compile: hello lint test
 	@echo "Compiling"
-	go build -v -ldflags="-X 'main.Version=$(VERSION)' \
+	go build -v -ldflags="-s -w \
+	-X 'main.Version=$(VERSION)' \
 	-X 'main.GoVersion=$(GOVERSION)' \
 	-X 'main.BuildUser=$(USER)' \
 	-X 'main.BuildTime=$(TIME)'" \
