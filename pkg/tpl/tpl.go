@@ -32,13 +32,20 @@ import (
 
 	"github.com/jrnd-io/jrv2/pkg/config"
 	"github.com/jrnd-io/jrv2/pkg/function"
-	"github.com/jrnd-io/jrv2/pkg/types"
 	"github.com/jrnd-io/jrv2/pkg/utils"
 	"github.com/rs/zerolog/log"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 type Tpl struct {
+	Template *template.Template
+}
+
+type TemplateInfo struct {
+	Name     string
+	IsValid  bool
+	FullPath string
+	Error    error
 	Template *template.Template
 }
 
@@ -126,12 +133,12 @@ func ExecuteTemplateByName(name string, ctx any) (string, error) {
 	return ExecuteTemplate(t, ctx)
 }
 
-func SystemTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+func SystemTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrSystemDir, "templates"))
 	return templateList(templateDir)
 }
 
-func UserTemplateList() *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+func UserTemplateList() *orderedmap.OrderedMap[string, *TemplateInfo] {
 	templateDir := os.ExpandEnv(fmt.Sprintf("%s/%s", config.JrUserDir, "templates"))
 	return templateList(templateDir)
 }
@@ -154,10 +161,10 @@ func getTemplate(name string) (string, error) {
 	return string(templateScript), nil
 }
 
-func templateList(templateDir string) *orderedmap.OrderedMap[string, *types.TemplateInfo] {
+func templateList(templateDir string) *orderedmap.OrderedMap[string, *TemplateInfo] {
 
 	howManyTemplatesInTemplateDir, _ := utils.CountFilesInDir(templateDir)
-	templateList := orderedmap.New[string, *types.TemplateInfo](howManyTemplatesInTemplateDir)
+	templateList := orderedmap.New[string, *TemplateInfo](howManyTemplatesInTemplateDir)
 
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		return templateList
@@ -169,7 +176,7 @@ func templateList(templateDir string) *orderedmap.OrderedMap[string, *types.Temp
 			t, _ := os.ReadFile(path)
 			valid, tt, err := IsValidTemplate(string(t))
 			name, _ := strings.CutSuffix(f.Name(), ".tpl")
-			templateInfo := types.TemplateInfo{
+			templateInfo := TemplateInfo{
 				Name:     name,
 				IsValid:  valid,
 				FullPath: path,
