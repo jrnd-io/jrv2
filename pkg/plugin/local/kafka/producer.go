@@ -27,22 +27,13 @@ import (
 	"fmt"
 	"github.com/jrnd-io/jrv2/pkg/jrpc"
 	"github.com/jrnd-io/jrv2/pkg/plugin"
-	"io"
 	"os"
-	"path/filepath"
-	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/rules/encryption"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/rules/encryption/awskms"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/rules/encryption/azurekms"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/rules/encryption/gcpkms"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/rules/encryption/hcvault"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/avrov2"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/jsonschema"
@@ -119,13 +110,15 @@ func (k *Manager) InitializeSchemaRegistry(configFile string) {
 		log.Fatal().Err(err).Msg("Failed to create schema registry client")
 	}
 
-	if k.Serializer == "avro" || k.Serializer == "avro-generic" {
-		verifyCSFLE(conf, k)
-	}
-
+	/*
+		if k.Serializer == "avro" || k.Serializer == "avro-generic" {
+			verifyCSFLE(conf, k)
+		}
+	*/
 	k.schemaRegistry = true
 }
 
+/*
 func verifyCSFLE(conf map[string]string, k *Manager) {
 	if conf["kekName"] == "" || conf["kmsType"] == "" || conf["kmsKeyID"] == "" {
 		return
@@ -211,6 +204,7 @@ func registerProviders() {
 	hcvault.Register()
 	encryption.Register()
 }
+*/
 
 func (k *Manager) Close(_ context.Context) error {
 	k.admin.Close()
@@ -405,6 +399,7 @@ func convertInKafkaConfig(m map[string]string) kafka.ConfigMap {
 	return conf
 }
 
+/*
 func capitalizeFirstLetter(s string) string {
 	if len(s) == 0 {
 		return s
@@ -416,3 +411,4 @@ func normalizeWhitespace(s string) string {
 	re := regexp.MustCompile(`\s+`)
 	return re.ReplaceAllString(s, " ")
 }
+*/
