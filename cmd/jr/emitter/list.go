@@ -52,7 +52,10 @@ func list(cmd *cobra.Command, _ []string) {
 
 	for k, v := range emitterapi.Emitters {
 		if all {
-			green.Printf("%s", k)
+			_, err := green.Printf("%s", k)
+			if err != nil {
+				return
+			}
 			fmt.Print(" -> (")
 			for _, e := range v {
 				fmt.Printf(" %s ", e.Name)
@@ -60,7 +63,10 @@ func list(cmd *cobra.Command, _ []string) {
 			fmt.Println(")")
 
 		} else {
-			green.Printf("%s\n", k)
+			_, err := green.Printf("%s\n", k)
+			if err != nil {
+				return
+			}
 		}
 	}
 	fmt.Println()

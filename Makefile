@@ -69,6 +69,7 @@ generate:
 	go generate pkg/generator/generate.go
 
 compile: hello lint test
+#compile: hello test
 	@echo "Compiling"
 	go build -v -ldflags="-s -w \
 	-X 'main.Version=$(VERSION)' \
@@ -108,7 +109,7 @@ vet:
 .PHONY: lint
 lint: golangci-lint
 	$(LOCALBIN)/golangci-lint cache clean
-	$(LOCALBIN)/golangci-lint run --config .localci/lint/golangci.yml
+	$(LOCALBIN)/golangci-lint run
 
 .PHONY: vuln
 vuln: govulncheck

@@ -142,13 +142,17 @@ func InitCSV(csvpath string) error {
 		return err
 	}
 
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Error in closing file")
+		}
+	}(file)
 
 	reader := csv.NewReader(file)
 
 	lines, err := reader.ReadAll()
 	if err != nil {
-		file.Close()
 		log.Fatal().Err(err).Str("file", csvpath).Msg("Error reading CSV file") //nolint do not bother
 		return err
 	}

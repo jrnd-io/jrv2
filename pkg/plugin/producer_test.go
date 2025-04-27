@@ -22,6 +22,7 @@ package plugin_test
 
 import (
 	"context"
+	"github.com/rs/zerolog/log"
 	"testing"
 
 	"github.com/hashicorp/go-hclog"
@@ -68,7 +69,12 @@ func TestLocalPlugin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer c.Close()
+	defer func(c *plugin.Plugin) {
+		err := c.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Error in closing plugin")
+		}
+	}(c)
 
 	resp, err := c.Produce(context.Background(), []byte("key"), []byte("value"), nil, nil)
 	if err != nil {

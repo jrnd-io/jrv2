@@ -222,17 +222,17 @@ func (k *Manager) Produce(_ context.Context, key []byte, data []byte, _ any) {
 	if k.schemaRegistry {
 		var err error
 
-		switch {
-		case k.Serializer == "avro" || k.Serializer == "avro-generic":
+		switch k.Serializer {
+		case "avro", "avro-generic":
 			serConfig := avrov2.NewSerializerConfig()
 			if k.fleEnabled {
 				serConfig.AutoRegisterSchemas = false
 				serConfig.UseLatestVersion = true
 			}
 			ser, err = avrov2.NewSerializer(k.schema, serde.ValueSerde, serConfig)
-		case k.Serializer == "protobuf":
+		case "protobuf":
 			log.Fatal().Msg("Protobuf not yet implemented")
-		case k.Serializer == "json-schema":
+		case "json-schema":
 			ser, err = jsonschema.NewSerializer(k.schema, serde.ValueSerde, jsonschema.NewSerializerConfig())
 		default:
 			log.Fatal().Str("serializer", k.Serializer).Msg("Serializer not supported")
